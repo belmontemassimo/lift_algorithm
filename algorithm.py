@@ -1,16 +1,16 @@
 class Algorithm:
 
-    def __init__(self):
+    def __init__(self, floors: int, lifts: int):
         pass
 
     def FloorRequest(self, floor: int):
         pass
 
-    def ElevatorRequest(self, floor: int, goUp: bool, elevator: int = 0):
+    def LiftRequest(self, floor: int, goUp: bool, lift: int = 0):
         pass
 
-    def ElevatorStep(self, floor: int, elevator: int = 0):
+    def LiftStep(self, floor: int, lift: int = 0):
         pass
 
-    def IsElevatorFull(self, isFull: bool, elevator: int = 0):
+    def LiftFull(self, isFull: bool, lift: int = 0):
         pass
