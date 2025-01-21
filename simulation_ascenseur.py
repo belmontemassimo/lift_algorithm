@@ -19,13 +19,10 @@ class ascenseur():
             bottom_coord = height - (i * n_stops)
             self.floor_coords.append(bottom_coord)
             canvas.create_line(0, bottom_coord, canvas.winfo_width(), bottom_coord, fill="black", width=2)
-            canvas.create_text(10, bottom_coord, text=str(i+1), fill="black", font=("Arial", 12, "bold"))
-
-
+            canvas.create_text(10, bottom_coord-20, text=str(i+1), fill="black", font=("Arial", 12, "bold"))
 
         self.floor_coords.append(0)
-
-        self.id = canvas.create_rectangle(self.floor_coords[0],self.floor_coords[0],self.floor_coords[0]-40,self.floor_coords[0]-40,fill='black')
+        self.id = canvas.create_rectangle(40,self.floor_coords[0],80,self.floor_coords[0]-40,fill='black')
         print(self.floor_coords)
         print(self.floors)
 
@@ -39,7 +36,7 @@ class ascenseur():
             root.after(10, lambda: self.move_down(target_floor))
             
         else:
-            time.sleep(2)
+            time.sleep(1)
             self.status = 0
     
     def move_up(self,target_floor):
@@ -51,7 +48,7 @@ class ascenseur():
             canvas.move(self.id,0, -self.speed)
             root.after(10, lambda: self.move_up(target_floor))
         else:
-            time.sleep(2)
+            time.sleep(1)
             self.status = 0
 
     def move(self,target_floors):
@@ -82,7 +79,7 @@ class ascenseur():
                     pass
                 else:
                     self.floor = i+1
-                    print(f"lift position: {self.floor}")
+                    print(f"lift position: {self.floor-1}")
 
         root.after(10, self.update_floor)
 
@@ -91,7 +88,7 @@ if __name__ == "__main__":
     canvas = tk.Canvas(root, width=800, height=600, bg='white')
     canvas.pack()
     floors = [1,2,3,4,5,6,7,8,9,10]
-    target_floors = [10,1]
+    target_floors = [1,2,3,4,5,6,7,8,9]
     lift = ascenseur(canvas,floors)
     lift.move(target_floors)
     lift.update_floor()
