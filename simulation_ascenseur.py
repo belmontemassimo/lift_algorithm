@@ -24,13 +24,13 @@ class ascenseur():
         canvas.update()
         n_stops = canvas.winfo_height()/floors
         height = canvas.winfo_height()
-        for i in range(len(self.floors)):
+        for i in range(len(self.floors)+1):
             # Calculate the bottom of each floor
             bottom_coord = height - (i * n_stops)
             self.floor_coords.append(bottom_coord)
             canvas.create_line(0, bottom_coord, canvas.winfo_width(), bottom_coord, fill="black", width=2) #add line
             canvas.create_text(10, bottom_coord-(n_stops/2), text=str(i), fill="black", font=("Arial", 12, "bold")) #add floor label
-        self.floor_coords.append(0)
+
 
         # Create object
         self.id = canvas.create_rectangle(
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     canvas = tk.Canvas(root, width=800, height=1000, bg='white')
     canvas.pack()
     floors = 50
-    target_floors = [1,2,5,2,10,11,10,19,0]
+    target_floors = [1,2,5,2,10,11,10,19,49,0]
     lift = ascenseur(canvas,floors)
     lift.move(target_floors)
     lift.update_floor()
