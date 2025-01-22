@@ -1,26 +1,29 @@
 import tkinter as tk
 import time
+import threading
+import queue
+from FCFS import Algorithm
+
+
 
 class ascenseur():
     
     def __init__(self,canvas,floor):
         ''' 
-        Setup object, including:
-        -current floor (0)
-        -list of floors
-        -speed of lift
-        -y value of different floors
-        -status of lift (0/1)
+        Initialise the elevator object
         '''
+        self.interrupt = False
         self.canvas = canvas
         self.floor = 0
         self.floors = list()
+        self.queue = queue.Queue()
+        self.speed = 1
         # Create list of floors
         for i in range(floor):
             self.floors.append(i)
-        self.speed = 1
         self.floor_coords = []
         self.status = 0
+        self.request_list = []
         canvas.update()
         n_stops = canvas.winfo_height()/floors
         height = canvas.winfo_height()
@@ -47,6 +50,10 @@ class ascenseur():
         If the object is not at desired floor, move the lift down
         If the object is at desired floor, stop lift
         '''
+
+        if self.interrupt:
+            return
+        
         self.status = 1 # Lift is active
         bottom_coords = canvas.coords(self.id)[3] # Current coords of bottom of lift
         target_coords = self.floor_coords[self.floors.index(target_floor)] # Get desired stop coord
@@ -65,6 +72,10 @@ class ascenseur():
         If the object is not at desired floor, move the lift up
         If the object is at desired floor, stop lift
         '''
+
+        if self.interrupt:
+            return
+        
         self.status = 1
         bottom_coords = canvas.coords(self.id)[3] # Current coords of bottom of lift
         target_coords = self.floor_coords[self.floors.index(target_floor)] # Get desired stop coord
@@ -87,6 +98,9 @@ class ascenseur():
             if element not in self.floors:
                 target_floors.remove(element)
 
+        if self.interrupt:
+            return
+
         # If lift is inactive: 
         if self.status == 0:
             # If floors in request list:
@@ -108,7 +122,7 @@ class ascenseur():
                     target_floors.pop(0)
 
             else:
-                return
+                root.after(10, lambda: self.move(target_floors))
         
         root.after(10, lambda: self.move(target_floors))
         
@@ -130,15 +144,69 @@ class ascenseur():
 
         root.after(10, self.update_floor)
 
-if __name__ == "__main__":
+    def interupt(self):
+        self.interrupt = True
+        algo = Algorithm()
+        self.request_list, target_floors = algo.system(self.request_list,self.floor)
+        self.interrupt = False
+        self.move(target_floors)
+
+    def get_queue(self):
+        while not self.queue.empty():
+            request = self.queue.get()
+            self.request_list.append(request)
+            self.interupt()
+        root.after(100,self.get_queue)
+
+
+
+
+
+def get_input(self):
+    ''' 
+    Reads input from the terminal and adds requests to the lift's request list.
+    '''
+    directions = [1,0,-1]
+    while True:
+        user_input = input("enter desired floor and direction, expected format: floor,direction (direction = [-1,0,1])")
+        if len(user_input.split(',')) != 2:
+            print('wrong input, expected format: floor(int), direction(1,0,-1) i.e. 4,1')
+            continue
+        user_input = user_input.split(',')
+
+        try:
+            user_input[0] = int(user_input[0])
+            user_input[1] = int(user_input[1])
+        except ValueError:
+            print('Floor and direction must be integers.')
+            continue
+        if user_input[0] not in self.floors:
+            print('Floor not in list of floors')
+            continue
+        if user_input[1] not in directions:
+            print('direction must be -1, 1 or 0')
+            continue
+
+        self.queue.put((user_input[0], user_input[1], time.time()))
         
+
+if __name__ == "__main__":
+
+    
+
     root = tk.Tk()
     root.title("Lift Simulation")
     canvas = tk.Canvas(root, width=800, height=1000, bg='white')
     canvas.pack()
+
     floors = 50
-    target_floors = [1,2,5,2,10,11,10,19,49,0]
     lift = ascenseur(canvas,floors)
-    lift.move(target_floors)
+
+    threading.Thread(target=get_input, args=(lift,), daemon=True).start()
+    
+
+    lift.get_queue()
     lift.update_floor()
+
     root.mainloop()
+
