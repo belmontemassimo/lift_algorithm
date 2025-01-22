@@ -9,4 +9,5 @@ class Algorithm():
 
         return request_list,output
     
-    # output: [(1,1,time),(2,1,time),(3,1,time),(2,1,time)], [1,2,3,2]
+    # output: [(1,1,time),(2,1,time),(3,1,time),(2,1,time)], [1,2,3,2] ...
+

@@ -158,10 +158,6 @@ class ascenseur():
             self.interupt()
         root.after(100,self.get_queue)
 
-
-
-
-
 def get_input(self):
     ''' 
     Reads input from the terminal and adds requests to the lift's request list.
