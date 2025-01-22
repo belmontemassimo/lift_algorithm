@@ -147,7 +147,7 @@ class ascenseur():
     def interupt(self):
         self.interrupt = True
         algo = Algorithm()
-        self.request_list, target_floors = algo.system(self.request_list,self.floor)
+        self.request_list, target_floors = algo.system(self,self.floor,self.request_list)
         self.interrupt = False
         self.move(target_floors)
 
