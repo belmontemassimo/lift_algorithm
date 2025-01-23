@@ -1,7 +1,7 @@
 class Algorithm():
     def __init__(self):
         pass
-    def system(self,request_list):
+    def system(self, request_list):
         # request_list = [(1,1,time),(2,1,time),(3,1,time),(2,1,time)]
         output = []
         for element in request_list:

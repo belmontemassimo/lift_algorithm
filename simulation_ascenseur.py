@@ -1,22 +1,23 @@
 import tkinter as tk
 import time
-import threading
-import queue
+import multiprocessing
+from multiprocessing import Queue
 from FCFS import Algorithm
 
 
 
 class ascenseur():
     
-    def __init__(self,canvas,floor):
+    def __init__(self,canvas,floor,queue,root):
         ''' 
         Initialise the elevator object
         '''
         self.interrupt = False
         self.canvas = canvas
+        self.root = root
         self.floor = 0
         self.floors = list()
-        self.queue = queue.Queue()
+        self.queue = queue
         self.speed = 1
         # Create list of floors
         for i in range(floor):
@@ -25,7 +26,7 @@ class ascenseur():
         self.status = 0
         self.request_list = []
         canvas.update()
-        n_stops = canvas.winfo_height()/floors
+        n_stops = canvas.winfo_height()/floor
         height = canvas.winfo_height()
         for i in range(len(self.floors)+1):
             # Calculate the bottom of each floor
@@ -55,12 +56,12 @@ class ascenseur():
             return
         
         self.status = 1 # Lift is active
-        bottom_coords = canvas.coords(self.id)[3] # Current coords of bottom of lift
+        bottom_coords = self.canvas.coords(self.id)[3] # Current coords of bottom of lift
         target_coords = self.floor_coords[self.floors.index(target_floor)] # Get desired stop coord
         
         if bottom_coords < target_coords:
-            canvas.move(self.id,0, self.speed) # Move object of self.speed down
-            root.after(10, lambda: self.move_down(target_floor))
+            self.canvas.move(self.id,0, self.speed) # Move object of self.speed down
+            self.root.after(10, lambda: self.move_down(target_floor))
             
         else:
             time.sleep(1)
@@ -77,13 +78,13 @@ class ascenseur():
             return
         
         self.status = 1
-        bottom_coords = canvas.coords(self.id)[3] # Current coords of bottom of lift
+        bottom_coords = self.canvas.coords(self.id)[3] # Current coords of bottom of lift
         target_coords = self.floor_coords[self.floors.index(target_floor)] # Get desired stop coord
 
 
         if bottom_coords > target_coords:
-            canvas.move(self.id,0, -self.speed) # Move object of self.speed up
-            root.after(10, lambda: self.move_up(target_floor))
+            self.canvas.move(self.id,0, -self.speed) # Move object of self.speed up
+            self.root.after(10, lambda: self.move_up(target_floor))
         else:
             time.sleep(1)
             self.status = 0
@@ -122,16 +123,16 @@ class ascenseur():
                     target_floors.pop(0)
 
             else:
-                root.after(10, lambda: self.move(target_floors))
+                self.root.after(10, lambda: self.move(target_floors))
         
-        root.after(10, lambda: self.move(target_floors))
+        self.root.after(10, lambda: self.move(target_floors))
         
     def update_floor(self):
         ''' 
         This function takes care of updating the current position of the lift,
         as well as outputing to the terminal the current floor each time it changes
         '''
-        bottom_coords = canvas.coords(self.id)[3]
+        bottom_coords = self.canvas.coords(self.id)[3]
         
         # Check where the lift currently is located
         for i in range(len(self.floor_coords)):
@@ -142,12 +143,12 @@ class ascenseur():
                     self.floor = i # Update object location
                     print(f"lift position: {self.floor}")
 
-        root.after(10, self.update_floor)
+        self.root.after(10, self.update_floor)
 
     def interupt(self):
         self.interrupt = True
         algo = Algorithm()
-        self.request_list, target_floors = algo.system(self,self.floor,self.request_list)
+        self.request_list, target_floors = algo.system(self.request_list)
         self.interrupt = False
         self.move(target_floors)
 
@@ -156,9 +157,9 @@ class ascenseur():
             request = self.queue.get()
             self.request_list.append(request)
             self.interupt()
-        root.after(100,self.get_queue)
+        self.root.after(100,self.get_queue)
 
-def get_input(self):
+def get_input(queue: Queue, floors: list):
     ''' 
     Reads input from the terminal and adds requests to the lift's request list.
     '''
@@ -176,33 +177,37 @@ def get_input(self):
         except ValueError:
             print('Floor and direction must be integers.')
             continue
-        if user_input[0] not in self.floors:
+        if user_input[0] not in floors:
             print('Floor not in list of floors')
             continue
         if user_input[1] not in directions:
             print('direction must be -1, 1 or 0')
             continue
 
-        self.queue.put((user_input[0], user_input[1], time.time()))
+        queue.put((user_input[0], user_input[1], time.time()))
         
 
-if __name__ == "__main__":
-
-    
-
+def main_loop(floors, queue):
     root = tk.Tk()
     root.title("Lift Simulation")
     canvas = tk.Canvas(root, width=800, height=1000, bg='white')
     canvas.pack()
 
-    floors = 50
-    lift = ascenseur(canvas,floors)
-
-    threading.Thread(target=get_input, args=(lift,), daemon=True).start()
-    
+    lift = ascenseur(canvas,floors,queue,root)
 
     lift.get_queue()
     lift.update_floor()
 
     root.mainloop()
+
+if __name__ == "__main__":
+
+    floors = 50
+    queue = Queue()
+    
+
+    #threading.Thread(target=get_input, args=(lift,), daemon=True).start()
+    multiprocessing.Process(target=main_loop, args=(floors, queue,), daemon=True).start()
+
+    get_input(queue, list(range(floors)))
 
