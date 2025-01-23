@@ -4,13 +4,12 @@ import json
 import os
 import multiprocessing
 from multiprocessing import Queue
-from FCFS import Algorithm
 
 
 
 class ascenseur():
     
-    def __init__(self,canvas,floor,queue,root,speed):
+    def __init__(self,canvas,floor,queue,root,speed, Algorithm):
         ''' 
         Initialise the elevator object
         '''
@@ -18,11 +17,12 @@ class ascenseur():
         self.canvas = canvas
         self.root = root
         self.floor = 0
+        self.algorithm = Algorithm()
         self.floors = [i for i in range(floor)]
         self.queue = queue
         self.speed = speed/floor
-        # Create list of floors
         self.floor_coords = []
+        self.target_floors = []
         self.status = 0
         self.request_list = []
         canvas.update()
@@ -64,6 +64,8 @@ class ascenseur():
             self.root.after(10, lambda: self.move_down(target_floor))
             
         else:
+            self.request_list = list(filter(lambda x: x[0] != target_floor, self.request_list))
+            print(self.request_list)
             time.sleep(1)
             self.status = 0 # Lift inactive
     
@@ -86,18 +88,20 @@ class ascenseur():
             self.canvas.move(self.id,0, -self.speed) # Move object of self.speed up
             self.root.after(10, lambda: self.move_up(target_floor))
         else:
+            self.request_list = list(filter(lambda x: x[0] != target_floor, self.request_list))
+            print(self.request_list)
             time.sleep(1)
             self.status = 0
 
-    def move(self,target_floors):
+    def move(self):
         ''' 
         This function sends command to the lift making it go up or down 
         deppending on the list of target floors (requested floors)
         '''
         # Remove potential floors that do not exist
-        for element in target_floors:
+        for element in self.target_floors:
             if element not in self.floors:
-                target_floors.remove(element)
+                self.target_floors.remove(element)
 
         if self.interrupt:
             return
@@ -105,27 +109,24 @@ class ascenseur():
         # If lift is inactive: 
         if self.status == 0:
             # If floors in request list:
-            if len(target_floors) > 0: 
+            if len(self.target_floors) > 0: 
 
                 # If requested floor is higher than current position
-                if target_floors[0] > self.floor:
+                if self.target_floors[0] > self.floor:
                     # Request lift moves up to next floor in request list
-                    self.move_up(target_floors.pop(0))
+                    self.move_up(self.target_floors.pop(0))
 
                 # If requested floor is lower than current position
-                elif target_floors[0] < self.floor:
+                elif self.target_floors[0] < self.floor:
                     # Request lift moves down to next floor in request list
-                    self.move_down(target_floors.pop(0))
+                    self.move_down(self.target_floors.pop(0))
                 
                 # If requested floor equals current floor
                 else: 
                     #Remove floor from request list
-                    target_floors.pop(0)
-
-            else:
-                self.root.after(10, lambda: self.get_queue())
+                    self.target_floors.pop(0)
         
-        self.root.after(10, lambda: self.move(target_floors))
+        self.root.after(10, lambda: self.move())
         
     def update_floor(self):
         ''' 
@@ -141,15 +142,15 @@ class ascenseur():
                     pass
                 else:
                     self.floor = i # Update object location
-                    print(f"lift position: {self.floor}")
+                    #print(f"lift position: {self.floor}")
 
         self.root.after(50, self.update_floor)
 
     def interupt(self):
         self.interrupt = True
-        self.request_list, target_floors = Algorithm().system(self.request_list)
+        self.target_floors = self.algorithm.system(self.request_list)
         self.interrupt = False
-        self.move(target_floors)
+        self.move()
 
     def get_queue(self):
         while not self.queue.empty():
@@ -186,13 +187,13 @@ def get_input(queue: Queue, floors: list):
         queue.put((user_input[0], user_input[1], time.time()))
         
 
-def main_loop(floors, queue, speed):
+def main_loop(floors, queue, speed, Algorithm):
     root = tk.Tk()
     root.title("Lift Simulation")
     canvas = tk.Canvas(root, width=800, height=1000, bg='white')
     canvas.pack()
 
-    lift = ascenseur(canvas,floors,queue,root,speed)
+    lift = ascenseur(canvas,floors,queue,root,speed, Algorithm)
 
     lift.get_queue()
     lift.update_floor()
@@ -206,10 +207,11 @@ if __name__ == "__main__":
         floors = config["floors"]
         lifts = config["lifts"]
         speed = config["speed"]
+        Algorithm = getattr(__import__(config["algorithm"]), "Algorithm")
 
     queue = Queue()
     
-    multiprocessing.Process(target=main_loop, args=(floors, queue, speed,)).start()
+    multiprocessing.Process(target=main_loop, args=(floors, queue, speed, Algorithm,), daemon=True).start()
 
     get_input(queue, list(range(floors)))
 

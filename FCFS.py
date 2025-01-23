@@ -7,7 +7,7 @@ class Algorithm():
         for element in request_list:
             output.append(element[0])
 
-        return request_list,output
+        return output
     
     # output: [(1,1,time),(2,1,time),(3,1,time),(2,1,time)], [1,2,3,2] ...
 

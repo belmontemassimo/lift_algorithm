@@ -1,5 +1,6 @@
 {
     "floors": 50,
     "lifts": 1,
-    "speed": 10
+    "speed": 10,
+    "algorithm": "FCFS"
 }
