@@ -1,5 +1,7 @@
 import tkinter as tk
 import time
+import json
+import os
 import multiprocessing
 from multiprocessing import Queue
 from FCFS import Algorithm
@@ -8,7 +10,7 @@ from FCFS import Algorithm
 
 class ascenseur():
     
-    def __init__(self,canvas,floor,queue,root):
+    def __init__(self,canvas,floor,queue,root,speed):
         ''' 
         Initialise the elevator object
         '''
@@ -16,12 +18,10 @@ class ascenseur():
         self.canvas = canvas
         self.root = root
         self.floor = 0
-        self.floors = list()
+        self.floors = [i for i in range(floor)]
         self.queue = queue
-        self.speed = 1
+        self.speed = speed/floor
         # Create list of floors
-        for i in range(floor):
-            self.floors.append(i)
         self.floor_coords = []
         self.status = 0
         self.request_list = []
@@ -186,13 +186,13 @@ def get_input(queue: Queue, floors: list):
         queue.put((user_input[0], user_input[1], time.time()))
         
 
-def main_loop(floors, queue):
+def main_loop(floors, queue, speed):
     root = tk.Tk()
     root.title("Lift Simulation")
     canvas = tk.Canvas(root, width=800, height=1000, bg='white')
     canvas.pack()
 
-    lift = ascenseur(canvas,floors,queue,root)
+    lift = ascenseur(canvas,floors,queue,root,speed)
 
     lift.get_queue()
     lift.update_floor()
@@ -201,10 +201,15 @@ def main_loop(floors, queue):
 
 if __name__ == "__main__":
 
-    floors = 50
+    with open(f"{os.path.dirname(__file__)}/config.json", "r") as file:
+        config = json.load(file)
+        floors = config["floors"]
+        lifts = config["lifts"]
+        speed = config["speed"]
+
     queue = Queue()
     
-    multiprocessing.Process(target=main_loop, args=(floors, queue,), daemon=True).start()
+    multiprocessing.Process(target=main_loop, args=(floors, queue, speed,)).start()
 
     get_input(queue, list(range(floors)))
 
