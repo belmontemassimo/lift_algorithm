@@ -204,8 +204,6 @@ if __name__ == "__main__":
     floors = 50
     queue = Queue()
     
-
-    #threading.Thread(target=get_input, args=(lift,), daemon=True).start()
     multiprocessing.Process(target=main_loop, args=(floors, queue,), daemon=True).start()
 
     get_input(queue, list(range(floors)))
