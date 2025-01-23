@@ -6,6 +6,7 @@ class Algorithm():
         output = []
         for element in request_list:
             output.append(element[0])
+            output.sort(reverse=False)
 
         return output
     

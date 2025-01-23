@@ -9,23 +9,32 @@ from multiprocessing import Queue
 
 class ascenseur():
     
-    def __init__(self,canvas,floor,queue,root,speed, Algorithm):
+    def __init__(self,canvas,floor,queue,root, Algorithm):
         ''' 
         Initialise the elevator object
         '''
+
+        # Setup Object (lift)
+        self.floor = 0
+        self.status = 0
         self.interrupt = False
+        self.algorithm = Algorithm()
+        self.queue = queue
+        self.speed = 1
+
+        # Setup Building
+        self.floors = [i for i in range(floor)]
+        self.floor_coords = []
+
+        # Setup Input methods
+        self.target_floors = []
+        self.request_list = []
+        
+
+        #  Setup tkinter
+        canvas.update()
         self.canvas = canvas
         self.root = root
-        self.floor = 0
-        self.algorithm = Algorithm()
-        self.floors = [i for i in range(floor)]
-        self.queue = queue
-        self.speed = speed/floor
-        self.floor_coords = []
-        self.target_floors = []
-        self.status = 0
-        self.request_list = []
-        canvas.update()
         n_stops = canvas.winfo_height()/floor
         height = canvas.winfo_height()
         for i in range(len(self.floors)+1):
@@ -34,6 +43,8 @@ class ascenseur():
             self.floor_coords.append(bottom_coord)
             canvas.create_line(0, bottom_coord, canvas.winfo_width(), bottom_coord, fill="black", width=2) #add line
             canvas.create_text(10, bottom_coord-(n_stops/2), text=str(i), fill="black", font=("Arial", 12, "bold")) #add floor label
+
+
 
 
         # Create object
@@ -113,36 +124,39 @@ class ascenseur():
                 if self.target_floors[0] > self.floor:
                     # Request lift moves up to next floor in request list
                     self.move_up(self.target_floors.pop(0))
+ 
 
                 # If requested floor is lower than current position
                 elif self.target_floors[0] < self.floor:
                     # Request lift moves down to next floor in request list
                     self.move_down(self.target_floors.pop(0))
+      
                 
                 # If requested floor equals current floor
                 else: 
                     #Remove floor from request list
                     self.target_floors.pop(0)
+
         
-        self.root.after(10, lambda: self.move())
+        self.root.after(200, lambda: self.move())
         
     def update_floor(self):
         ''' 
         This function takes care of updating the current position of the lift,
         as well as outputing to the terminal the current floor each time it changes
         '''
-        bottom_coords = self.canvas.coords(self.id)[3]
+        lift_coords = (self.canvas.coords(self.id)[1] + self.canvas.coords(self.id)[3]) / 2
         
         # Check where the lift currently is located
         for i in range(len(self.floor_coords)):
-            if bottom_coords <= self.floor_coords[i] and bottom_coords > self.floor_coords[i+1]:
+            if lift_coords <= self.floor_coords[i] and lift_coords > self.floor_coords[i+1]:
                 if self.floor == i:
                     pass
                 else:
                     self.floor = i # Update object location
                     print(f"lift position: {self.floor}")
 
-        self.root.after(50, self.update_floor)
+        self.root.after(100, self.update_floor)
 
     def interupt(self):
         self.interrupt = True
@@ -154,44 +168,77 @@ class ascenseur():
         while not self.queue.empty():
             request = self.queue.get()
             self.request_list.append(request)
-            self.interupt()
+        self.interupt()    
         self.root.after(100,self.get_queue)
 
-def get_input(queue: Queue, floors: list):
+def get_input(queue: Queue, floors: list, method='json'):
     ''' 
     Reads input from the terminal and adds requests to the lift's request list.
     '''
+    global fetched
     directions = [1,0,-1]
+
     while True:
-        user_input = input("enter desired floor and direction, expected format: floor,direction (direction = [-1,0,1])")
-        if len(user_input.split(',')) != 2:
-            print('wrong input, expected format: floor(int), direction(1,0,-1) i.e. 4,1')
-            continue
-        user_input = user_input.split(',')
 
-        try:
-            user_input[0] = int(user_input[0])
-            user_input[1] = int(user_input[1])
-        except ValueError:
-            print('Floor and direction must be integers.')
-            continue
-        if user_input[0] not in floors:
-            print('Floor not in list of floors')
-            continue
-        if user_input[1] not in directions:
-            print('direction must be -1, 1 or 0')
-            continue
+        if method == 'json':
+            if not fetched:
+                with open(f"{os.path.dirname(__file__)}/input_test.json", "r") as file:
+                    config = json.load(file)
+                    requests = config["test"]
+                        
+                    for request in requests:
+                        print(request)
+                        if len(request.split(',')) != 2:
+                            continue
 
-        queue.put((user_input[0], user_input[1], time.time()))
-        
+                        request = request.split(',')
 
-def main_loop(floors, queue, speed, Algorithm):
+                        try:
+                            request[0] = int(request[0])
+                            request[1] = int(request[1])
+                        except ValueError:
+                            print('Floor and direction must be integers.')
+                            continue
+                        if request[0] not in floors:
+                            print('Floor not in list of floors')
+                            continue
+                        if request[1] not in directions:
+                            print('direction must be -1, 1 or 0')
+                            continue
+
+                        queue.put((request[0], request[1], time.time()))     
+                    fetched = True
+                
+                    
+        else:
+            user_input = input("enter desired floor and direction, expected format: floor,direction (direction = [-1,0,1])")
+            if len(user_input.split(',')) != 2:
+                print('wrong input, expected format: floor(int), direction(1,0,-1) i.e. 4,1')
+                continue
+            user_input = user_input.split(',')
+
+            try:
+                user_input[0] = int(user_input[0])
+                user_input[1] = int(user_input[1])
+            except ValueError:
+                print('Floor and direction must be integers.')
+                continue
+            if user_input[0] not in floors:
+                print('Floor not in list of floors')
+                continue
+            if user_input[1] not in directions:
+                print('direction must be -1, 1 or 0')
+                continue
+
+            queue.put((user_input[0], user_input[1], time.time()))      
+
+def main_loop(floors, queue, Algorithm):
     root = tk.Tk()
     root.title("Lift Simulation")
     canvas = tk.Canvas(root, width=800, height=1000, bg='white')
     canvas.pack()
 
-    lift = ascenseur(canvas,floors,queue,root,speed, Algorithm)
+    lift = ascenseur(canvas,floors,queue,root, Algorithm)
 
     lift.get_queue()
     lift.update_floor()
@@ -200,16 +247,15 @@ def main_loop(floors, queue, speed, Algorithm):
 
 if __name__ == "__main__":
 
-    with open(f"{os.path.dirname(__file__)}/config.json", "r") as file:
+    with open(f"{os.path.dirname(__file__)}/config_template.json", "r") as file:
         config = json.load(file)
         floors = config["floors"]
         lifts = config["lifts"]
-        speed = config["speed"]
         Algorithm = getattr(__import__(config["algorithm"]), "Algorithm")
 
     queue = Queue()
     
-    multiprocessing.Process(target=main_loop, args=(floors, queue, speed, Algorithm,), daemon=True).start()
-
+    multiprocessing.Process(target=main_loop, args=(floors, queue, Algorithm,), daemon=True).start()
+    fetched = False
     get_input(queue, list(range(floors)))
 
