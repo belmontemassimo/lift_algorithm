@@ -65,7 +65,6 @@ class ascenseur():
             
         else:
             self.request_list = list(filter(lambda x: x[0] != target_floor, self.request_list))
-            print(self.request_list)
             time.sleep(1)
             self.status = 0 # Lift inactive
     
@@ -89,7 +88,6 @@ class ascenseur():
             self.root.after(10, lambda: self.move_up(target_floor))
         else:
             self.request_list = list(filter(lambda x: x[0] != target_floor, self.request_list))
-            print(self.request_list)
             time.sleep(1)
             self.status = 0
 
@@ -142,7 +140,7 @@ class ascenseur():
                     pass
                 else:
                     self.floor = i # Update object location
-                    #print(f"lift position: {self.floor}")
+                    print(f"lift position: {self.floor}")
 
         self.root.after(50, self.update_floor)
 
