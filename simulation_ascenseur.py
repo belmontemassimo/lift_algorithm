@@ -123,7 +123,7 @@ class ascenseur():
                     target_floors.pop(0)
 
             else:
-                self.root.after(10, lambda: self.move(target_floors))
+                self.root.after(10, lambda: self.get_queue())
         
         self.root.after(10, lambda: self.move(target_floors))
         
