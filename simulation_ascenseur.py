@@ -143,12 +143,11 @@ class ascenseur():
                     self.floor = i # Update object location
                     print(f"lift position: {self.floor}")
 
-        self.root.after(10, self.update_floor)
+        self.root.after(50, self.update_floor)
 
     def interupt(self):
         self.interrupt = True
-        algo = Algorithm()
-        self.request_list, target_floors = algo.system(self.request_list)
+        self.request_list, target_floors = Algorithm().system(self.request_list)
         self.interrupt = False
         self.move(target_floors)
 
