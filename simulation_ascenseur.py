@@ -5,7 +5,13 @@ import os
 import multiprocessing
 from multiprocessing import Queue
 
-
+''' 
+To do:
+- For automation:
+    - Make sure the floors don't "re-input" the inside request
+        - Create a second json file in which testing data gets temporarily transfered
+        - Update inside request()
+'''
 
 class ascenseur():
     
@@ -21,6 +27,7 @@ class ascenseur():
         self.algorithm = Algorithm()
         self.queue = queue
         self.speed = 1
+        self.stops = []
 
         # Setup Building
         self.floors = [i for i in range(floor)]
@@ -29,6 +36,7 @@ class ascenseur():
         # Setup Input methods
         self.target_floors = []
         self.request_list = []
+        
         
 
         #  Setup tkinter
@@ -56,7 +64,7 @@ class ascenseur():
                                           fill='black'
                                           )
 
-    def move_down(self,target_floor):
+    def move_down(self,target_floor, request_element):
         ''' 
         This function takes as input the object and the target floor
         If the object is not at desired floor, move the lift down
@@ -72,14 +80,17 @@ class ascenseur():
         
         if bottom_coords < target_coords:
             self.canvas.move(self.id,0, self.speed) # Move object of self.speed down
-            self.root.after(10, lambda: self.move_down(target_floor))
+            self.root.after(1, lambda: self.move_down(target_floor, request_element))
             
         else:
             self.request_list = list(filter(lambda x: x[0] != target_floor, self.request_list))
-            time.sleep(1)
+            self.inside_request(target_floor,request_element)
+            self.stops.append(target_floor)
+            print(f"{len(self.stops)}: {self.stops}")
+            # time.sleep(1)
             self.status = 0 # Lift inactive
     
-    def move_up(self,target_floor):
+    def move_up(self,target_floor, request_element):
         ''' 
         This function takes as input the object and the target floor
         If the object is not at desired floor, move the lift up
@@ -96,10 +107,13 @@ class ascenseur():
 
         if bottom_coords > target_coords:
             self.canvas.move(self.id,0, -self.speed) # Move object of self.speed up
-            self.root.after(10, lambda: self.move_up(target_floor))
+            self.root.after(1, lambda: self.move_up(target_floor, request_element))
         else:
             self.request_list = list(filter(lambda x: x[0] != target_floor, self.request_list))
-            time.sleep(1)
+            self.inside_request(target_floor,request_element)
+            self.stops.append(target_floor)
+            print(f"{len(self.stops)}: {self.stops}")
+            # time.sleep(1)
             self.status = 0
 
     def move(self):
@@ -123,19 +137,20 @@ class ascenseur():
                 # If requested floor is higher than current position
                 if self.target_floors[0] > self.floor:
                     # Request lift moves up to next floor in request list
-                    self.move_up(self.target_floors.pop(0))
+                    self.move_up(self.target_floors.pop(0),self.request_list.pop(0))
  
 
                 # If requested floor is lower than current position
                 elif self.target_floors[0] < self.floor:
                     # Request lift moves down to next floor in request list
-                    self.move_down(self.target_floors.pop(0))
+                    self.move_down(self.target_floors.pop(0),self.request_list.pop(0))
       
                 
                 # If requested floor equals current floor
                 else: 
                     #Remove floor from request list
                     self.target_floors.pop(0)
+                    self.request_list.pop(0)
 
         
         self.root.after(200, lambda: self.move())
@@ -154,13 +169,17 @@ class ascenseur():
                     pass
                 else:
                     self.floor = i # Update object location
-                    print(f"lift position: {self.floor}")
+                    # print(f"lift position: {self.floor}")
 
         self.root.after(100, self.update_floor)
 
     def interupt(self):
+        if len(self.request_list) == 0:
+            return
         self.interrupt = True
-        self.target_floors = self.algorithm.system(self.request_list)
+        self.target_floors, self.request_list = self.algorithm.system(self.request_list)
+        # print(self.target_floors)
+        # print(self.request_list)
         self.interrupt = False
         self.move()
 
@@ -171,6 +190,47 @@ class ascenseur():
         self.interupt()    
         self.root.after(100,self.get_queue)
 
+    def inside_request(self,target_floor,request_element):
+
+        '''
+        to do:
+            - make request_line go to other file after being used
+        '''
+
+        with open(f"{os.path.dirname(__file__)}/input_test.json", "r") as file:
+            config = json.load(file)
+            requests = config['test']
+            compatibility = [f'{request_element[0]},{request_element[1]}']
+
+            for request in requests:
+                if compatibility[0] in request:
+                    inside_request = request[1] #the floor number
+                    new_set = []
+
+                    #create json file without taken commands
+                    for element in requests:
+                        if compatibility[0] in element[0]:
+                            continue
+                        else:
+                            new_set.append(element)
+                    
+                    new_set = {'test': new_set}
+                    
+                    with open(f"{os.path.dirname(__file__)}/input_test.json", "w") as file:
+                        json.dump(new_set,file, indent=4)
+
+                    with open(f"{os.path.dirname(__file__)}/used_input_test.json", "r") as file:
+                        data = json.load(file)
+                        used_requests = data['test']
+                        used_requests_dict = {'test': used_requests}
+                    
+                    with open(f"{os.path.dirname(__file__)}/used_input_test.json", "w") as file:
+                        json.dump(used_requests_dict,file, indent=4)
+
+                    self.queue.put((inside_request, 0, time.time()))   
+                    break
+                  
+            
 def get_input(queue: Queue, floors: list, method='json'):
     ''' 
     Reads input from the terminal and adds requests to the lift's request list.
@@ -183,15 +243,15 @@ def get_input(queue: Queue, floors: list, method='json'):
         if method == 'json':
             if not fetched:
                 with open(f"{os.path.dirname(__file__)}/input_test.json", "r") as file:
-                    config = json.load(file)
+                    config = json.load(file)                
                     requests = config["test"]
+           
                         
                     for request in requests:
-                        print(request)
-                        if len(request.split(',')) != 2:
+                        if len(request[0].split(',')) != 2:
                             continue
 
-                        request = request.split(',')
+                        request = request[0].split(',')
 
                         try:
                             request[0] = int(request[0])
@@ -255,7 +315,13 @@ if __name__ == "__main__":
 
     queue = Queue()
     
+    with open(f"{os.path.dirname(__file__)}/used_input_test.json", "r") as file:
+        data = json.load(file)
+    with open(f"{os.path.dirname(__file__)}/input_test.json", "w") as file:
+        json.dump(data, file, indent=4)
+
     multiprocessing.Process(target=main_loop, args=(floors, queue, Algorithm,), daemon=True).start()
+
     fetched = False
     get_input(queue, list(range(floors)))
 

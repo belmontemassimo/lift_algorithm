@@ -1,14 +1,21 @@
-class Algorithm():
+class Algorithm:
     def __init__(self):
         pass
+
     def system(self, request_list):
-        # request_list = [(1,1,time),(2,1,time),(3,1,time),(2,1,time)]
-        output = []
+        # Initialize an output list to store floor numbers
+        
+        floors = []
+        
+        # Extract floor numbers from the request_list
         for element in request_list:
-            output.append(element[0])
-            output.sort(reverse=False)
+            floor = element[0]
+            floors.append(floor)
 
-        return output
-    
-    # output: [(1,1,time),(2,1,time),(3,1,time),(2,1,time)], [1,2,3,2] ...
+        # return floors, request_list
+        # zipped_list = zip(floors,request_list)
+        # zipped_list = sorted(zipped_list)
+        
+        # floors, request_list = zip(*zipped_list) 
 
+        # return list(floors), list(request_list)
