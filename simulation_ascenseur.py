@@ -15,7 +15,7 @@ To do:
 
 class ascenseur():
     
-    def __init__(self,canvas,floor,queue,root, Algorithm):
+    def __init__(self,canvas,floors,queue,root, Algorithm):
         ''' 
         Initialise the elevator object
         '''
@@ -26,11 +26,12 @@ class ascenseur():
         self.interrupt = False
         self.algorithm = Algorithm()
         self.queue = queue
+        # self.speed = int((floors*10)/50)
         self.speed = 1
         self.stops = []
 
         # Setup Building
-        self.floors = [i for i in range(floor)]
+        self.floors = [i for i in range(floors)]
         self.floor_coords = []
 
         # Setup Input methods
@@ -43,7 +44,7 @@ class ascenseur():
         canvas.update()
         self.canvas = canvas
         self.root = root
-        n_stops = canvas.winfo_height()/floor
+        n_stops = canvas.winfo_height()/floors
         height = canvas.winfo_height()
         for i in range(len(self.floors)+1):
             # Calculate the bottom of each floor
@@ -51,11 +52,6 @@ class ascenseur():
             self.floor_coords.append(bottom_coord)
             canvas.create_line(0, bottom_coord, canvas.winfo_width(), bottom_coord, fill="black", width=2) #add line
             canvas.create_text(10, bottom_coord-(n_stops/2), text=str(i), fill="black", font=("Arial", 12, "bold")) #add floor label
-
-
-
-
-        # Create object
         self.id = canvas.create_rectangle(
                                           40,
                                           self.floor_coords[0],
@@ -79,8 +75,8 @@ class ascenseur():
         target_coords = self.floor_coords[self.floors.index(target_floor)] # Get desired stop coord
         
         if bottom_coords < target_coords:
-            self.canvas.move(self.id,0, self.speed) # Move object of self.speed down
-            self.root.after(1, lambda: self.move_down(target_floor, request_element))
+            self.canvas.move(self.id,0, 1) # Move object of self.speed down
+            self.root.after(self.speed, lambda: self.move_down(target_floor, request_element))
             
         else:
             self.request_list = list(filter(lambda x: x[0] != target_floor, self.request_list))
@@ -106,8 +102,8 @@ class ascenseur():
 
 
         if bottom_coords > target_coords:
-            self.canvas.move(self.id,0, -self.speed) # Move object of self.speed up
-            self.root.after(1, lambda: self.move_up(target_floor, request_element))
+            self.canvas.move(self.id,0, -1) # Move object of self.speed up
+            self.root.after(self.speed, lambda: self.move_up(target_floor, request_element))
         else:
             self.request_list = list(filter(lambda x: x[0] != target_floor, self.request_list))
             self.inside_request(target_floor,request_element)
@@ -217,7 +213,7 @@ class ascenseur():
                     new_set = {'test': new_set}
                     
                     with open(f"{os.path.dirname(__file__)}/input_test.json", "w") as file:
-                        json.dump(new_set,file, indent=4)
+                        json.dump(new_set,file, indent=3)
 
                     with open(f"{os.path.dirname(__file__)}/used_input_test.json", "r") as file:
                         data = json.load(file)
@@ -225,12 +221,23 @@ class ascenseur():
                         used_requests_dict = {'test': used_requests}
                     
                     with open(f"{os.path.dirname(__file__)}/used_input_test.json", "w") as file:
-                        json.dump(used_requests_dict,file, indent=4)
+                        json.dump(used_requests_dict,file)
 
                     self.queue.put((inside_request, 0, time.time()))   
                     break
                   
+    def timer(self,start_time = None):
+        if not start_time:
+            start_time = time.time()
+
+            if len(self.stops) != 21:
+                self.root.after(100, lambda: self.timer(start_time=start_time))
+
+            else: 
+                stop_time = time.time()
+                print(stop_time-start_time)
             
+
 def get_input(queue: Queue, floors: list, method='json'):
     ''' 
     Reads input from the terminal and adds requests to the lift's request list.
@@ -300,10 +307,14 @@ def main_loop(floors, queue, Algorithm):
 
     lift = ascenseur(canvas,floors,queue,root, Algorithm)
 
+    lift.timer()
     lift.get_queue()
     lift.update_floor()
+    
 
     root.mainloop()
+
+
 
 if __name__ == "__main__":
 
@@ -324,4 +335,5 @@ if __name__ == "__main__":
 
     fetched = False
     get_input(queue, list(range(floors)))
+    
 

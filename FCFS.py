@@ -12,7 +12,7 @@ class Algorithm:
             floor = element[0]
             floors.append(floor)
 
-        # return floors, request_list
+        return floors, request_list
         # zipped_list = zip(floors,request_list)
         # zipped_list = sorted(zipped_list)
         
