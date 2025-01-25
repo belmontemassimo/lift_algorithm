@@ -1,6 +1,6 @@
 import tkinter as tk
 
-
 class GUI:
     
-    ui = tk.Tk()
+    def __init__(self):
+        ui = tk.Tk()
