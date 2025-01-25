@@ -2,4 +2,5 @@ import tkinter as tk
 
 
 class GUI:
-    pass
+    
+    ui = tk.Tk()
