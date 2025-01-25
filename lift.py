@@ -25,11 +25,13 @@ class Lift:
     def update(self):
         deltatime = self.deltatime()
         stopping_distance = self.speed ** 2 / (2 * self.acceleration)
-        if abs(self.position - self.target_floor) < stopping_distance:
-            self.speed = InterpolateTo(self.speed, self.acceleration, deltatime, 0)
-        else:
-            self.speed = InterpolateTo(self.speed, self.acceleration, deltatime, self.max_speed)
-        self.position = InterpolateTo(self.position, self.speed, deltatime, self.target_floor)
+        speed = InterpolateTo(self.speed, self.acceleration, deltatime, self.max_speed)
+        position = InterpolateTo(self.position, speed, deltatime, self.target_floor)
+        if abs(position - self.target_floor) < stopping_distance:
+            speed = InterpolateTo(self.speed, self.acceleration, deltatime, 0)
+            position = InterpolateTo(self.position, speed, deltatime, self.target_floor)
+        self.speed = speed
+        self.position = position
 
         
 
