@@ -23,7 +23,7 @@ def Interpolate(current: float, change_rate: float, deltatime: float) -> float:
 
 def InterpolateTo(current: float, change_rate: float, deltatime: float, to: float) -> float:
     if current < to:
-        current = min(current + change_rate * deltatime, to)
+        current = min(Interpolate(current, change_rate, deltatime), to)
     elif current > to:
-        current = max(current - change_rate * deltatime, to)
+        current = max(Interpolate(current, -change_rate, deltatime), to)
     return current
