@@ -1,0 +1,2 @@
+class Lift:
+    pass
