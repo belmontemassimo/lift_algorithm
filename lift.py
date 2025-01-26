@@ -21,10 +21,6 @@ class Lift:
         self.acceleration = acceleration
         self.target_floor = target_floor
 
-    #def move_to(self, target_floor: list[float]):
-    #    self.target_floor = target_floor
-
-    # LOOPED FROM SIMULATION !!!!!!
     def update(self):
         deltatime = self.deltatime()
         stopping_distance = self.speed ** 2 / (2 * self.acceleration)
