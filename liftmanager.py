@@ -12,11 +12,11 @@ class LiftManager:
 
     # craete and set lifts 
     # capacity: max weight in kg
-    def __init__(self, num_floors, num_lifts, max_speed, acceleration, capacity):
+    def __init__(self, num_floors, num_lifts, max_speed, acceleration, capacity, time_multiplier=1):
         self.num_floors = num_floors
         self.num_lifts = num_lifts
         self.target_floors = [[0] for _ in range(num_lifts)]
-        self.lifts = [Lift(capacity, max_speed, acceleration, self.target_floors[i]) for i in range(num_lifts)]
+        self.lifts = [Lift(capacity, max_speed, acceleration, self.target_floors[i], time_multiplier) for i in range(num_lifts)]
         # this part launches a thread to update lifts in a more predictable way (semi temporary)
         self.lifts_thread = threading.Thread(target=lifts_update_circle, args=(self.lifts,))
         self.lifts_thread.start()

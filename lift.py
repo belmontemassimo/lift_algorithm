@@ -22,8 +22,8 @@ class Lift:
 
     # note: target_floor is a lift with ONLY ONE value (so far) because lists are passed by reference
     # so it can be changed from outside the class without calling any class functions 
-    def __init__(self, capacity: int, max_speed: float, acceleration: float, target_floor: list[float]):
-        self.deltatime = DeltaTime()
+    def __init__(self, capacity: int, max_speed: float, acceleration: float, target_floor: list[float], time_multiplier: float = 1):
+        self.deltatime = DeltaTime(time_multiplier)
         self.status = LiftState.IDLE
         self.previous_time = time.time()
         self.capacity = capacity

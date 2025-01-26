@@ -7,13 +7,15 @@ import time
 # function to return the time difference between now and the last time it was called
 class DeltaTime:
     previous_time: float
+    time_multiplier: float
 
-    def __init__(self):
+    def __init__(self, time_multiplier: float = 1):
         self.previous_time = time.time()
+        self.time_multiplier = time_multiplier
 
     def __call__(self) -> float:
         cur_time = time.time()
-        deltatime = cur_time - self.previous_time
+        deltatime = (cur_time - self.previous_time) * self.time_multiplier
         self.previous_time = cur_time
         return deltatime
     

@@ -9,8 +9,8 @@ import liftmanager
 if __name__ == "__main__":
 
     # temporary solution for testing purposes
-    lift_manager = liftmanager.LiftManager(10, 3, 2, 0.5, 10)
-    lift_manager.set_target_floors([5, 7, 2])
+    lift_manager = liftmanager.LiftManager(10, 3, 2, 0.5, 10, 10)
+    lift_manager.set_target_floors([50, 70, 20])
 
     # output lifts positions constantly
     while True:
