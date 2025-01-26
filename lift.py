@@ -11,7 +11,6 @@ class Lift:
     target_floor: list[float]
     status: LiftStatus
 
-
     def __init__(self, capacity: int, max_speed: float, acceleration: float, target_floor: list[float]):
         self.deltatime = DeltaTime()
         self.status = LiftStatus.IDLE

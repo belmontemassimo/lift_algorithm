@@ -1,7 +1,5 @@
 import gui
-import lift
 import time
-import os
 import liftmanager
 
 if __name__ == "__main__":

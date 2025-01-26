@@ -19,7 +19,6 @@ class LiftManager:
     def lifts_positions(self):
         return [lift.position for lift in self.lifts]
 
-    
 def lifts_update_circle(lifts: list[Lift]):
     while True:
         for lift in lifts:
