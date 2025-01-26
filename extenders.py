@@ -1,11 +1,10 @@
-from enum import Enum
+#
+#   This is a module for having some useful, generalised and obstructed code that can be used by any other module.
+#
+
 import time
 
-class LiftStatus(Enum):
-    IDLE = 0
-    MOVING = 1
-    WAITING = 2
-
+# function to return the time difference between now and the last time it was called
 class DeltaTime:
     previous_time: float
 
@@ -18,9 +17,15 @@ class DeltaTime:
         self.previous_time = cur_time
         return deltatime
     
+# function to change value by sertain number of units per second based on time passed
+# current: value to change
+# change_rate: units per second
+# deltatime: time passed since last update
 def Interpolate(current: float, change_rate: float, deltatime: float) -> float:
     return current + change_rate * deltatime
 
+# same as interpolate function but with a target value aka to
+# this function may have some flactuations in return when near the target value
 def InterpolateTo(current: float, change_rate: float, deltatime: float, to: float) -> float:
     if current < to:
         current = min(Interpolate(current, change_rate, deltatime), to)
