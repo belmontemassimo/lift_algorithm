@@ -24,6 +24,15 @@ class LiftManager:
     # returns lift of all lifts opsitions
     def lifts_positions(self):
         return [lift.position for lift in self.lifts]
+    
+    # return all target floors (only on index 0 so far)
+    def get_target_floors(self):
+        return [lift.target_floor[0] for lift in self.lifts]
+    
+    # set target floors for all lifts (only on index 0 so far)
+    def set_target_floors(self, target_floors):
+        for i, target_floor in enumerate(target_floors):
+            self.lifts[i].target_floor[0] = target_floor
 
 # semi temporary function to provide at least some level of consistency for lift updates
 def lifts_update_circle(lifts: list[Lift]):
