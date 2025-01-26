@@ -2,21 +2,18 @@ import gui
 import lift
 import time
 import os
+import liftmanager
 
 if __name__ == "__main__":
-    
-    prev_message_length = 0
 
-
-    lift = lift.Lift(capacity=5, max_speed=1, acceleration=0.2)
-    lift.move_to(8)
+    lift_manager = liftmanager.LiftManager(10, 3, 2, 0.5, 10)
+    lift_manager.target_floors[0][0] = 10
+    lift_manager.target_floors[1][0] = 15
+    lift_manager.target_floors[2][0] = 8
     while True:
-        lift.update()
-        print("\033c") 
-        print(f"speed: {lift.speed}")
-        print(f"position: {lift.position}")
-        print(f"target_floor: {lift.target_floor}")
-        time.sleep(0.001)
+        poss = lift_manager.lifts_positions()
+        print(f'{"%.2f" % poss[0]} {"%.2f" % poss[1]} {"%.2f" % poss[2]}')
+        time.sleep(0.1)
 
 
         
