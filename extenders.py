@@ -30,7 +30,11 @@ def Interpolate(current: float, change_rate: float, deltatime: float) -> float:
 # this function may have some flactuations in return when near the target value
 def InterpolateTo(current: float, change_rate: float, deltatime: float, to: float) -> float:
     if current < to:
-        current = min(Interpolate(current, change_rate, deltatime), to)
-    elif current > to:
-        current = max(Interpolate(current, -change_rate, deltatime), to)
+        current = Interpolate(current, change_rate, deltatime)
+        if current > to:
+            return to
+    if current > to:
+        current = Interpolate(current, change_rate, deltatime)
+        if current < to:
+            return to
     return current
