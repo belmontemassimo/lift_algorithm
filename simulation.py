@@ -16,9 +16,10 @@ if __name__ == "__main__":
     while True:
         poss = lift_manager.lifts_positions()
         speed = lift_manager.lifts_speed()
-        print(f'{"%.2f" % poss[0]} {"%.2f" % poss[1]} {"%.2f" % poss[2]}')
-        print(f'{"%.2f" % speed[0]} {"%.2f" % speed[1]} {"%.2f" % speed[2]}')
-        print(*lift_manager.get_target_floors())
+        print(f'position:      {"%.2f" % poss[0]} {"%.2f" % poss[1]} {"%.2f" % poss[2]}')
+        print(f'speed:         {"%.2f" % speed[0]} {"%.2f" % speed[1]} {"%.2f" % speed[2]}')
+        print("target floors: ", end="")
+        print(*lift_manager.get_target_floors(), sep="   ")
         time.sleep(0.05)
 
         if lift_manager.lifts_positions()[1] > 20:
