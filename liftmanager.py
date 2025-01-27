@@ -10,7 +10,7 @@ class LiftManager:
     lifts: list[Lift]
     lifts_thread: threading.Thread
 
-    # craete and set lifts 
+    # create and set lifts 
     # capacity: max weight in kg
     def __init__(self, num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time, time_multiplier=1):
         self.num_floors = num_floors
