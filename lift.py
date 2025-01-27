@@ -24,8 +24,8 @@ class Lift:
     state: LiftState
 
     # init function with default values for lift
-    def __init__(self, capacity: int, max_speed: float, acceleration: float, waiting_time, time_multiplier: float = 1):
-        self.deltatime = DeltaTime(time_multiplier)
+    def __init__(self, capacity: int, max_speed: float, acceleration: float, waiting_time):
+        self.deltatime = DeltaTime()
         self.state = LiftState.IDLE
         self.previous_time = time.time()
         self.capacity = capacity

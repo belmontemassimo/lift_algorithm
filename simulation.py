@@ -5,9 +5,12 @@
 import gui
 import time
 from lift import LiftState
+import extenders
 import liftmanager
 
 if __name__ == "__main__":
+
+    extenders.set_time_multiplier(10)
 
     # temporary solution for testing purposes
     lift_manager = liftmanager.LiftManager(10, 3, 2, 0.4, 10, 4)

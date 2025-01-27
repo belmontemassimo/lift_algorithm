@@ -4,12 +4,19 @@
 
 import time
 
+time_multiplier = 1
+
+def set_time_multiplier(time_multiplier_incoming):
+    global time_multiplier
+    time_multiplier = time_multiplier_incoming
+
 # function to return the time difference between now and the last time it was called
 class DeltaTime:
     previous_time: float
     time_multiplier: float
 
-    def __init__(self, time_multiplier: float = 1):
+    def __init__(self):
+        global time_multiplier
         self.previous_time = time.time()
         self.time_multiplier = time_multiplier
 
