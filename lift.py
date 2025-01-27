@@ -53,5 +53,5 @@ class Lift:
             speed = InterpolateTo(self.speed, -self.acceleration, deltatime, 0)
             position = InterpolateTo(self.position, speed, deltatime, self.target_floor)
         self.speed = speed
-        self.position = position
+        self.position = position 
         
