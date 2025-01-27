@@ -18,7 +18,7 @@ class Lift:
     max_speed: float = 0
     capacity: int = 0
     target_floor: float = 0
-    status: LiftState
+    state: LiftState
 
     # init function with default values for lift
     def __init__(self, capacity: int, max_speed: float, acceleration: float, time_multiplier: float = 1):
