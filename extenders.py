@@ -36,13 +36,13 @@ def Interpolate(current: float, change_rate: float, deltatime: float) -> float:
 
 # same as interpolate function but with a target value aka to
 # this function may have some fluctuations in return when near the target value
-def InterpolateTo(current: float, change_rate: float, deltatime: float, expected_value: float) -> float:
+def InterpolateTo(current: float, change_rate: float, deltatime: float, expected_value: float, only_soft_catch: bool = False) -> float:
     if current < expected_value:
         current = Interpolate(current, change_rate, deltatime)
-        if current > expected_value:
+        if (current > expected_value) and (not only_soft_catch or change_rate <= 0.05):
             return expected_value
     if current > expected_value:
         current = Interpolate(current, change_rate, deltatime)
-        if current < expected_value:
+        if (current < expected_value) and (not only_soft_catch or change_rate <= 0.05):
             return expected_value
     return current

@@ -1,6 +1,7 @@
 import time
 from enum import Enum
 from extenders import DeltaTime, InterpolateTo
+from math import copysign
 
 # used to ensure that the lift state is consistent
 # subject to change
@@ -46,11 +47,11 @@ class Lift:
             self.acceleration = -self.acceleration
         # update speed so that it reaches the max_speed and the position in case it went above the target_floor
         speed = InterpolateTo(self.speed, self.acceleration, deltatime, self.max_speed)
-        position = InterpolateTo(self.position, speed, deltatime, self.target_floor)
+        position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True)
         # if the lift is within the stopping distance, decelerate
-        if abs(position - self.target_floor) <= stopping_distance:
+        if abs(position - self.target_floor) <= stopping_distance and copysign(1, self.speed) == copysign(1, self.target_floor - self.position):
             speed = InterpolateTo(self.speed, -self.acceleration, deltatime, 0)
-            position = InterpolateTo(self.position, speed, deltatime, self.target_floor)
+            position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True)
         self.speed = speed
         self.position = position
 
