@@ -19,22 +19,22 @@ class DeltaTime:
         self.previous_time = cur_time
         return deltatime
     
-# function to change value by sertain number of units per second based on time passed
-# current: value to change
+# function to change value by certain number of units per second based on time passed
+# current: value to change (speed, acceleration)
 # change_rate: units per second
 # deltatime: time passed since last update
 def Interpolate(current: float, change_rate: float, deltatime: float) -> float:
     return current + change_rate * deltatime
 
 # same as interpolate function but with a target value aka to
-# this function may have some flactuations in return when near the target value
-def InterpolateTo(current: float, change_rate: float, deltatime: float, to: float) -> float:
-    if current < to:
+# this function may have some fluctuations in return when near the target value
+def InterpolateTo(current: float, change_rate: float, deltatime: float, expected_value: float) -> float:
+    if current < expected_value:
         current = Interpolate(current, change_rate, deltatime)
-        if current > to:
-            return to
-    if current > to:
+        if current > expected_value:
+            return expected_value
+    if current > expected_value:
         current = Interpolate(current, change_rate, deltatime)
-        if current < to:
-            return to
+        if current < expected_value:
+            return expected_value
     return current
