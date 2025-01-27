@@ -4,6 +4,7 @@
 
 import time
 
+# global variables for this file
 time_multiplier = 1
 
 def set_time_multiplier(time_multiplier_incoming):
