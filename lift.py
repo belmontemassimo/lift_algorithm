@@ -17,19 +17,17 @@ class Lift:
     acceleration: float = 0
     max_speed: float = 0
     capacity: int = 0
-    target_floor: list[float]
+    target_floor: float = 0
     status: LiftState
 
-    # note: target_floor is a lift with ONLY ONE value (so far) because lists are passed by reference
-    # so it can be changed from outside the class without calling any class functions 
-    def __init__(self, capacity: int, max_speed: float, acceleration: float, target_floor: list[float], time_multiplier: float = 1):
+    # init function with default values for lift
+    def __init__(self, capacity: int, max_speed: float, acceleration: float, time_multiplier: float = 1):
         self.deltatime = DeltaTime(time_multiplier)
         self.status = LiftState.IDLE
         self.previous_time = time.time()
         self.capacity = capacity
         self.max_speed = max_speed
         self.acceleration = acceleration
-        self.target_floor = target_floor
 
     # function to update the lift's position and speed
     # should be run frequently to ensure accuracy 
@@ -37,10 +35,10 @@ class Lift:
         deltatime = self.deltatime()
         stopping_distance = self.speed ** 2 / (2 * self.acceleration)
         speed = InterpolateTo(self.speed, self.acceleration, deltatime, self.max_speed)
-        position = InterpolateTo(self.position, speed, deltatime, self.target_floor[0])
-        if abs(position - self.target_floor[0]) < stopping_distance:
+        position = InterpolateTo(self.position, speed, deltatime, self.target_floor)
+        if abs(position - self.target_floor) < stopping_distance:
             speed = InterpolateTo(self.speed, self.acceleration, deltatime, 0)
-            position = InterpolateTo(self.position, speed, deltatime, self.target_floor[0])
+            position = InterpolateTo(self.position, speed, deltatime, self.target_floor)
         self.speed = speed
         self.position = position
         
