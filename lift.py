@@ -31,17 +31,24 @@ class Lift:
 
     # function to update the lift's position and speed
     # should be run frequently to ensure accuracy 
+    # when the lift reached the target floor, this function do not do anything
     def update(self):
         deltatime = self.deltatime()
+        # distance to stop a lift decelerating at a constant acceleration = v^2 / 2a
         stopping_distance = self.speed ** 2 / (2 * abs(self.acceleration))
+
+        # if the lift goes above the target floor, reverse the speed and the acceleration until it reaches the target floor
         if self.position > self.target_floor and self.acceleration > 0:
             self.max_speed = -self.max_speed
             self.acceleration = -self.acceleration
+        # if the lift goes below the target floor, reverse the speed and the acceleration until it reaches the target floor
         elif self.position < self.target_floor and self.acceleration < 0:
             self.max_speed = -self.max_speed
             self.acceleration = -self.acceleration
+        # update speed so that it reaches the max_speed and the position in case it went above the target_floor
         speed = InterpolateTo(self.speed, self.acceleration, deltatime, self.max_speed)
         position = InterpolateTo(self.position, speed, deltatime, self.target_floor)
+        # if the lift is within the stopping distance, decelerate
         if abs(position - self.target_floor) <= stopping_distance:
             speed = InterpolateTo(self.speed, -self.acceleration, deltatime, 0)
             position = InterpolateTo(self.position, speed, deltatime, self.target_floor)
