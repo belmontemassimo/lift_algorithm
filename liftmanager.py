@@ -16,9 +16,6 @@ class LiftManager:
         self.num_floors = num_floors
         self.num_lifts = num_lifts
         self.lifts = [Lift(capacity, max_speed, acceleration, waiting_time) for i in range(num_lifts)]
-        # this part launches a thread to update lifts in a more predictable way (semi temporary)
-        self.lifts_thread = threading.Thread(target=lifts_update_circle, args=(self.lifts,))
-        self.lifts_thread.start()
 
     # returns lift of all lifts opsitions
     def get_positions(self):
