@@ -6,7 +6,7 @@ import gui
 import time
 from lift import LiftState
 from extenders import DeltaTime, set_time_multiplier
-from algorithms import Request
+from request import Request
 import liftmanager
 
 if __name__ == "__main__":
@@ -43,6 +43,7 @@ if __name__ == "__main__":
                 for request in lift.picked_requests:
                     if request.target_floor == lift.position:
                         lift.picked_requests.remove(request)
+        
 
         print(f'position:      {"%.2f" % poss[0]}')
         print(f'speed:         {"%.2f" % speed[0]}')

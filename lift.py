@@ -2,7 +2,7 @@ import time
 from enum import Enum
 from extenders import DeltaTime, InterpolateTo
 from math import copysign
-from algorithms import Request
+from request import Request
 
 # used to ensure that the lift state is consistent
 # subject to change
@@ -67,6 +67,7 @@ class Lift:
             return True
         else:
             return False
+
     # function to update the lift's position and speed
     # should be run frequently to ensure accuracy 
     def update(self):
