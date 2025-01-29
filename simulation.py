@@ -17,8 +17,6 @@ if __name__ == "__main__":
 
     # temporary solution for testing purposes
     lift_manager = liftmanager.LiftManager(10, 3, 2, 0.4, 1000, 4)
-    lift_manager.set_target_floors([9])
-    lift_manager.set_lifts_states([LiftState.MOVING])
 
     # output lifts positions constantly
 
