@@ -1,7 +1,7 @@
 #
 #   This is a module for having some useful, generalised and obstructed code that can be used by any other module.
 #
-
+import random
 import time
 
 # global variables for this file
@@ -49,3 +49,10 @@ def InterpolateTo(current: float, change_rate: float, deltatime: float, expected
         if (current < expected_value) and (not only_soft_catch or change_rate <= 0.05):
             return expected_value
     return current
+
+
+def generate_person_weight(mean=70, std_dev=12.5, lmean=3.5, lstd_dev=0.5):
+    """
+    Generate a person's weight following a normal distribution.
+    """
+    return max(30, random.gauss(mean, std_dev)) + max(0, random.gauss(lmean, lstd_dev))  # Minimum weight of 30kg to avoid unrealistic values
