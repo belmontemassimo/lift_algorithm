@@ -16,7 +16,7 @@ if __name__ == "__main__":
     set_time_multiplier(2)
 
     # temporary solution for testing purposes
-    lift_manager = liftmanager.LiftManager(10, 3, 2, 0.4, 1000, 4)
+    lift_manager = liftmanager.LiftManager(10, 1, 2, 0.4, 1000, 4)
 
     # output lifts positions constantly
 
