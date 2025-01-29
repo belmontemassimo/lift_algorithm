@@ -9,29 +9,31 @@ import extenders
 import liftmanager
 
 if __name__ == "__main__":
-
-    extenders.set_time_multiplier(10)
+    # requests are in the form of (target_floor, direction, time_created)
+    list_of_requests = [(5, 0, 0), (8, 2, 3), (2, 1, 20), (3, 0, 29), (4, 1, 57)]
+    extenders.set_time_multiplier(2)
 
     # temporary solution for testing purposes
     lift_manager = liftmanager.LiftManager(10, 3, 2, 0.4, 10, 4)
-    lift_manager.set_target_floors([10, 15, 5])
-    lift_manager.set_lifts_states([LiftState.MOVING, LiftState.MOVING, LiftState.MOVING])
+    lift_manager.set_target_floors([9])
+    lift_manager.set_lifts_states([LiftState.MOVING])
 
     # output lifts positions constantly
-    while True:
+
+    timer = 0
+    deltatime = extenders.DeltaTime()
+    while True: 
+        lift_manager.run_updates()
         poss = lift_manager.lifts_positions()
         speed = lift_manager.lifts_speed()
         states = lift_manager.get_lifts_states()
-        print(f'position:      {"%.2f" % poss[0]} {"%.2f" % poss[1]} {"%.2f" % poss[2]}')
-        print(f'speed:         {"%.2f" % speed[0]} {"%.2f" % speed[1]} {"%.2f" % speed[2]}')
-        print(f'state:         {states[0]} {states[1]} {states[2]}')
+        deltatime = deltatime()
+        timer += deltatime
+        print(f'position:      {"%.2f" % poss[0]}')
+        print(f'speed:         {"%.2f" % speed[0]}')
+        print(f'state:         {states[0]}')
         print("target floors: ", end="")
         print(*lift_manager.get_target_floors(), sep="   ")
-
-        if lift_manager.get_lifts_states()[1] == LiftState.AFTERWAIT:
-            lift_manager.set_target_floors([10, 5, 5])
-            lift_manager.set_lifts_states([LiftState.IDLE, LiftState.MOVING, LiftState.IDLE])
-
         time.sleep(0.05)
 
 
