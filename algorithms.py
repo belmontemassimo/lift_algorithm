@@ -2,10 +2,11 @@ import heapq
 import time
 
 class Request:
-    def __init__(self, target_floor: int, time_created: float, direction:str):
+    def __init__(self, target_floor: int, time_created: float, direction:str, capacity: float):
         self.target_floor = target_floor
         self.time_created = time_created
         self.direction = direction
+        self.capacity = capacity
 
 
     def waiting_time(self):
