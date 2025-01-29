@@ -3,9 +3,9 @@ from lift import Lift
 
 class fcfs:
 
-    def run(self,lift: Lift , list_of_requests: list[Request], picked_requests: list[Request]) -> Request:
+    def run(self,lift: Lift , current_requests: list[Request], picked_requests: list[Request]) -> float:
         for picked_request in picked_requests:
-            return picked_request
-        for request in list_of_requests:
-            return request
+            return picked_request.target_floor
+        for request in current_requests:
+            return request.request_floor
         return None

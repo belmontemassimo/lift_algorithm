@@ -75,9 +75,11 @@ class Lift:
         match self.state:
             case LiftState.IDLE:
                 self.move(deltatime)
+                if self.position == self.target_floor and abs(self.speed) <= 0.1:
+                    self.speed = 0
             case LiftState.MOVING:
                 self.move(deltatime)
-                if self.position == self.target_floor and self.speed <= 0.05:
+                if self.position == self.target_floor and abs(self.speed) <= 0.1:
                     self.state = LiftState.WAITING
                     self.speed = 0
             case LiftState.WAITING:

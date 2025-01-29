@@ -1,6 +1,4 @@
 from lift import Lift
-import time
-import threading
 
 # class to manage multiple lifts
 # ensures easy flow of information between lifts
@@ -8,7 +6,6 @@ class LiftManager:
     num_floors: int
     num_lifts: int
     lifts: list[Lift]
-    lifts_thread: threading.Thread
 
     # create and set lifts 
     # capacity: max weight in kg

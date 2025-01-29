@@ -42,11 +42,11 @@ def Interpolate(current: float, change_rate: float, deltatime: float) -> float:
 def InterpolateTo(current: float, change_rate: float, deltatime: float, expected_value: float, only_soft_catch: bool = False) -> float:
     if current < expected_value:
         current = Interpolate(current, change_rate, deltatime)
-        if (current > expected_value) and (not only_soft_catch or change_rate <= 0.05):
+        if (current > expected_value) and (not only_soft_catch or abs(change_rate) <= 0.1):
             return expected_value
     if current > expected_value:
         current = Interpolate(current, change_rate, deltatime)
-        if (current < expected_value) and (not only_soft_catch or change_rate <= 0.05):
+        if (current < expected_value) and (not only_soft_catch or abs(change_rate) <= 0.1):
             return expected_value
     return current
 
