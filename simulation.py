@@ -26,9 +26,9 @@ if __name__ == "__main__":
         deltatime = deltatime()
         timer += deltatime
         lift_manager.run_updates()
-        poss = lift_manager.lifts_positions()
-        speed = lift_manager.lifts_speed()
-        states = lift_manager.get_lifts_states()
+        poss = lift_manager.get_positions()
+        speed = lift_manager.get_speed()
+        states = lift_manager.get_states()
         if list_of_requests and timer >= list_of_requests[0].time_created():
             current_requests.append(list_of_requests.pop(0))
 
