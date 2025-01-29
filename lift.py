@@ -2,6 +2,7 @@ import time
 from enum import Enum
 from extenders import DeltaTime, InterpolateTo
 from math import copysign
+from algorithms import Request
 
 # used to ensure that the lift state is consistent
 # subject to change
@@ -21,6 +22,7 @@ class Lift:
     waiting_time: float = 0
     waited_time: float = 0
     capacity: int = 0
+    picked_requests: list[Request] = []
     target_floor: float = 0
     state: LiftState
 
@@ -55,6 +57,16 @@ class Lift:
         self.speed = speed
         self.position = position
 
+    def add_request(self, request: Request) -> bool:
+        weight = 0
+        for picked_request in self.picked_requests:
+            weight += picked_request.weight_captor
+        weight += request.weight_captor
+        if weight <= self.capacity:
+            self.picked_requests.append(request)
+            return True
+        else:
+            return False
     # function to update the lift's position and speed
     # should be run frequently to ensure accuracy 
     def update(self):

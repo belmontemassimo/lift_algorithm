@@ -13,6 +13,7 @@ class Request:
         self.target_floor = target_floor
         self.time_created = time_created
         self.direction = Direction.UP if (request_floor-target_floor) < 0 else Direction.DOWN
+        self.in_lift = False
         self.weight_captor = generate_person_weight()
 
 

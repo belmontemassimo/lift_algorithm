@@ -12,7 +12,7 @@ import liftmanager
 if __name__ == "__main__":
     # requests are in the form of (target_floor, direction, time_created)
     list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 0, 29), Request(4, 1, 57)]
-    current_requests = []
+    current_requests: list[Request] = []
     set_time_multiplier(2)
 
     # temporary solution for testing purposes
@@ -31,6 +31,18 @@ if __name__ == "__main__":
         states = lift_manager.get_states()
         if list_of_requests and timer >= list_of_requests[0].time_created:
             current_requests.append(list_of_requests.pop(0))
+
+       
+        for lift in lift_manager.lifts:
+            if lift.state == LiftState.WAITING:
+                 # checks for every lift if it is at the floor where someone called it
+                for request in current_requests:
+                    if request.request_floor == lift.position | lift.add_request(request):
+                        list_of_requests.remove(request)
+                # checks if someone arrived at it's target floor (the floor he wanted to go to)
+                for request in lift.picked_requests:
+                    if request.target_floor == lift.position:
+                        lift.picked_requests.remove(request)
 
         print(f'position:      {"%.2f" % poss[0]}')
         print(f'speed:         {"%.2f" % speed[0]}')
