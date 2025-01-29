@@ -6,11 +6,12 @@ import gui
 import time
 from lift import LiftState
 import extenders
+from algorithms import Request
 import liftmanager
 
 if __name__ == "__main__":
     # requests are in the form of (target_floor, direction, time_created)
-    list_of_requests = [(5, 0, 0), (8, 2, 3), (2, 1, 20), (3, 0, 29), (4, 1, 57)]
+    list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 0, 29), Request(4, 1, 57)]
     current_requests = []
     extenders.set_time_multiplier(2)
 
