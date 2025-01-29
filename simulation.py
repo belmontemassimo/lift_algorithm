@@ -23,14 +23,13 @@ if __name__ == "__main__":
     timer = 0
     deltatime = extenders.DeltaTime()
     while True: 
+        deltatime = deltatime()
+        timer += deltatime
         lift_manager.run_updates()
         poss = lift_manager.lifts_positions()
         speed = lift_manager.lifts_speed()
         states = lift_manager.get_lifts_states()
-        deltatime = deltatime()
-        timer += deltatime
-        if list_of_requests and timer >= list_of_requests[0][2]:
-
+        if list_of_requests and timer >= list_of_requests[0].time_created():
             current_requests.append(list_of_requests.pop(0))
 
         print(f'position:      {"%.2f" % poss[0]}')
