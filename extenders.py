@@ -18,10 +18,13 @@ class DeltaTime:
 
     def __init__(self):
         global time_multiplier
-        self.previous_time = time.time()
+        self.previous_time = 0.0
         self.time_multiplier = time_multiplier
 
     def __call__(self) -> float:
+        if self.previous_time == 0.0:
+            self.previous_time = time.time()
+            return 0.0
         cur_time = time.time()
         deltatime = (cur_time - self.previous_time) * self.time_multiplier
         self.previous_time = cur_time
