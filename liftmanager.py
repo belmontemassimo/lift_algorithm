@@ -42,6 +42,5 @@ class LiftManager:
 
     # semi temporary function to provide at least some level of consistency for lift updates
     def run_updates(self):
-        while True:
-            for lift in self.lifts:
-                lift.update()
+        for lift in self.lifts:
+            lift.update()
