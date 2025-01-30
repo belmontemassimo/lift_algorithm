@@ -56,10 +56,12 @@ if __name__ == "__main__":
         if len(lift_manager.lifts) == 1:
             lift: Lift = lift_manager.lifts[0]
             next_floor= algorithm.run(lift, current_requests, lift.picked_requests)
+            # put lift into idle if there is no requests 
             if next_floor == None:
                 lift.target_floor = 0
                 if lift.state != LiftState.WAITING:
                     lift.state = LiftState.IDLE
+            # set lift on motion to the next floor
             else:
                 lift.target_floor = next_floor
                 if lift.state == LiftState.IDLE or lift.state == LiftState.AFTERWAIT:
