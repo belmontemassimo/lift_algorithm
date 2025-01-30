@@ -31,6 +31,7 @@ if __name__ == "__main__":
         poss = lift_manager.get_positions()
         speed = lift_manager.get_speed()
         states = lift_manager.get_states()
+        
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         if new_requests_list:
             current_requests.extend(new_requests_list)
