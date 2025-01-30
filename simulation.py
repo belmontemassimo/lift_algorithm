@@ -23,10 +23,9 @@ if __name__ == "__main__":
     # output lifts positions constantly
 
     timer = 0
-    deltatime_obj = DeltaTime()
+    deltatime = DeltaTime()
     while True: 
-        deltatime = deltatime_obj()
-        timer += deltatime
+        timer += deltatime()
         lift_manager.run_updates()
         poss = lift_manager.get_positions()
         speed = lift_manager.get_speed()
