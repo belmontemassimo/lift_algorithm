@@ -63,7 +63,7 @@ if __name__ == "__main__":
         print(f"time: {"%.2f" % timer}")
         print(f'position:      {"%.2f" % poss[0]}')
         print(f'speed:         {"%.2f" % speed[0]}')
-        print(f'state:         {states[0]}')
+        print(f'state:         {"waiting" if states[0] == LiftState.WAITING else "idle" if states[0] == LiftState.IDLE else "moving"}')
         print("target floors: ", end="")
         print(*lift_manager.get_target_floors(), sep="   ")
         time.sleep(0.01)
