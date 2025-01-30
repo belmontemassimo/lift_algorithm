@@ -18,6 +18,7 @@ class Lift:
     deltatime: DeltaTime
     acceleration: float = 0
     max_speed: float = 0
+    weight = 0
     waiting_time: float = 0
     waited_time: float = 0
     capacity: int = 0
@@ -56,15 +57,17 @@ class Lift:
         self.position = position
 
     def add_request(self, request: Request) -> bool:
-        weight = 0
-        for picked_request in self.picked_requests:
-            weight += picked_request.weight_captor
-        weight += request.weight_captor
-        if weight <= self.capacity:
+        if self.weight + request.weight_captor <= self.capacity:
             self.picked_requests.append(request)
+            self.weight += request.weight_captor
             return True
         else:
             return False
+        
+    def remove_request(self, request: Request) -> bool:
+        if request in self.picked_requests:
+            self.picked_requests.remove(request)
+            self.weight -= request.weight_captor
 
     # function to update the lift's position and speed
     # should be run frequently to ensure accuracy 

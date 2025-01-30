@@ -5,11 +5,13 @@ from lift import Lift
 class LiftManager:
     num_lifts: int
     lifts: list[Lift]
+    capacity: float
 
     # create and set lifts 
     # capacity: max weight in kg
     def __init__(self, num_lifts, max_speed, acceleration, capacity, waiting_time):
         self.num_lifts = num_lifts
+        self.capacity = capacity
         self.lifts = [Lift(capacity, max_speed, acceleration, waiting_time) for i in range(num_lifts)]
 
     # returns lift of all lifts opsitions
@@ -29,6 +31,9 @@ class LiftManager:
     def set_states(self, states):
         for i, state in enumerate(states):
             self.lifts[i].state = state
+
+    def get_weight(self):
+        return [lift.weight for lift in self.lifts]
     
     # set target floor for all lifts
     def set_target_floors(self, target_floors):

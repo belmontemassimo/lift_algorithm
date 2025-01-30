@@ -31,9 +31,6 @@ if __name__ == "__main__":
     while True: 
         timer += deltatime()
         lift_manager.run_updates()
-        poss = lift_manager.get_positions()
-        speed = lift_manager.get_speed()
-        states = lift_manager.get_states()
 
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         if new_requests_list:
@@ -48,9 +45,8 @@ if __name__ == "__main__":
                 if add_requests_list:
                     current_requests = [request for request in current_requests if request not in add_requests_list]
                 # checks if someone arrived at it's target floor (the floor he wanted to go to)
-                remove_requests_list: list[Request] = [request for request in lift.picked_requests if request.target_floor == lift.position]
-                if remove_requests_list:
-                    lift.picked_requests = [request for request in lift.picked_requests if request not in remove_requests_list]
+                # this variable is temporary not in use but is very important
+                remove_requests_list: list[Request] = [request for request in lift.picked_requests if request.target_floor == lift.position and lift.remove_request(request)]
 
         # TEMPORARY PART TO ACCOMODATWE ONLY ONE LIFT
         if len(lift_manager.lifts) == 1:
@@ -69,9 +65,11 @@ if __name__ == "__main__":
  
         print("")
         print(f"time: {"%.2f" % timer}")
-        print(f'position:      {"%.2f" % poss[0]}')
-        print(f'speed:         {"%.2f" % speed[0]}')
-        print(f'state:         {"waiting" if states[0] == LiftState.WAITING else "idle" if states[0] == LiftState.IDLE else "moving"}')
+        print(f'position:      {"%.2f" % lift_manager.get_positions()[0]}')
+        print(f'speed:         {"%.2f" % lift_manager.get_speed()[0]}')
+        state = lift_manager.get_states()[0]
+        print(f'state:         {"waiting" if state == LiftState.WAITING else "idle" if state == LiftState.IDLE else "moving"}')
+        print(f'weight:        {lift_manager.get_weight()[0]}/{lift_manager.capacity}')
         print("target floors: ", end="")
         print(*lift_manager.get_target_floors())
         sleep(0.01)

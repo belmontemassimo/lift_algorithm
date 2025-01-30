@@ -12,7 +12,7 @@ class Request:
         self.time_created = time_created
         self.direction = Direction.UP if (request_floor-target_floor) < 0 else Direction.DOWN
         self.in_lift = False
-        self.weight_captor = double_normal_distribution(mean=70, std_dev=12.5, second_mean=3.5, second_std_dev=0.5)
+        self.weight_captor = round(double_normal_distribution(mean=70, std_dev=12.5, second_mean=3.5, second_std_dev=0.5), 2)
 
 
     def waiting_time(self, current_time: float) -> float:
