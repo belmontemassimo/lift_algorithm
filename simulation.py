@@ -22,7 +22,7 @@ if __name__ == "__main__":
     
 
     # temporary solution for testing purposes
-    lift_manager = LiftManager(1, 2, 0.4, 1000, 4)
+    lift_manager = LiftManager(20, 1, 2, 0.4, 1000, 4)
 
     # output lifts positions constantly
 

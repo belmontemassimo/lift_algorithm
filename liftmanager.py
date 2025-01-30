@@ -4,13 +4,15 @@ from lift import Lift
 # ensures easy flow of information between lifts
 class LiftManager:
     num_lifts: int
+    num_floors: int
     lifts: list[Lift]
     capacity: float
 
     # create and set lifts 
     # capacity: max weight in kg
-    def __init__(self, num_lifts, max_speed, acceleration, capacity, waiting_time):
+    def __init__(self, num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time):
         self.num_lifts = num_lifts
+        self.num_floors = num_floors
         self.capacity = capacity
         self.lifts = [Lift(capacity, max_speed, acceleration, waiting_time) for i in range(num_lifts)]
 
