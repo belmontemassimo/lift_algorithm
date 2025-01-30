@@ -49,7 +49,7 @@ if __name__ == "__main__":
                 remove_requests_list: list[Request] = [request for request in lift.picked_requests if request.target_floor == lift.position and lift.remove_request(request)]
 
         # TEMPORARY PART TO ACCOMODATWE ONLY ONE LIFT
-        if len(lift_manager.lifts) == 1:
+        if lift_manager.num_lifts == 1:
             lift: Lift = lift_manager.lifts[0]
             next_floor= algorithm.run(lift, current_requests, lift.picked_requests)
             # put lift into idle if there is no requests 
@@ -63,13 +63,13 @@ if __name__ == "__main__":
                 if lift.state == LiftState.IDLE or lift.state == LiftState.AFTERWAIT:
                     lift.state = LiftState.MOVING
  
+        state = lift_manager.get_states()[0]
         print("")
         print(f"time: {"%.2f" % timer}")
         print(f'position:      {"%.2f" % lift_manager.get_positions()[0]}')
         print(f'speed:         {"%.2f" % lift_manager.get_speed()[0]}')
-        state = lift_manager.get_states()[0]
         print(f'state:         {"waiting" if state == LiftState.WAITING else "idle" if state == LiftState.IDLE else "moving"}')
-        print(f'weight:        {lift_manager.get_weight()[0]}/{lift_manager.capacity}')
+        print(f'weight:        {"%.2f" % lift_manager.get_weight_kg()[0]}/{"%.2f" % lift_manager.capacity}')
         print("target floors: ", end="")
         print(*lift_manager.get_target_floors())
         sleep(0.01)

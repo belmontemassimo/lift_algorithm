@@ -37,6 +37,9 @@ class LiftManager:
     def get_weight(self):
         return [lift.weight for lift in self.lifts]
     
+    def get_weight_kg(self):
+        return [lift.weight/100 for lift in self.lifts]
+    
     # set target floor for all lifts
     def set_target_floors(self, target_floors):
         for i, target_floor in enumerate(target_floors):

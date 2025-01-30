@@ -30,7 +30,7 @@ class Lift:
     def __init__(self, capacity: int, max_speed: float, acceleration: float, waiting_time):
         self.deltatime = DeltaTime()
         self.state = LiftState.IDLE
-        self.capacity = capacity
+        self.capacity = capacity * 100
         self.max_speed = max_speed
         self.acceleration = acceleration
         self.waiting_time = waiting_time
@@ -57,6 +57,7 @@ class Lift:
         self.position = position
 
     def add_request(self, request: Request) -> bool:
+
         if self.weight + request.weight_captor <= self.capacity:
             self.picked_requests.append(request)
             self.weight += request.weight_captor
