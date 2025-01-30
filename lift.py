@@ -1,4 +1,3 @@
-import time
 from enum import Enum
 from extenders import DeltaTime, InterpolateTo
 from math import copysign
@@ -30,7 +29,6 @@ class Lift:
     def __init__(self, capacity: int, max_speed: float, acceleration: float, waiting_time):
         self.deltatime = DeltaTime()
         self.state = LiftState.IDLE
-        self.previous_time = time.time()
         self.capacity = capacity
         self.max_speed = max_speed
         self.acceleration = acceleration

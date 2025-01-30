@@ -3,14 +3,12 @@ from lift import Lift
 # class to manage multiple lifts
 # ensures easy flow of information between lifts
 class LiftManager:
-    num_floors: int
     num_lifts: int
     lifts: list[Lift]
 
     # create and set lifts 
     # capacity: max weight in kg
-    def __init__(self, num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time):
-        self.num_floors = num_floors
+    def __init__(self, num_lifts, max_speed, acceleration, capacity, waiting_time):
         self.num_lifts = num_lifts
         self.lifts = [Lift(capacity, max_speed, acceleration, waiting_time) for i in range(num_lifts)]
 
@@ -28,7 +26,7 @@ class LiftManager:
     def get_states(self):
         return [lift.state for lift in self.lifts]
     
-    def set_lifts_states(self, states):
+    def set_states(self, states):
         for i, state in enumerate(states):
             self.lifts[i].state = state
     

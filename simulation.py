@@ -2,13 +2,13 @@
 # this is a main file that must be used to run any code
 #
 
-import gui
-import time
+from gui import GUI
+from time import sleep
 from lift import LiftState, Lift
 from extenders import DeltaTime, set_time_multiplier
 from request import Request
 from algorithms import fcfs
-import liftmanager
+from liftmanager import LiftManager
 
 if __name__ == "__main__":
     # requests are in the form of (target_floor, direction, time_created)
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     set_time_multiplier(1)
 
     # temporary solution for testing purposes
-    lift_manager = liftmanager.LiftManager(10, 1, 2, 0.4, 1000, 4)
+    lift_manager = LiftManager(1, 2, 0.4, 1000, 4)
 
     # output lifts positions constantly
 
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         poss = lift_manager.get_positions()
         speed = lift_manager.get_speed()
         states = lift_manager.get_states()
-        
+
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         if new_requests_list:
             current_requests.extend(new_requests_list)
@@ -68,8 +68,8 @@ if __name__ == "__main__":
         print(f'speed:         {"%.2f" % speed[0]}')
         print(f'state:         {"waiting" if states[0] == LiftState.WAITING else "idle" if states[0] == LiftState.IDLE else "moving"}')
         print("target floors: ", end="")
-        print(*lift_manager.get_target_floors(), sep="   ")
-        time.sleep(0.01)
+        print(*lift_manager.get_target_floors())
+        sleep(0.01)
 
 
         

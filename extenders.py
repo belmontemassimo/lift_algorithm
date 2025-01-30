@@ -1,8 +1,8 @@
 #
 #   This is a module for having some useful, generalised and obstructed code that can be used by any other module.
 #
-import random
-import time
+from random import gauss
+from time import time
 
 # global variables for this file
 time_multiplier = 1
@@ -23,9 +23,9 @@ class DeltaTime:
 
     def __call__(self) -> float:
         if self.previous_time == 0.0:
-            self.previous_time = time.time()
+            self.previous_time = time()
             return 0.0
-        cur_time = time.time()
+        cur_time = time()
         deltatime = (cur_time - self.previous_time) * self.time_multiplier
         self.previous_time = cur_time
         return deltatime
@@ -55,4 +55,4 @@ def generate_person_weight(mean=70, std_dev=12.5, lmean=3.5, lstd_dev=0.5):
     """
     Generate a person's weight following a normal distribution.
     """
-    return max(30, random.gauss(mean, std_dev)) + max(0, random.gauss(lmean, lstd_dev))  # Minimum weight of 30kg to avoid unrealistic values
+    return max(30, gauss(mean, std_dev)) + max(0, gauss(lmean, lstd_dev))  # Minimum weight of 30kg to avoid unrealistic values
