@@ -9,4 +9,4 @@ class GUI:
     window: tk.Tk
 
     def __init__(self):
-        self.windwo = tk.Tk()
+        self.window = tk.Tk()
