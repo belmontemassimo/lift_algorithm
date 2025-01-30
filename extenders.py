@@ -7,6 +7,7 @@ from time import time
 # global variables for this file
 time_multiplier = 1
 
+# function to set the time multiplier for the Deltatime class
 def set_time_multiplier(time_multiplier_incoming):
     global time_multiplier
     time_multiplier = time_multiplier_incoming
@@ -22,9 +23,11 @@ class DeltaTime:
         self.time_multiplier = time_multiplier
 
     def __call__(self) -> float:
+        # set the time to the previous time if it is the first time the function is called
         if self.previous_time == 0.0:
             self.previous_time = time()
             return 0.0
+        # get the time difference between now and the last time it was called
         cur_time = time()
         deltatime = (cur_time - self.previous_time) * self.time_multiplier
         self.previous_time = cur_time
@@ -33,7 +36,6 @@ class DeltaTime:
 # function to change value by certain number of units per second based on time passed
 # current: value to change (speed, acceleration)
 # change_rate: units per second
-# deltatime: time passed since last update
 def Interpolate(current: float, change_rate: float, deltatime: float) -> float:
     return current + change_rate * deltatime
 
@@ -50,6 +52,6 @@ def InterpolateTo(current: float, change_rate: float, deltatime: float, expected
             return expected_value
     return current
 
-# Generate a person's weight following a normal distribution.
+# Generate a person's weight following a normal distribution, adding a possible luggage.
 def double_normal_distribution(mean: float = 70, std_dev: float = 12.5, second_mean: float = 3.5, second_std_dev: float = 0.5) -> float:
     return max(30, gauss(mean, std_dev)) + max(0, gauss(second_mean, second_std_dev))  # Minimum weight of 30kg to avoid unrealistic values
