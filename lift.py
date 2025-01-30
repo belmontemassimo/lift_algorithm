@@ -85,7 +85,5 @@ class Lift:
                 if self.waited_time >= self.waiting_time:
                     self.state = LiftState.AFTERWAIT
                     self.waited_time = 0
-            case _:
-                pass
  
         
