@@ -31,8 +31,10 @@ if __name__ == "__main__":
         poss = lift_manager.get_positions()
         speed = lift_manager.get_speed()
         states = lift_manager.get_states()
-        if list_of_requests and timer >= list_of_requests[0].time_created:
-            current_requests.append(list_of_requests.pop(0))
+        new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
+        if new_requests_list:
+            current_requests.extend(new_requests_list)
+            list_of_requests = [request for request in list_of_requests if request not in new_requests_list]
 
        
         for lift in lift_manager.lifts:
