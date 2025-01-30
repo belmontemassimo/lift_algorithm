@@ -1,5 +1,7 @@
 from enum import Enum
 from extenders import double_normal_distribution
+
+# 
 class Direction(Enum):
     UP = 1
     DOWN = -1
