@@ -195,36 +195,35 @@ class ascenseur():
 
         with open(f"{os.path.dirname(__file__)}/input_test.json", "r") as file:
             config = json.load(file)
-            requests = config['test']
-            compatibility = [f'{request_element[0]},{request_element[1]}']
+            requests = config['test'] # List of lists with format: ["target_floor,direction", next_floor] 
+            compatibility = f'{request_element[0]},{request_element[1]}'
+            print(compatibility)
 
-            for request in requests:
-                if compatibility[0] in request:
-                    inside_request = request[1] #the floor number
-                    new_set = []
+        new_set = []
+        inside_request = None
+        for request in requests: # find inside request and create new identical set without current target floor
+            if compatibility == request[0]:
+                inside_request = request[1] # next_floor
+            else:
+                new_set.append(request) 
 
-                    #create json file without taken commands
-                    for element in requests:
-                        if compatibility[0] in element[0]:
-                            continue
-                        else:
-                            new_set.append(element)
-                    
-                    new_set = {'test': new_set}
-                    
-                    with open(f"{os.path.dirname(__file__)}/input_test.json", "w") as file:
-                        json.dump(new_set,file, indent=3)
+        new_set = {'test': new_set}
+    
+        with open(f"{os.path.dirname(__file__)}/input_test.json", "w") as file:
+            json.dump(new_set,file, indent=3)
 
-                    with open(f"{os.path.dirname(__file__)}/used_input_test.json", "r") as file:
-                        data = json.load(file)
-                        used_requests = data['test']
-                        used_requests_dict = {'test': used_requests}
-                    
-                    with open(f"{os.path.dirname(__file__)}/used_input_test.json", "w") as file:
-                        json.dump(used_requests_dict,file)
+        with open(f"{os.path.dirname(__file__)}/used_input_test.json", "r") as file:
+            data = json.load(file)
+            used_requests = data['test']
+            used_requests_dict = {'test': used_requests}
+        
+        with open(f"{os.path.dirname(__file__)}/used_input_test.json", "w") as file:
+            json.dump(used_requests_dict,file)
 
-                    self.queue.put((inside_request, 0, time.time()))   
-                    break
+        if inside_request:
+            self.queue.put((inside_request, 0, time.time()))   
+            
+                
                   
     def timer(self,start_time = None):
         if not start_time:
