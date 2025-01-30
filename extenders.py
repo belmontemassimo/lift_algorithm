@@ -50,9 +50,6 @@ def InterpolateTo(current: float, change_rate: float, deltatime: float, expected
             return expected_value
     return current
 
-
-def generate_person_weight(mean=70, std_dev=12.5, lmean=3.5, lstd_dev=0.5):
-    """
-    Generate a person's weight following a normal distribution.
-    """
-    return max(30, gauss(mean, std_dev)) + max(0, gauss(lmean, lstd_dev))  # Minimum weight of 30kg to avoid unrealistic values
+# Generate a person's weight following a normal distribution.
+def double_normal_distribution(mean=70, std_dev=12.5, second_mean=3.5, second_std_dev=0.5):
+    return max(30, gauss(mean, std_dev)) + max(0, gauss(second_mean, second_std_dev))  # Minimum weight of 30kg to avoid unrealistic values
