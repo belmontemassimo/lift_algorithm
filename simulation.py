@@ -11,11 +11,15 @@ from algorithms import fcfs
 from liftmanager import LiftManager
 
 if __name__ == "__main__":
+
+    # place for all config variables (please nothing above this comment)
+    set_time_multiplier(1)
+
     # requests are in the form of (target_floor, direction, time_created)
     list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 29), Request(4, 1, 180)]
     current_requests: list[Request] = []
     algorithm = fcfs()
-    set_time_multiplier(1)
+    
 
     # temporary solution for testing purposes
     lift_manager = LiftManager(1, 2, 0.4, 1000, 4)
