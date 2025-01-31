@@ -8,12 +8,13 @@ from lift import LiftState, Lift
 from extenders import DeltaTime, set_time_multiplier
 from request import Request
 from algorithms import fcfs
+from monitoring import Monitoring
 from liftmanager import LiftManager
 
 if __name__ == "__main__":
 
     # place for all config variables (please nothing above this comment)
-    set_time_multiplier(1)
+    set_time_multiplier(5)
 
     # requests are in the form of (target_floor, direction, time_created)
     list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 29), Request(4, 1, 180)]
@@ -23,6 +24,7 @@ if __name__ == "__main__":
 
     # temporary solution for testing purposes
     lift_manager = LiftManager(20, 1, 2, 0.4, 1000, 4)
+    monitoring = Monitoring(lift_manager)
 
     # output lifts positions constantly
 
@@ -31,6 +33,7 @@ if __name__ == "__main__":
     while True: 
         timer += deltatime()
         lift_manager.run_updates()
+        monitoring.update(timer)
 
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         if new_requests_list:
@@ -62,17 +65,6 @@ if __name__ == "__main__":
                 lift.target_floor = next_floor
                 if lift.state == LiftState.IDLE or lift.state == LiftState.AFTERWAIT:
                     lift.state = LiftState.MOVING
- 
-        state = lift_manager.get_states()[0]
-        print("")
-        print(f"time: {"%.2f" % timer}")
-        print(f'position:      {"%.2f" % lift_manager.get_positions()[0]}')
-        print(f'speed:         {"%.2f" % lift_manager.get_speed()[0]}')
-        print(f'state:         {"waiting" if state == LiftState.WAITING else "idle" if state == LiftState.IDLE else "moving"}')
-        print(f'weight:        {"%.2f" % lift_manager.get_weight_kg()[0]}/{"%.2f" % lift_manager.capacity}')
-        print("target floors: ", end="")
-        print(*lift_manager.get_target_floors())
-        sleep(0.01)
 
 
         
