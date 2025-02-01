@@ -88,14 +88,14 @@ if __name__ == "__main__":
                     lift.state = LiftState.MOVING
  
         state = lift_manager.get_states()[0]
-        # print("")
-        # print(f"time: {"%.2f" % timer}")
-        # print(f'position:      {"%.2f" % lift_manager.get_positions()[0]}')
-        # print(f'speed:         {"%.2f" % lift_manager.get_speed()[0]}')
-        # print(f'state:         {"waiting" if state == LiftState.WAITING else "idle" if state == LiftState.IDLE else "moving"}')
-        # print(f'weight:        {"%.2f" % lift_manager.get_weight_kg()[0]}/{"%.2f" % lift_manager.capacity}')
-        # print("target floors: ", end="")
-        # print(*lift_manager.get_target_floors())
+        print("")
+        print(f"time: {"%.2f" % timer}")
+        print(f'position:      {"%.2f" % lift_manager.get_positions()[0]}')
+        print(f'speed:         {"%.2f" % lift_manager.get_speed()[0]}')
+        print(f'state:         {"waiting" if state == LiftState.WAITING else "idle" if state == LiftState.IDLE else "moving"}')
+        print(f'weight:        {"%.2f" % lift_manager.get_weight_kg()[0]}/{"%.2f" % lift_manager.capacity}')
+        print("target floors: ", end="")
+        print(*lift_manager.get_target_floors())
         sleep(0.01)
 
 
