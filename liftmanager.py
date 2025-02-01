@@ -10,11 +10,11 @@ class LiftManager:
 
     # create and set lifts 
     # capacity: max weight in kg
-    def __init__(self, num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time):
+    def __init__(self, num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time,q):
         self.num_lifts = num_lifts
         self.num_floors = num_floors
         self.capacity = capacity
-        self.lifts = [Lift(capacity, max_speed, acceleration, waiting_time) for i in range(num_lifts)]
+        self.lifts = [Lift(capacity, max_speed, acceleration, waiting_time,q) for i in range(num_lifts)]
 
     # returns lift of all lifts opsitions
     def get_positions(self):
@@ -36,6 +36,9 @@ class LiftManager:
 
     def get_weight(self):
         return [lift.weight for lift in self.lifts]
+    
+    def get_weight_kg(self):
+        return [lift.weight/100 for lift in self.lifts]
     
     # set target floor for all lifts
     def set_target_floors(self, target_floors):

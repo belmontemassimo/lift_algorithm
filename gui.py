@@ -3,15 +3,20 @@
 #
 
 import tkinter as tk
-from liftmanager import LiftManager
+from multiprocessing import Queue
 from lift import Lift
+
 
 # nothing is implemented yet
 class GUI:
 
+    q: Queue
     root: tk.Tk
 
-    def __init__(self, n_floors: int, n_lifts: int, lift_manager:LiftManager):
+
+    def __init__(self, n_floors: int, n_lifts: int, q):
+        self.q = q
+        self.floors = n_floors
         self.root = tk.Tk()
         self.root.title("GUI")
 
@@ -36,20 +41,46 @@ class GUI:
             if i%2 == 1:
                 self.lifts.append(self.canvas.create_rectangle(i*n_stops, height-n_stops, (i*n_stops)+n_stops, height, fill="black"))
 
+
+        self.root.after(100,self.queue_to_move)  # <-- CALL queue_to_move HERE
+
         self.root.mainloop()
     
-    def move(self, position):
+    def queue_to_move(self):
+
+        if not self.q.empty():  # Ensure there is data
+            
+            next_positions = self.q.get()
+            self.move(next_positions)
+
+        self.root.after(1, self.queue_to_move)  # Avoid recursion crash
+
+
+
+        
+    def move(self, positions):
         for i in range(len(self.lifts)):
-
-            back_coords = None
-            front_coords = self.canvas.coords(self.lifts[i])
-            front_coords = front_coords[3] - front_coords[1]
-            difference = None
+            back_coords = positions  # Target Y position
+            self.canvas.update()
+            front_coords = self.canvas.coords(self.lifts[i])  # Get lift rectangle coordinates
             
-
-
+            current_y = front_coords[3]  # Use the bottom coordinate
             
+            canvas_height = self.canvas.winfo_height()
+            target_y = canvas_height - ((back_coords / self.floors) * canvas_height)  # Flip the coordinate system
+            difference = target_y - current_y
+            print(difference)
+            # 🔹 Move smoothly with a small step size
+            step = min(abs(difference), 5)  # Move at most 5 pixels per update
+
+            if difference > 0:  # Move DOWN
+                self.canvas.move(self.lifts[i], 0, step)
+            elif difference < 0:  # Move UP
+                self.canvas.move(self.lifts[i], 0, -step)
+
+                
+
+
+                
     
 
-a = GUI(20,1,lift_manager=0)
-a.move()
