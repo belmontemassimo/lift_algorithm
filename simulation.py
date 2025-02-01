@@ -17,7 +17,7 @@ if __name__ == "__main__":
     # place for all config variables (please nothing above this comment)
     set_time_multiplier(5)
 
-    num_floors = 20
+    num_floors = 30
     num_lifts = 1
 
     # requests are in the form of (target_floor, direction, time_created)
