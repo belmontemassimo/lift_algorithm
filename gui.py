@@ -49,7 +49,6 @@ class GUI:
     def queue_to_move(self):
         if not self.q.empty():  # Ensure there is data
             next_positions = self.q.get()
-            print(next_positions)
             self.move(next_positions)
 
         self.root.after(1, self.queue_to_move)  # Avoid recursion crash
