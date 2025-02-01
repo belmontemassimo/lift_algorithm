@@ -3,8 +3,8 @@
 #
 
 import tkinter as tk
-from multiprocessing import Queue
-from lift import Lift
+from multiprocessing import Process, Queue
+from liftmanager import LiftManager
 
 
 # nothing is implemented yet
@@ -47,10 +47,9 @@ class GUI:
         self.root.mainloop()
     
     def queue_to_move(self):
-
         if not self.q.empty():  # Ensure there is data
-            
             next_positions = self.q.get()
+            print(next_positions)
             self.move(next_positions)
 
         self.root.after(1, self.queue_to_move)  # Avoid recursion crash
@@ -76,6 +75,14 @@ class GUI:
             elif difference < 0:  # Move UP
                 self.canvas.move(self.lifts[i], 0, -step)
 
+def run_gui(num_floors: int, num_lifts: int) -> Queue:
+    gui_possition_queue: Queue = Queue()
+    Process(target=GUI, args=(num_floors, num_lifts, gui_possition_queue)).start()
+    return gui_possition_queue
+
+def gui_update(lift_manager: LiftManager, gui_possition_queue: Queue):
+    if gui_possition_queue.empty():
+        gui_possition_queue.put(lift_manager.get_positions())
                 
 
 
