@@ -8,6 +8,7 @@ from lift import LiftState, Lift
 from extenders import DeltaTime, set_time_multiplier
 from request import Request
 from algorithms import fcfs
+from monitoring import Monitoring
 from liftmanager import LiftManager
 from multiprocessing import Process, Queue
 import queue
@@ -15,7 +16,7 @@ import queue
 if __name__ == "__main__":
 
     # place for all config variables (please nothing above this comment)
-    set_time_multiplier(1)
+    set_time_multiplier(5)
 
     # requests are in the form of (target_floor, direction, time_created)
     list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 29), Request(4, 1, 180)]
@@ -48,6 +49,7 @@ if __name__ == "__main__":
     while True: 
         timer += deltatime()
         lift_manager.run_updates()
+        monitoring.update(timer)
 
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         if new_requests_list:
@@ -89,7 +91,7 @@ if __name__ == "__main__":
         print(f'weight:        {"%.2f" % lift_manager.get_weight_kg()[0]}/{"%.2f" % lift_manager.capacity}')
         print("target floors: ", end="")
         print(*lift_manager.get_target_floors())
-        sleep(0.1)
+        sleep(0.01)
 
 
         
