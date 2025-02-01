@@ -15,8 +15,9 @@ class Monitoring:
     target_floor: StaticText
     timer: StaticText
     lift_manager: LiftManager
+    Monitoring_queue: Queue
 
-    def __init__(self, lift_manager: LiftManager, q):
+    def __init__(self, lift_manager: LiftManager, Monitoring_queue):
         self.lift_manager = lift_manager
         self.app = App()
         self.frame = Frame(parent=None, title='Monitoring')
@@ -27,15 +28,14 @@ class Monitoring:
         self.weight_label = StaticText(self.panel, -1, "", (25, 85))
         self.target_floor = StaticText(self.panel, -1, "", (25, 105))
         self.timer = StaticText(self.panel, -1, "", (25, 125))
-        self.q = q
+        self.Monitoring_queue = Monitoring_queue
         self.frame.Show()
         self.update()
 
     def update(self):
-        self.q: Queue
         while True:
-            if not self.q.empty():
-                timer = self.q.get()
+            if not self.Monitoring_queue.empty():
+                timer = self.Monitoring_queue.get()
                 state = self.lift_manager.get_states()[0]
                 self.position_label.SetLabelText(f'position:      {"%.2f" % self.lift_manager.get_positions()[0]}')
                 self.speed_label.SetLabelText(f'speed:         {"%.2f" % self.lift_manager.get_speed()[0]}')

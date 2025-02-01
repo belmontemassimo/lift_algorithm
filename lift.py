@@ -29,14 +29,14 @@ class Lift:
     state: LiftState
 
     # init function with default values for lift
-    def __init__(self, capacity: int, max_speed: float, acceleration: float, waiting_time, q):
+    def __init__(self, capacity: int, max_speed: float, acceleration: float, waiting_time):
         self.deltatime = DeltaTime()
         self.state = LiftState.IDLE
         self.capacity = capacity * 100
         self.max_speed = max_speed
         self.acceleration = acceleration
         self.waiting_time = waiting_time
-        self.q = q
+
 
     def move(self, deltatime: float):
         self.q: Queue
@@ -59,7 +59,7 @@ class Lift:
             position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True)
         self.speed = speed
         self.position = position
-        self.q.put(position)
+        
         
 
     def add_request(self, request: Request) -> bool:

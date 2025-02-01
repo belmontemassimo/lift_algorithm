@@ -11,7 +11,7 @@ from algorithms import fcfs
 from monitoring import Monitoring
 from liftmanager import LiftManager
 from multiprocessing import Process, Queue
-import queue
+
 
 if __name__ == "__main__":
 
@@ -37,7 +37,9 @@ if __name__ == "__main__":
     lift_manager = LiftManager(floors, lifts, max_speed, acceleration, capacity, waiting_time,GUI_queue)
 
     # initialise monitoring
+
     Monitoring_queue = Queue() 
+    Lift_Manager_queue = Queue()
     Monitoring_process = Process(target=Monitoring, args=(lift_manager, Monitoring_queue))
     Monitoring_process.start()
 
@@ -53,6 +55,8 @@ if __name__ == "__main__":
     while True: 
         timer += deltatime()
         lift_manager.run_updates()
+
+        GUI_queue.put(lift_manager.get_positions())
 
         Monitoring_queue.put(timer)
 

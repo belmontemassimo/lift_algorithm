@@ -60,7 +60,7 @@ class GUI:
         
     def move(self, positions):
         for i in range(len(self.lifts)):
-            back_coords = positions  # Target Y position
+            back_coords = positions[i]  # Target Y position
             self.canvas.update()
             front_coords = self.canvas.coords(self.lifts[i])  # Get lift rectangle coordinates
             

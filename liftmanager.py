@@ -14,7 +14,7 @@ class LiftManager:
         self.num_lifts = num_lifts
         self.num_floors = num_floors
         self.capacity = capacity
-        self.lifts = [Lift(capacity, max_speed, acceleration, waiting_time,q) for i in range(num_lifts)]
+        self.lifts = [Lift(capacity, max_speed, acceleration, waiting_time) for i in range(num_lifts)]
 
     # returns lift of all lifts opsitions
     def get_positions(self):
