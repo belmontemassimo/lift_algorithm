@@ -10,7 +10,7 @@ class LiftManager:
 
     # create and set lifts 
     # capacity: max weight in kg
-    def __init__(self, num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time,q):
+    def __init__(self, num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time):
         self.num_lifts = num_lifts
         self.num_floors = num_floors
         self.capacity = capacity

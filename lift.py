@@ -2,8 +2,6 @@ from enum import Enum
 from extenders import DeltaTime, InterpolateTo
 from math import copysign
 from request import Request
-from multiprocessing import Queue
-
 
 # used to ensure that the lift state is consistent
 # subject to change
@@ -37,9 +35,7 @@ class Lift:
         self.acceleration = acceleration
         self.waiting_time = waiting_time
 
-
     def move(self, deltatime: float):
-        self.q: Queue
         stopping_distance = self.speed ** 2 / (2 * abs(self.acceleration))
 
         # if the lift goes above the target floor, reverse the speed and the acceleration until it reaches the target floor
@@ -59,8 +55,6 @@ class Lift:
             position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True)
         self.speed = speed
         self.position = position
-        
-        
 
     def add_request(self, request: Request) -> bool:
 
@@ -95,6 +89,5 @@ class Lift:
                 if self.waited_time >= self.waiting_time:
                     self.state = LiftState.AFTERWAIT
                     self.waited_time = 0
-            
  
         

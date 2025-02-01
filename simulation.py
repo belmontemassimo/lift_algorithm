@@ -10,8 +10,6 @@ from request import Request
 from algorithms import fcfs
 from monitoring import Monitoring
 from liftmanager import LiftManager
-from multiprocessing import Process, Queue
-
 
 if __name__ == "__main__":
 
@@ -22,31 +20,11 @@ if __name__ == "__main__":
     list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 29), Request(4, 1, 180)]
     current_requests: list[Request] = []
     algorithm = fcfs()
-
-    floors = 20
-    lifts = 1
-    max_speed = 2
-    acceleration = 0.4
-    capacity = 1000
-    waiting_time = 4
-
     
 
     # temporary solution for testing purposes
-    GUI_queue = Queue()
-    lift_manager = LiftManager(floors, lifts, max_speed, acceleration, capacity, waiting_time,GUI_queue)
-
-    # initialise monitoring
-
-    Monitoring_queue = Queue() 
-    Lift_Manager_queue = Queue()
-    Monitoring_process = Process(target=Monitoring, args=(lift_manager, Monitoring_queue))
-    Monitoring_process.start()
-
-    # Initiate GUI
-
-    GUI_process = Process(target=GUI, args=(floors, lifts, GUI_queue))
-    GUI_process.start() 
+    lift_manager = LiftManager(20, 1, 2, 0.4, 1000, 4)
+    monitoring = Monitoring(lift_manager)
 
     # output lifts positions constantly
 
@@ -55,10 +33,7 @@ if __name__ == "__main__":
     while True: 
         timer += deltatime()
         lift_manager.run_updates()
-
-        GUI_queue.put(lift_manager.get_positions())
-
-        Monitoring_queue.put(timer)
+        monitoring.update(timer)
 
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         if new_requests_list:
@@ -90,17 +65,6 @@ if __name__ == "__main__":
                 lift.target_floor = next_floor
                 if lift.state == LiftState.IDLE or lift.state == LiftState.AFTERWAIT:
                     lift.state = LiftState.MOVING
- 
-        state = lift_manager.get_states()[0]
-        print("")
-        print(f"time: {"%.2f" % timer}")
-        print(f'position:      {"%.2f" % lift_manager.get_positions()[0]}')
-        print(f'speed:         {"%.2f" % lift_manager.get_speed()[0]}')
-        print(f'state:         {"waiting" if state == LiftState.WAITING else "idle" if state == LiftState.IDLE else "moving"}')
-        print(f'weight:        {"%.2f" % lift_manager.get_weight_kg()[0]}/{"%.2f" % lift_manager.capacity}')
-        print("target floors: ", end="")
-        print(*lift_manager.get_target_floors())
-        sleep(0.01)
 
 
         
