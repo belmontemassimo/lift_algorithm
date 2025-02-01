@@ -42,7 +42,7 @@ class GUI:
                 self.lifts.append(self.canvas.create_rectangle(i*n_stops, height-n_stops, (i*n_stops)+n_stops, height, fill="black"))
 
 
-        self.root.after(100,self.queue_to_move)  # <-- CALL queue_to_move HERE
+        self.root.after(1,self.queue_to_move)  # <-- CALL queue_to_move HERE
 
         self.root.mainloop()
     
@@ -69,8 +69,6 @@ class GUI:
             canvas_height = self.canvas.winfo_height()
             target_y = canvas_height - ((back_coords / self.floors) * canvas_height)  # Flip the coordinate system
             difference = target_y - current_y
-            print(difference)
-            # 🔹 Move smoothly with a small step size
             step = min(abs(difference), 5)  # Move at most 5 pixels per update
 
             if difference > 0:  # Move DOWN
