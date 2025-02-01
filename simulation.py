@@ -10,7 +10,6 @@ from request import Request
 from algorithms import fcfs
 from monitoring import Monitoring
 from liftmanager import LiftManager
-from multiprocessing import Queue
 
 if __name__ == "__main__":
 
