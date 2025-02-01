@@ -49,7 +49,7 @@ if __name__ == "__main__":
     while True: 
         timer += deltatime()
         lift_manager.run_updates()
-        monitoring.update(timer)
+        Monitoring.update(timer)
 
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         if new_requests_list:
