@@ -10,51 +10,46 @@ from liftmanager import LiftManager
 # nothing is implemented yet
 class GUI:
 
-    q: Queue
+    queue: Queue
     root: tk.Tk
 
+    def __init__(self, n_floors: int, n_lifts: int, gui_possition_queue):
 
-    def __init__(self, n_floors: int, n_lifts: int, q):
-        self.q = q
-        self.floors = n_floors
+        
+        self.queue = gui_possition_queue
+
+        # Fields 
         self.root = tk.Tk()
         self.root.title("GUI")
-
-        # Create canvas
         self.canvas = tk.Canvas(self.root, width=800, height=1000, bg='white')
         self.canvas.pack()
-
-        # Get dimensions
-        self.root.update()
-        n_stops = self.canvas.winfo_height()/n_floors
-        height = self.canvas.winfo_height()
-        
-        # Add floors
-        for i in range(n_floors+1):
-            bottom_coord = height - (i * n_stops)
-            self.canvas.create_line(0, bottom_coord, self.canvas.winfo_width(), bottom_coord, fill="black", width=2) #add line
-            self.canvas.create_text(10, bottom_coord-(n_stops/2), text=str(i), fill="black", font=("Arial", 12, "bold")) #add floor label
-        
-        # Create lifts
+        self.floors = n_floors
         self.lifts = list()
+        self.root.update()
+
+        proportional_stops = self.canvas.winfo_height()/n_floors
+        height = self.canvas.winfo_height()
+        # Apply dimensions
+        for i in range(n_floors+1):
+            bottom_coord = height - (i * proportional_stops)
+            self.canvas.create_line(0, bottom_coord, self.canvas.winfo_width(), bottom_coord, fill="black", width=2) #add line
+            self.canvas.create_text(10, bottom_coord-(proportional_stops/2), text=str(i), fill="black", font=("Arial", 12, "bold")) #add floor label
+        
+        # Create lift objects
         for i in range(1, (2*n_lifts) + 1):
             if i%2 == 1:
-                self.lifts.append(self.canvas.create_rectangle(i*n_stops, height-n_stops, (i*n_stops)+n_stops, height, fill="black"))
+                self.lifts.append(self.canvas.create_rectangle(i*proportional_stops, height-proportional_stops, (i*proportional_stops)+proportional_stops, height, fill="black"))
 
-
-        self.root.after(1,self.queue_to_move)  # <-- CALL queue_to_move HERE
-
+        # Call mainloop
+        self.root.after(1,self.queue_to_move)  
         self.root.mainloop()
     
     def queue_to_move(self):
-        if not self.q.empty():  # Ensure there is data
-            next_positions = self.q.get()
+        if not self.queue.empty():  # Ensure there is data
+            next_positions = self.queue.get()
             self.move(next_positions)
 
         self.root.after(1, self.queue_to_move)  # Avoid recursion crash
-
-
-
         
     def move(self, positions):
         for i in range(len(self.lifts)):
@@ -73,6 +68,7 @@ class GUI:
                 self.canvas.move(self.lifts[i], 0, step)
             elif difference < 0:  # Move UP
                 self.canvas.move(self.lifts[i], 0, -step)
+
 
 def run_gui(num_floors: int, num_lifts: int) -> Queue:
     gui_possition_queue: Queue = Queue()
