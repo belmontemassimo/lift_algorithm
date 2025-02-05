@@ -39,5 +39,5 @@ class SCAN:
                 if floor <= lift.current_floor:
                     return floor
             # If no more requests below, change direction
-            lift.direction = 1
+            Request.direction = 1
             return min(all_requests)  # Move to the lowest request before reversing
