@@ -11,13 +11,13 @@ class FCFS:
         if current_requests:
             return current_requests[0].request_floor
         
-        return lift.current_floor
+        return None
 
 
 class SCAN:
     def run(self, lift: Lift, current_requests: list[Request], picked_requests: list[Request]) -> float:
         if not current_requests and not picked_requests:
-            return lift.current_floor  # No requests, stay on the same floor
+            return None  # No requests, stay on the same floor
 
         # Get all floors from requests
         all_requests = [req.target_floor for req in picked_requests] + [req.request_floor for req in current_requests]
