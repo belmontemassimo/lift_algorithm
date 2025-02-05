@@ -12,24 +12,26 @@ def set_time_multiplier(time_multiplier_incoming):
     global time_multiplier
     time_multiplier = time_multiplier_incoming
 
+def get_time_multiplier() -> float:
+    global time_multiplier
+    return time_multiplier
+
 # function to return the time difference between now and the last time it was called
 class DeltaTime:
     previous_time: float
-    time_multiplier: float
 
     def __init__(self):
-        global time_multiplier
         self.previous_time = 0.0
-        self.time_multiplier = time_multiplier
 
     def __call__(self) -> float:
+        global time_multiplier
         # set the time to the previous time if it is the first time the function is called
         if self.previous_time == 0.0:
             self.previous_time = time()
             return 0.0
         # get the time difference between now and the last time it was called
         cur_time = time()
-        deltatime = (cur_time - self.previous_time) * self.time_multiplier
+        deltatime = (cur_time - self.previous_time) * time_multiplier
         self.previous_time = cur_time
         return deltatime
     

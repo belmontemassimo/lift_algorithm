@@ -13,7 +13,7 @@ from liftmanager import LiftManager
 if __name__ == "__main__":
 
     # place for all config variables (please nothing above this comment)
-    set_time_multiplier(5)
+    set_time_multiplier(1)
 
     num_floors = 30
     num_lifts = 1
