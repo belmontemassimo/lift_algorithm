@@ -24,7 +24,7 @@ class SCAN:
         all_requests = sorted(set(all_requests))  # Remove duplicates and sort
 
         # Move in the current direction
-        if Request.direction == 1:
+        if lift.speed > 0:
             # Get next highest floor
             for floor in all_requests:
                 if floor >= lift.current_floor:
@@ -33,7 +33,7 @@ class SCAN:
             Request.direction = -1
             return max(all_requests)  # Move to the highest request before reversing
         
-        elif Request.direction == -1:
+        elif lift.speed < 0:
             # Get next lowest floor
             for floor in reversed(all_requests):
                 if floor <= lift.current_floor:
