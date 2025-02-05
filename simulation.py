@@ -3,18 +3,17 @@
 #
 
 from gui import run_gui, gui_update
-from time import sleep
 from lift import LiftState, Lift
 from extenders import DeltaTime, set_time_multiplier
 from request import Request
-from algorithms import fcfs
+from algorithms import FCFS, SCAN
 from monitoring import Monitoring
 from liftmanager import LiftManager
 
 if __name__ == "__main__":
 
     # place for all config variables (please nothing above this comment)
-    set_time_multiplier(5)
+    set_time_multiplier(1)
 
     num_floors = 30
     num_lifts = 1
@@ -22,7 +21,7 @@ if __name__ == "__main__":
     # requests are in the form of (target_floor, direction, time_created)
     list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 29), Request(4, 1, 180)]
     current_requests: list[Request] = []
-    algorithm = fcfs()
+    algorithm = SCAN()
     
 
     # temporary solution for testing purposes
