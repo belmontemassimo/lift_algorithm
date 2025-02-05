@@ -21,7 +21,7 @@ class SCAN:
             return None # No requests, lift remains idle
         
         if lift.state == LiftState.IDLE:
-            return min(current_requests, key=lambda x: abs(x.request_floor - lift.position)).request_floor
+            return min(current_requests, key=lambda request: abs(request.request_floor - lift.position)).request_floor
 
         # Collect all requested floors
         all_requests = [req.target_floor for req in picked_requests] + [req.request_floor for req in current_requests]
