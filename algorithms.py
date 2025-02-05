@@ -35,4 +35,5 @@ class SCAN:
             return up_requests[0]  # Move to the next highest request first
         elif down_requests:
             return down_requests[-1] # Move to the lowest request if no higher requests remain
+        return None
 
