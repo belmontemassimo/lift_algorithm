@@ -15,19 +15,29 @@ if __name__ == "__main__":
     # place for all config variables (please nothing above this comment)
     set_time_multiplier(1)
 
-    num_floors = 30
-    num_lifts = 1
+    isMonitoring: bool = False
+    isGUI: bool = True
+    num_floors: int = 30
+    num_lifts: int = 1
+    max_speed: float = 2
+    acceleration: float = 0.4
+    capacity: float = 1000
+    waiting_time: float = 4
 
     # requests are in the form of (target_floor, direction, time_created)
     list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 29), Request(4, 1, 180)]
     current_requests: list[Request] = []
-    algorithm = SCAN()
+    algorithm = AlgorithmHandler()
     
 
     # temporary solution for testing purposes
-    lift_manager = LiftManager(num_floors, num_lifts, 2, 0.4, 1000, 4)
-    monitoring = Monitoring(lift_manager)
-    gui_possition_queue = run_gui(num_floors, num_lifts)
+    lift_manager = LiftManager(num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time)
+    if isMonitoring:
+        monitoring = Monitoring(lift_manager, algorithm)
+    else:
+        algorithm.set_algorithm("FCFS")
+    if isGUI:
+        gui_possition_queue = run_gui(num_floors, num_lifts)
 
     # output lifts positions constantly
 
@@ -36,8 +46,10 @@ if __name__ == "__main__":
     while True: 
         timer += deltatime()
         lift_manager.run_updates()
-        monitoring.update(timer)
-        gui_update(lift_manager, gui_possition_queue)
+        if isMonitoring:
+            monitoring.update(timer)
+        if isGUI:
+            gui_update(lift_manager, gui_possition_queue)
 
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         if new_requests_list:
