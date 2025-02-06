@@ -35,7 +35,7 @@ class Monitoring:
         self.weight_label = StaticText(self.panel, -1, "", (25, 85))
         self.timer = StaticText(self.panel, -1, "", (25, 125))
         self.target_floor = StaticText(self.panel, -1, "", (25, 105))
-        self.speed_input = TextCtrl(self.panel, -1, f"{get_time_multiplier()}", (220,55), (50,20))
+        self.speed_input = TextCtrl(self.panel, -1, "1", (220,55), (50,20))
         self.speed_button = Button(self.panel, -1, "update", (285, 55), (70,20))
         self.speed_button.Bind(EVT_BUTTON, self.on_speed_update)
         self.algorithm_choice = Choice(self.panel, -1, (250,25), (100,20), self.algorithm.get_list())
