@@ -1,7 +1,29 @@
 from request import Request
 from lift import Lift
 from lift import LiftState
+from inspect import getmembers, isclass
+from importlib import import_module
 
+def get_algorithms() -> dict[str,object]:
+    module = import_module("algorithms")
+    return {algorithm_name: algorithm_class for algorithm_name, algorithm_class in getmembers(module, isclass) if algorithm_class.__module__ == module.__name__ and algorithm_name != "AlgorithmHandler"}
+
+class AlgorithmHandler:
+    algorithm: object
+    algorithms: dict[str,object]
+
+    def __init__(self):
+        self.algorithm = FCFS()
+        self.algorithms = get_algorithms()
+
+    def __call__(self, lift: Lift, current_requests: list[Request], picked_requests: list[Request]):
+        return self.algorithm(lift, current_requests, picked_requests)
+
+    def get_list(self) -> dict[str,object]:
+        return list(self.algorithms.keys())
+    
+    def set_algorithm(self, algorithm_name: str):
+        self.algorithm = self.algorithms[algorithm_name]()
 
 # create algorithm class for each algorithm
 class FCFS:

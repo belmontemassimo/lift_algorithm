@@ -1,6 +1,7 @@
-from wx import App, Frame, StaticText, Panel, TextCtrl, Button, EVT_BUTTON
+from wx import App, Frame, StaticText, Panel, TextCtrl, Button, EVT_BUTTON, Choice
 from liftmanager import LiftManager
 from lift import LiftState
+from algorithms import AlgorithmHandler
 from extenders import set_time_multiplier, get_time_multiplier
 
 class Monitoring:
@@ -16,10 +17,14 @@ class Monitoring:
     speed_input: TextCtrl
     speed_button: Button
     timer: StaticText
+    algorithm_choice: Choice
     lift_manager: LiftManager
+    algorithm: AlgorithmHandler
 
-    def __init__(self, lift_manager: LiftManager):
+    def __init__(self, lift_manager: LiftManager, algorithm: AlgorithmHandler):
+        set_time_multiplier(0)
         self.lift_manager = lift_manager
+        self.algorithm = algorithm
         self.app = App()
         self.frame = Frame(parent=None, title='Monitoring')
         self.panel = Panel(self.frame, -1)
@@ -32,6 +37,8 @@ class Monitoring:
         self.speed_input = TextCtrl(self.panel, -1, f"{get_time_multiplier()}", (25,145), (50,20))
         self.speed_button = Button(self.panel, -1, "update", (90, 145), (70,20))
         self.speed_button.Bind(EVT_BUTTON, self.speed_update)
+        self.algorithm_choice = Choice(self.panel, -1, (70,25), choices=self.algorithm.get_list())
+        self.start_button = Button
         self.frame.Show()
 
     def update(self, timer:float):

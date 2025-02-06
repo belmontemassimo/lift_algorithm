@@ -6,7 +6,7 @@ from gui import run_gui, gui_update
 from lift import LiftState, Lift
 from extenders import DeltaTime, set_time_multiplier
 from request import Request
-from algorithms import FCFS, SCAN
+from algorithms import AlgorithmHandler
 from monitoring import Monitoring
 from liftmanager import LiftManager
 
