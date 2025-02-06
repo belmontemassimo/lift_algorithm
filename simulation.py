@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # place for all config variables (please nothing above this comment)
     set_time_multiplier(1)
 
-    isMonitoring: bool = False
+    isMonitoring: bool = True
     isGUI: bool = True
     num_floors: int = 30
     num_lifts: int = 1
