@@ -70,7 +70,7 @@ if __name__ == "__main__":
         # TEMPORARY PART TO ACCOMODATWE ONLY ONE LIFT
         if lift_manager.num_lifts == 1:
             lift: Lift = lift_manager.lifts[0]
-            next_floor= algorithm.run(lift, current_requests, lift.picked_requests)
+            next_floor= algorithm(lift, current_requests, lift.picked_requests)
             # put lift into idle if there is no requests 
             if next_floor == None:
                 lift.target_floor = 0

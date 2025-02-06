@@ -5,7 +5,7 @@ from lift import LiftState
 
 # create algorithm class for each algorithm
 class FCFS:
-    def run(self, lift: Lift, current_requests: list[Request], picked_requests: list[Request]) -> float:
+    def __call__(self, lift: Lift, current_requests: list[Request], picked_requests: list[Request]) -> float:
         if picked_requests:
             return picked_requests[0].target_floor
         
@@ -16,7 +16,7 @@ class FCFS:
 
 
 class SCAN:
-    def run(self, lift: Lift, current_requests: list[Request], picked_requests: list[Request]) -> None:
+    def __call__(self, lift: Lift, current_requests: list[Request], picked_requests: list[Request]) -> None:
         if not current_requests and not picked_requests:
             return None # No requests, lift remains idle
         
