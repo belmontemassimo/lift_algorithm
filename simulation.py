@@ -12,9 +12,6 @@ from liftmanager import LiftManager
 
 if __name__ == "__main__":
 
-    # place for all config variables (please nothing above this comment)
-    set_time_multiplier(1)
-
     isMonitoring: bool = True
     isGUI: bool = True
     num_floors: int = 30
@@ -39,6 +36,7 @@ if __name__ == "__main__":
         monitoring = Monitoring(lift_manager, algorithm)
     else:
         algorithm.set_algorithm("FCFS")
+        set_time_multiplier(1)
     if isGUI:
         gui_possition_queue = run_gui(num_floors, num_lifts)
 

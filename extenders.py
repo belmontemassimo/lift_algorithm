@@ -5,7 +5,7 @@ from random import gauss
 from time import time
 
 # global variables for this file
-time_multiplier = 1
+time_multiplier = 0
 
 # function to set the time multiplier for the Deltatime class
 def set_time_multiplier(time_multiplier_incoming):
