@@ -23,7 +23,6 @@ class Monitoring:
     algorithm: AlgorithmHandler
 
     def __init__(self, lift_manager: LiftManager, algorithm: AlgorithmHandler):
-        set_time_multiplier(0)
         self.lift_manager = lift_manager
         self.algorithm = algorithm
         self.app = App()
