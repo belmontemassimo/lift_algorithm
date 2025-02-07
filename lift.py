@@ -81,7 +81,6 @@ class Lift:
                     self.speed = 0
             case LiftState.MOVING:
                 self.move(deltatime)
-                print(f"test {deltatime} {self.position} {self.target_floor} {abs(self.speed)}")
                 if self.position == self.target_floor and abs(self.speed) <= 0.1:
                     print(f"stop! {self.position}")
                     self.state = LiftState.WAITING
