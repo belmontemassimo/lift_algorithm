@@ -43,7 +43,7 @@ def Interpolate(current: float, change_rate: float, deltatime: float) -> float:
 
 # same as interpolate function but with a target value aka to
 # this function may have some fluctuations in return when near the target value
-def InterpolateTo(current: float, change_rate: float, deltatime: float, expected_value: float, only_soft_catch: bool = False) -> float:
+def InterpolateTo(current: float, change_rate: float, deltatime: float, expected_value: float, only_soft_catch: bool = False, round_dp = None) -> float:
     if current < expected_value:
         current = Interpolate(current, change_rate, deltatime)
         if (current > expected_value) and (not only_soft_catch or abs(change_rate) <= 0.1):
@@ -52,6 +52,8 @@ def InterpolateTo(current: float, change_rate: float, deltatime: float, expected
         current = Interpolate(current, change_rate, deltatime)
         if (current < expected_value) and (not only_soft_catch or abs(change_rate) <= 0.1):
             return expected_value
+    if round_dp != None:
+        return round(current, round_dp)
     return current
 
 # Generate a person's weight following a normal distribution, adding a possible luggage.
