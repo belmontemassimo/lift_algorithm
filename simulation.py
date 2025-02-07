@@ -25,7 +25,7 @@ if __name__ == "__main__":
     waiting_time: float = 4
 
     # requests are in the form of (target_floor, direction, time_created)
-    list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 29), Request(4, 1, 180)]
+    list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 21), Request(4, 1, 24), Request(5, 1, 25), Request(6, 1, 26), Request(7, 1, 27), Request(8, 1, 28), Request(9, 1, 29), Request(10, 1, 30), Request(11, 1, 31), Request(12, 1, 32), Request(13, 1, 33), Request(14, 1, 34), Request(15, 1, 35), Request(16, 1, 36), Request(17, 1, 37), Request(18, 1, 38), Request(19, 1, 39), Request(20, 1, 40), Request(21, 1, 41), Request(22, 1, 42), Request(23, 1, 43)]
     current_requests: list[Request] = []
     algorithm = AlgorithmHandler()
     
