@@ -3,7 +3,7 @@ from wx import EVT_BUTTON, EVT_CHOICE
 from liftmanager import LiftManager
 from lift import LiftState
 from algorithms import AlgorithmHandler
-from extenders import set_time_multiplier, get_time_multiplier
+from extenders import set_time_multiplier
 
 class Monitoring:
 
