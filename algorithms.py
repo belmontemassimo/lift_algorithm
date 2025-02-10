@@ -16,8 +16,8 @@ class AlgorithmHandler:
         self.algorithm = FCFS()
         self.algorithms = get_algorithms()
 
-    def __call__(self, lift: Lift, current_requests: list[Request], picked_requests: list[Request]):
-        return self.algorithm(lift, current_requests, picked_requests)
+    def __call__(self, lift: Lift, current_requests: list[Request]):
+        return self.algorithm(lift, current_requests)
 
     def get_list(self) -> dict[str,object]:
         return list(self.algorithms.keys())
@@ -27,7 +27,8 @@ class AlgorithmHandler:
 
 # create algorithm class for each algorithm
 class FCFS:
-    def __call__(self, lift: Lift, current_requests: list[Request], picked_requests: list[Request]) -> float:
+    def __call__(self, lift: Lift, current_requests: list[Request]) -> float:
+        picked_requests = lift.picked_requests
         if picked_requests:
             return picked_requests[0].target_floor
         
@@ -38,7 +39,8 @@ class FCFS:
 
 
 class SCAN:
-    def __call__(self, lift: Lift, current_requests: list[Request], picked_requests: list[Request]) -> None:
+    def __call__(self, lift: Lift, current_requests: list[Request]) -> None:
+        picked_requests = lift.picked_requests
         if not current_requests and not picked_requests:
             return None # No requests, lift remains idle
         
