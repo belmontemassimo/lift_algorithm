@@ -22,7 +22,7 @@ class Lift:
     waiting_time: float = 0
     waited_time: float = 0
     capacity: int = 0
-    picked_requests: list[Request] = []
+    picked_requests: list[Request]
     target_floor: float = 0
     state: LiftState
 
@@ -34,6 +34,7 @@ class Lift:
         self.max_speed = max_speed
         self.acceleration = acceleration
         self.waiting_time = waiting_time
+        self.picked_requests = []
 
     def move(self, deltatime: float):
         stopping_distance = self.speed ** 2 / (2 * abs(self.acceleration))
@@ -48,11 +49,11 @@ class Lift:
             self.acceleration = -self.acceleration
         # update speed so that it reaches the max_speed and the position in case it went above the target_floor
         speed = InterpolateTo(self.speed, self.acceleration, deltatime, self.max_speed)
-        position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True, 5)
+        position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True, 7)
         # if the lift is within the stopping distance, decelerate
         if abs(position - self.target_floor) <= stopping_distance and copysign(1, self.speed) == copysign(1, self.target_floor - self.position):
             speed = InterpolateTo(self.speed, -self.acceleration, deltatime, 0)
-            position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True, 5)
+            position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True, 7)
         self.speed = speed
         self.position = position
 
@@ -82,7 +83,6 @@ class Lift:
             case LiftState.MOVING:
                 self.move(deltatime)
                 if self.position == self.target_floor and abs(self.speed) <= 0.1:
-                    print(f"stop! {self.position}")
                     self.state = LiftState.WAITING
                     self.speed = 0
             case LiftState.WAITING:
