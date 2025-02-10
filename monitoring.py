@@ -44,9 +44,9 @@ class Monitoring:
     def update(self, timer:float):
         self.position_label.SetLabelText(f'position:      {" ".join(["%.2f" % item for item in  self.lift_manager.get_positions()])}')
         self.speed_label.SetLabelText(f'speed:         {" ".join(["%.2f" % item for item in self.lift_manager.get_speed()])}')
-        self.state_label.SetLabelText(f'state:         {" ".join(["waiting" if state == LiftState.WAITING else "idle" if state == LiftState.IDLE else "moving" for state in self.lift_manager.get_states()])}')
-        self.weight_label.SetLabelText(f'weight:        {" ".join(["%.2f" % item for item in  self.lift_manager.get_weight_kg()])} / {"%.2f" % self.lift_manager.capacity}')
-        self.target_floor.SetLabelText(f'target floor:  {" ".join(["%.2f" % item for item in self.lift_manager.get_target_floors()])}')
+        self.state_label.SetLabelText(f'state:         {" ".join(["W" if state == LiftState.WAITING else "I" if state == LiftState.IDLE else "M" for state in self.lift_manager.get_states()])}')
+        self.weight_label.SetLabelText(f'weight:        {" ".join(["%.1f" % item for item in  self.lift_manager.get_weight_kg()])} / {"%.1f" % self.lift_manager.capacity}')
+        self.target_floor.SetLabelText(f'target floor:  {" ".join(["%.1f" % item for item in self.lift_manager.get_target_floors()])}')
         self.timer.SetLabelText(f'time:  {"%.2f" % timer}')
         self.app.Yield()
 
