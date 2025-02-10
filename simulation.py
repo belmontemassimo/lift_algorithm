@@ -15,7 +15,7 @@ if __name__ == "__main__":
     isMonitoring: bool = True
     isGUI: bool = True
     num_floors: int = 30
-    num_lifts: int = 1
+    num_lifts: int = 3 # PLEASE DO NOT SET MORE THEN 3, NOT ALL MODULES ARE READY FOR IT :)
     max_speed: float = 2
     acceleration: float = 0.4
     capacity: float = 1000
@@ -68,16 +68,13 @@ if __name__ == "__main__":
                 # this variable is temporary not in use but is very important
                 remove_requests_list: list[Request] = [request for request in lift.picked_requests if request.target_floor == lift.position and lift.remove_request(request)]
 
-        # TEMPORARY PART TO ACCOMODATWE ONLY ONE LIFT
-        if lift_manager.num_lifts == 1:
-            lift: Lift = lift_manager.lifts[0]
-            next_floor= algorithm(lift, current_requests, lift.picked_requests)
+            next_floor = algorithm(lift, current_requests)
             # put lift into idle if there is no requests 
             if next_floor == None:
                 lift.target_floor = 0
                 if lift.state != LiftState.WAITING:
                     lift.state = LiftState.IDLE
-            # set lift on motion to the next floor
+                # set lift on motion to the next floor
             else:
                 lift.target_floor = next_floor
                 if lift.state == LiftState.IDLE or lift.state == LiftState.AFTERWAIT:
