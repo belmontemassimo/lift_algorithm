@@ -1,6 +1,5 @@
-from request import Request
-from lift import Lift
-from lift import LiftState
+from request import Request, Direction
+from lift import Lift, LiftState
 from inspect import getmembers, isclass
 from importlib import import_module
 
@@ -61,3 +60,31 @@ class SCAN:
             return down_requests[-1] # Move to the lowest request if no higher requests remain
         return None
 
+class LOOK:
+    direction = Direction.UP
+
+    def __call__(self, lift: Lift, current_requests: list[Request]):
+        picked_requests = lift.picked_requests
+        if not current_requests and not picked_requests:
+            return None # No requests, lift remains idle
+        
+        if lift.state == LiftState.IDLE:
+            return min(current_requests, key=lambda request: abs(request.request_floor - lift.position)).request_floor
+        
+        all_requests = [req.target_floor for req in picked_requests] + [req.request_floor for req in current_requests]
+        all_requests = sorted(set(all_requests))  # Remove duplicates and sort
+
+        up_requests = [floor for floor in all_requests if floor > lift.position]
+        down_requests = [floor for floor in all_requests if floor < lift.position]
+
+        if up_requests and (self.direction == Direction.UP or not down_requests):
+            if self.direction != Direction.UP:
+                self.direction = Direction.UP
+            return up_requests[0]
+        
+        if down_requests and (self.direction == Direction.DOWN or not up_requests):
+            if self.direction != Direction.DOWN:
+                self.direction = Direction.DOWN
+            return down_requests[-1]
+        
+        return None
