@@ -7,6 +7,13 @@ class Direction(Enum):
     DOWN = -1
 
 class Request:
+    request_floor: int
+    target_floor: int
+    time_created: float    
+    waited_time: float
+    total_waited_time: float
+    direction: Direction
+
     def __init__(self, request_floor:int , target_floor: int, time_created: float, weight_captor: int = None):
         self.request_floor = request_floor
         self.target_floor = target_floor
@@ -21,7 +28,13 @@ class Request:
     def waiting_time(self, current_time: float) -> float:
         return current_time - self.time_created
     
+    def picked(self, current_time: float):
+        self.waited_time = current_time - self.time_created
+        return True
 
+    def delivered(self, current_time: float):
+        self.waited_time = current_time - self.time_created
+        return True
 
     # compares the waited times
     def __lt__(self, other_request: float):
