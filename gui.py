@@ -62,7 +62,7 @@ class GUI:
             canvas_height = self.canvas.winfo_height()
             target_y = canvas_height - ((back_coords / self.floors) * canvas_height)  # Flip the coordinate system
             difference = target_y - current_y
-            step = min(abs(difference), 5)  # Move at most 5 pixels per update
+            step = abs(difference)
 
             if difference > 0:  # Move DOWN
                 self.canvas.move(self.lifts[i], 0, step)
