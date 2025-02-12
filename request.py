@@ -1,18 +1,20 @@
 from enum import Enum
 from extenders import double_normal_distribution
-
-# 
+import uuid
+ 
 class Direction(Enum):
     UP = 1
     DOWN = -1
 
 class Request:
+    id: uuid
     request_floor: int
     target_floor: int
     time_created: float    
     direction: Direction
 
     def __init__(self, request_floor:int , target_floor: int, time_created: float, weight_captor: int = None):
+        self.id = uuid.uuid4()
         self.request_floor = request_floor
         self.target_floor = target_floor
         self.time_created = time_created
