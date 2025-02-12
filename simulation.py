@@ -26,7 +26,9 @@ if __name__ == "__main__":
                                        Request(6, 1, 26), Request(7, 1, 27), Request(8, 1, 28), Request(9, 1, 29), Request(10, 1, 30), Request(11, 1, 31), 
                                        Request(12, 1, 32), Request(13, 1, 33), Request(14, 1, 34), Request(15, 1, 35), Request(16, 1, 36), Request(17, 1, 37), 
                                        Request(18, 1, 38), Request(19, 1, 39), Request(20, 1, 40), Request(21, 1, 41), Request(22, 1, 42), Request(23, 1, 43)]
+    len_list_of_requests: int = len(list_of_requests)
     current_requests: list[Request] = []
+    removed_requests_list: list[Request] = []
     algorithm = AlgorithmHandler()
     
 
@@ -67,12 +69,11 @@ if __name__ == "__main__":
         for lift in lift_manager.lifts:
             if lift.state == LiftState.WAITING:
                  # checks for every lift if it is at the floor where someone called it
-                add_requests_list: list[Request] = [request for request in current_requests if request.request_floor == lift.position and lift.add_request(request)]
+                add_requests_list: list[Request] = [request for request in current_requests if request.request_floor == lift.position and lift.add_request(request) and request.lift_check_in(timer)]
                 if add_requests_list:
                     current_requests = [request for request in current_requests if request not in add_requests_list]
                 # checks if someone arrived at it's target floor 
-                # this variable is temporary not in use but is very important
-                removed_requests_list: list[Request] = [request for request in lift.picked_requests if request.target_floor == lift.position and lift.remove_request(request)]
+                removed_requests_list += [request for request in lift.picked_requests if request.target_floor == lift.position and request.floor_check_in(timer) and lift.remove_request(request)]
 
             next_floor = algorithm(lift, current_requests)
             # put lift into idle if there is no requests 
@@ -86,5 +87,6 @@ if __name__ == "__main__":
                 if lift.state == LiftState.IDLE or lift.state == LiftState.AFTERWAIT:
                     lift.state = LiftState.MOVING
 
-
+        if len_list_of_requests == len(removed_requests_list):
+            break
         

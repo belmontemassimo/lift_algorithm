@@ -1,20 +1,19 @@
 from enum import Enum
 from extenders import double_normal_distribution
-import uuid
  
 class Direction(Enum):
     UP = 1
     DOWN = -1
 
 class Request:
-    id: uuid
     request_floor: int
     target_floor: int
     time_created: float    
+    time_on_floor: int
+    time_in_lift: int
     direction: Direction
 
     def __init__(self, request_floor:int , target_floor: int, time_created: float, weight_captor: int = None):
-        self.id = uuid.uuid4()
         self.request_floor = request_floor
         self.target_floor = target_floor
         self.time_created = time_created
@@ -27,6 +26,14 @@ class Request:
 
     def waiting_time(self, current_time: float) -> float:
         return current_time - self.time_created
+    
+    def lift_check_in(self, time: float):
+        self.time_on_floor = time - self.time_created
+        return True
+    
+    def floor_check_in(self, time: float):
+        self.time_in_lift = time - self.time_on_floor
+        return True
 
     # compares the waited times
     def __lt__(self, other_request: float):
