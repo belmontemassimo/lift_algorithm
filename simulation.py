@@ -30,7 +30,7 @@ if __name__ == "__main__":
     algorithm = AlgorithmHandler()
     
 
-    # temporary solution for testing purposes
+
     lift_manager = LiftManager(num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time)
     if isMonitoring:
         monitoring = Monitoring(lift_manager, algorithm)
@@ -42,19 +42,25 @@ if __name__ == "__main__":
 
     # output lifts positions constantly
 
+    # set a timer so that we can see the efficiency of the algorithm based on a set of requests
     timer = 0
     deltatime = DeltaTime()
     while True: 
         timer += deltatime()
+        # update lifts
         lift_manager.run_updates()
+
+        # allow the user to diable the monitoring and the gui
         if isMonitoring:
             monitoring.update(timer)
         if isGUI:
             gui_update(lift_manager, gui_possition_queue)
-
+        # check if there are any requests that should be processed
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
+        # if there is a request in new_requests_list then add it to the current_requests list 
         if new_requests_list:
             current_requests.extend(new_requests_list)
+        # removes the processed request from the list_of_requests
             list_of_requests = [request for request in list_of_requests if request not in new_requests_list]
 
        
@@ -64,9 +70,9 @@ if __name__ == "__main__":
                 add_requests_list: list[Request] = [request for request in current_requests if request.request_floor == lift.position and lift.add_request(request)]
                 if add_requests_list:
                     current_requests = [request for request in current_requests if request not in add_requests_list]
-                # checks if someone arrived at it's target floor (the floor he wanted to go to)
+                # checks if someone arrived at it's target floor 
                 # this variable is temporary not in use but is very important
-                remove_requests_list: list[Request] = [request for request in lift.picked_requests if request.target_floor == lift.position and lift.remove_request(request)]
+                removed_requests_list: list[Request] = [request for request in lift.picked_requests if request.target_floor == lift.position and lift.remove_request(request)]
 
             next_floor = algorithm(lift, current_requests)
             # put lift into idle if there is no requests 

@@ -3,6 +3,7 @@ from lift import Lift, LiftState
 from inspect import getmembers, isclass
 from importlib import import_module
 
+# get the name of the algorithms listed in the algorithms.py file and returns a dictionary conatining the name as key and the class as value
 def get_algorithms() -> dict[str,object]:
     module = import_module("algorithms")
     return {algorithm_name: algorithm_class for algorithm_name, algorithm_class in getmembers(module, isclass) if algorithm_class.__module__ == module.__name__ and algorithm_name != "AlgorithmHandler"}
@@ -15,12 +16,15 @@ class AlgorithmHandler:
         self.algorithm = FCFS()
         self.algorithms = get_algorithms()
 
+    # returns the next floor to move to and the lift status
     def __call__(self, lift: Lift, current_requests: list[Request]):
         return self.algorithm(lift, current_requests)
-
+    
+    # returns the list of algorithms names
     def get_list(self) -> dict[str,object]:
         return list(self.algorithms.keys())
     
+    # allows the user to change algorithm in use
     def set_algorithm(self, algorithm_name: str):
         self.algorithm = self.algorithms[algorithm_name]()
 
