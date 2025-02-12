@@ -61,12 +61,12 @@ if __name__ == "__main__":
         for lift in lift_manager.lifts:
             if lift.state == LiftState.WAITING:
                  # checks for every lift if it is at the floor where someone called it
-                add_requests_list: list[Request] = [request for request in current_requests if request.request_floor == lift.position and lift.add_request(request) and request.picked(deltatime.previous_time)]
+                add_requests_list: list[Request] = [request for request in current_requests if request.request_floor == lift.position and lift.add_request(request)]
                 if add_requests_list:
                     current_requests = [request for request in current_requests if request not in add_requests_list]
                 # checks if someone arrived at it's target floor (the floor he wanted to go to)
                 # this variable is temporary not in use but is very important
-                remove_requests_list: list[Request] = [request for request in lift.picked_requests if request.target_floor == lift.position and request.delivered(deltatime.previous_time) and lift.remove_request(request)]
+                remove_requests_list: list[Request] = [request for request in lift.picked_requests if request.target_floor == lift.position and lift.remove_request(request)]
 
             next_floor = algorithm(lift, current_requests)
             # put lift into idle if there is no requests 
