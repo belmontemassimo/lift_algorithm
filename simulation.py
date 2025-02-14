@@ -69,21 +69,25 @@ if __name__ == "__main__":
 
        
         for lift in lift_manager.lifts:
-            if lift.state == LiftState.WAITING:
-                 # checks for every lift if it is at the floor where someone called it
-                add_requests_list: list[Request] = [request for request in current_requests if request.request_floor == lift.position and lift.add_request(request) and request.lift_check_in(timer)]
-                if add_requests_list:
-                    current_requests = [request for request in current_requests if request not in add_requests_list]
-                    update_flag = True
-                # checks if someone arrived at it's target floor 
-                if (lambda new_items: removed_requests_list.extend(new_items) or new_items)([request for request in lift.picked_requests if request.target_floor == lift.position and request.floor_check_in(timer) and lift.remove_request(request)]):
+            match lift.state:
+                case LiftState.WAITING:
+                    # checks for every lift if it is at the floor where someone called it
+                    add_requests_list: list[Request] = [request for request in current_requests if request.request_floor == lift.position and lift.add_request(request) and request.lift_check_in(timer)]
+                    if add_requests_list:
+                        current_requests = [request for request in current_requests if request not in add_requests_list]
+                        update_flag = True
+                    # checks if someone arrived at it's target floor 
+                    if (lambda new_items: removed_requests_list.extend(new_items) or new_items)([request for request in lift.picked_requests if request.target_floor == lift.position and request.floor_check_in(timer) and lift.remove_request(request)]):
+                        update_flag = True
+                case LiftState.AFTERWAIT:
                     update_flag = True
 
         if update_flag:
             update_flag = False
             next_floors = algorithm(lift_manager, current_requests)
             lift_manager.set_target_floors([floor if floor != None else 0 for floor in next_floors])
-            lift_manager.set_states([(LiftState.IDLE if lift_manager.lifts[i].state != LiftState.WAITING else lift_manager.lifts[i].state) if floor == None else (LiftState.MOVING if lift_manager.lifts[i].state == LiftState.IDLE or lift_manager.lifts[i].state == LiftState.AFTERWAIT else lift_manager.lifts[i].state) for i, floor in enumerate(next_floors)])
+            states = lift_manager.get_states()
+            lift_manager.set_states([(LiftState.IDLE if states[i] != LiftState.WAITING else states[i]) if floor == None else (LiftState.MOVING if states[i] == LiftState.IDLE or states[i] == LiftState.AFTERWAIT else states[i]) for i, floor in enumerate(next_floors)])
 
             if len_list_of_requests == len(removed_requests_list):
                 break
