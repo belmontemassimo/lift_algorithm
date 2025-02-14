@@ -1,5 +1,6 @@
 from request import Request, Direction
 from lift import Lift, LiftState
+from liftmanager import LiftManager
 from inspect import getmembers, isclass
 from importlib import import_module
 
@@ -17,8 +18,9 @@ class AlgorithmHandler:
         self.algorithms = get_algorithms()
 
     # returns the next floor to move to and the lift status
-    def __call__(self, lift: Lift, current_requests: list[Request]):
-        return self.algorithm(lift, current_requests)
+    def __call__(self, lift_manager: LiftManager, current_requests: list[Request]):
+        #TEMP
+        return [self.algorithm(lift, current_requests) for lift in lift_manager.lifts]
     
     # returns the list of algorithms names
     def get_list(self) -> dict[str,object]:

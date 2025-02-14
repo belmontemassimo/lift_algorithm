@@ -49,11 +49,11 @@ class Lift:
             self.acceleration = -self.acceleration
         # update speed so that it reaches the max_speed and the position in case it went above the target_floor
         speed = InterpolateTo(self.speed, self.acceleration, deltatime, self.max_speed)
-        position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True, 7)
+        position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True, 9)
         # if the lift is within the stopping distance, decelerate
         if abs(position - self.target_floor) <= stopping_distance and copysign(1, self.speed) == copysign(1, self.target_floor - self.position):
             speed = InterpolateTo(self.speed, -self.acceleration, deltatime, 0)
-            position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True, 7)
+            position = InterpolateTo(self.position, speed, deltatime, self.target_floor, True, 9)
         self.speed = speed
         self.position = position
 
