@@ -9,6 +9,7 @@ from request import Request
 from algorithms import AlgorithmHandler
 from monitoring import Monitoring
 from liftmanager import LiftManager
+from graph import SimulationAnalytics
 
 if __name__ == "__main__":
 
@@ -28,12 +29,13 @@ if __name__ == "__main__":
                                        Request(18, 1, 38), Request(19, 1, 39), Request(20, 1, 40), Request(21, 1, 41), Request(22, 1, 42), Request(23, 1, 43)]
     len_list_of_requests: int = len(list_of_requests)
     current_requests: list[Request] = []
-    removed_requests_list: list[Request] = []
+    completed_requests_list: list[Request] = []
     algorithm = AlgorithmHandler()
     
 
 
     lift_manager = LiftManager(num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time)
+    analytics = SimulationAnalytics()
     if isMonitoring:
         monitoring = Monitoring(lift_manager, algorithm)
     else:
@@ -52,6 +54,9 @@ if __name__ == "__main__":
         timer += deltatime()
         # update lifts
         lift_manager.run_updates()
+
+        # record the state of the lifts
+        analytics.record_state(timer, lift_manager.lifts)
 
         # allow the user to diable the monitoring and the gui
         if isMonitoring:
@@ -77,7 +82,10 @@ if __name__ == "__main__":
                         current_requests = [request for request in current_requests if request not in add_requests_list]
                         update_flag = True
                     # checks if someone arrived at it's target floor 
-                    if (lambda new_items: removed_requests_list.extend(new_items) or new_items)([request for request in lift.picked_requests if request.target_floor == lift.position and request.floor_check_in(timer) and lift.remove_request(request)]):
+                    if (lambda new_items: completed_requests_list.extend(new_items) or new_items)([request for request in lift.picked_requests if request.target_floor == lift.position and request.floor_check_in(timer) and lift.remove_request(request)]):
+                        for request in lift.picked_requests:
+                            if request.target_floor == lift.position:
+                                analytics.add_completed_request(request)
                         update_flag = True
                 case LiftState.AFTERWAIT:
                     update_flag = True
@@ -89,6 +97,7 @@ if __name__ == "__main__":
             states = lift_manager.get_states()
             lift_manager.set_states([(LiftState.IDLE if states[i] != LiftState.WAITING else states[i]) if floor == None else (LiftState.MOVING if states[i] == LiftState.IDLE or states[i] == LiftState.AFTERWAIT else states[i]) for i, floor in enumerate(next_floors)])
 
-            if len_list_of_requests == len(removed_requests_list):
+            if len_list_of_requests == len(completed_requests_list):
                 break
-        
+    analytics.set_simulation_time(timer)
+    analytics.generate_graphs()
