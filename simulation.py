@@ -83,9 +83,6 @@ if __name__ == "__main__":
                         update_flag = True
                     # checks if someone arrived at it's target floor 
                     if (lambda new_items: completed_requests_list.extend(new_items) or new_items)([request for request in lift.picked_requests if request.target_floor == lift.position and request.floor_check_in(timer) and lift.remove_request(request)]):
-                        for request in lift.picked_requests:
-                            if request.target_floor == lift.position:
-                                analytics.add_completed_request(request)
                         update_flag = True
                 case LiftState.AFTERWAIT:
                     update_flag = True
@@ -99,5 +96,4 @@ if __name__ == "__main__":
 
             if len_list_of_requests == len(completed_requests_list):
                 break
-    analytics.set_simulation_time(timer)
-    analytics.generate_graphs()
+    analytics.generate_graphs(completed_requests_list, timer)
