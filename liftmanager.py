@@ -12,6 +12,9 @@ class LiftManager:
     # capacity: max weight in kg
     def __init__(self) -> None:
         self.lifts = []
+        self.capacity = 0
+        self.num_floors = 0
+        self.num_lifts = 0
 
     def configure(self, num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time):
         self.num_lifts = num_lifts
