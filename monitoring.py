@@ -3,7 +3,7 @@ from wx import EVT_BUTTON, EVT_CHOICE
 from liftmanager import LiftManager
 from lift import LiftState
 from algorithms import AlgorithmHandler
-from extenders import set_time_multiplier
+from extenders import set_time_multiplier, set_number_of_lifts
 
 class Monitoring:
 
@@ -17,6 +17,9 @@ class Monitoring:
     target_floor: StaticText
     speed_input: TextCtrl
     speed_button: Button
+    lift_number_input: TextCtrl
+    lift_number_button: Button
+    start_button: Button
     timer: StaticText
     algorithm_choice: Choice
     lift_manager: LiftManager
@@ -35,8 +38,13 @@ class Monitoring:
         self.timer = StaticText(self.panel, -1, "", (25, 125))
         self.target_floor = StaticText(self.panel, -1, "", (25, 105))
         self.speed_input = TextCtrl(self.panel, -1, "1", (250,55), (50,20))
-        self.speed_button = Button(self.panel, -1, "update", (315, 55), (70,20))
+        self.speed_button = Button(self.panel, -1, "speed", (315, 55), (70,20))
         self.speed_button.Bind(EVT_BUTTON, self.on_speed_update)
+        self.lift_number_input = TextCtrl(self.panel, -1, "1", (250,85), (50,20))
+        self.lift_number_button = Button(self.panel, -1, "lifts", (315, 85), (70,20))
+        self.lift_number_button.Bind(EVT_BUTTON, self.on_lift_number_update)
+        self.start_button = Button(self.panel, -1, "start", (280, 115), (100,20))
+        self.start_button.Bind(EVT_BUTTON, self.on_start_update)
         self.algorithm_choice = Choice(self.panel, -1, (280,25), (100,20), self.algorithm.get_list())
         self.algorithm_choice.Bind(EVT_CHOICE, self.on_algorithm_choice)
         self.frame.Show()
@@ -54,6 +62,19 @@ class Monitoring:
         try:
             set_time_multiplier(float(self.speed_input.GetValue()))
             return
+        except:
+            return
+
+    def on_lift_number_update(self, _):
+        try:
+            set_number_of_lifts(int(self.lift_number_input.GetValue()))
+            return
+        except:
+            return
+
+    def on_start_update(self, _):
+        try:
+            ...
         except:
             return
         
