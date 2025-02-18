@@ -58,7 +58,7 @@ class SimulationAnalytics:
         plt.figure(figsize=(10, 6))
         
         # Calculate key metrics
-        avg_waiting_time = np.mean([req.time_on_floor - req.time_created for req in completed_requests])
+        avg_waiting_time = np.mean([req.time_on_floor for req in completed_requests])
         avg_travel_time = np.mean([req.time_in_lift for req in completed_requests])
         avg_turnaround = np.mean([req.time_in_lift + req.time_on_floor for req in completed_requests])
         throughput = len(completed_requests) / total_time
