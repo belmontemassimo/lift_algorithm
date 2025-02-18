@@ -45,7 +45,7 @@ class Monitoring:
         self.lift_number_input = TextCtrl(self.panel, -1, "1", (250,85), (50,20))
         self.lift_number_button = Button(self.panel, -1, "lifts", (315, 85), (70,20))
         self.lift_number_button.Bind(EVT_BUTTON, self.on_lift_number_update)
-        self.num_floors_input = TextCtrl(self.panel, -1, "1", (250,115), (50,20))
+        self.num_floors_input = TextCtrl(self.panel, -1, "10", (250,115), (50,20))
         self.num_floors_button = Button(self.panel, -1, "floors", (315, 115), (70,20))
         self.num_floors_button.Bind(EVT_BUTTON, self.on_num_floors_update)
         self.start_button = Button(self.panel, -1, "start", (280, 145), (100,20))
