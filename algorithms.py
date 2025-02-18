@@ -32,7 +32,7 @@ class AlgorithmHandler:
 
 # create algorithm class for each algorithm
 class FCFS:
-    def __call__(self, lift: Lift, current_requests: list[Request]) -> float:
+    def __call__(self, lift: Lift, current_requests: list[Request]) -> float | None:
         picked_requests = lift.picked_requests
         if picked_requests:
             return picked_requests[0].target_floor
@@ -44,7 +44,7 @@ class FCFS:
 
 
 class SCAN:
-    def __call__(self, lift: Lift, current_requests: list[Request]) -> None:
+    def __call__(self, lift: Lift, current_requests: list[Request]) -> float | None:
         picked_requests = lift.picked_requests
         if not current_requests and not picked_requests:
             return None # No requests, lift remains idle
@@ -69,7 +69,7 @@ class SCAN:
 class LOOK:
     direction = Direction.UP
 
-    def __call__(self, lift: Lift, current_requests: list[Request]):
+    def __call__(self, lift: Lift, current_requests: list[Request]) -> float | None:
         picked_requests = lift.picked_requests
         if not current_requests and not picked_requests:
             return None # No requests, lift remains idle

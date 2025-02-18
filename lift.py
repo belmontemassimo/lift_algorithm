@@ -71,6 +71,7 @@ class Lift:
             self.picked_requests.remove(request)
             self.weight -= request.weight_captor
             return True
+        return False
 
     # function to update the lift's position and speed
     # should be run frequently to ensure accuracy 
