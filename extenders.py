@@ -63,3 +63,13 @@ def InterpolateTo(current: float, change_rate: float, deltatime: float, expected
 # Generate a person's weight following a normal distribution, adding a possible luggage.
 def double_normal_distribution(mean: float = 70, std_dev: float = 12.5, second_mean: float = 3.5, second_std_dev: float = 0.5) -> float:
     return max(30, gauss(mean, std_dev)) + max(0, gauss(second_mean, second_std_dev))  # Minimum weight of 30kg to avoid unrealistic values
+
+
+def set_number_of_lifts(number_of_lifts: int):
+    global num_lifts
+    num_lifts = number_of_lifts
+
+
+def get_number_of_lifts() -> int:
+    global num_lifts
+    return num_lifts
