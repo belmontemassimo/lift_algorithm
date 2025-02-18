@@ -9,7 +9,7 @@ time_multiplier = 0
 skip_time_loop = False
 num_lifts = 1
 num_floors = 1
-start_simulation = False
+start = False
 
 # function to set the time multiplier for the Deltatime class
 def set_time_multiplier(time_multiplier_incoming):
@@ -87,6 +87,6 @@ def get_number_of_floors() -> int:
     return num_floors
 
 def start_simulation():
-    global start_simulation
-    start_simulation = True
+    global start
+    start = True
 
