@@ -3,7 +3,7 @@ from wx import EVT_BUTTON, EVT_CHOICE
 from liftmanager import LiftManager
 from lift import LiftState
 from algorithms import AlgorithmHandler
-from extenders import set_time_multiplier, set_number_of_lifts
+from extenders import set_time_multiplier, set_number_of_lifts, start_simulation, set_number_of_floors
 
 class Monitoring:
 
@@ -19,6 +19,8 @@ class Monitoring:
     speed_button: Button
     lift_number_input: TextCtrl
     lift_number_button: Button
+    num_floors_input: TextCtrl
+    num_floors_button: Button
     start_button: Button
     timer: StaticText
     algorithm_choice: Choice
@@ -43,7 +45,10 @@ class Monitoring:
         self.lift_number_input = TextCtrl(self.panel, -1, "1", (250,85), (50,20))
         self.lift_number_button = Button(self.panel, -1, "lifts", (315, 85), (70,20))
         self.lift_number_button.Bind(EVT_BUTTON, self.on_lift_number_update)
-        self.start_button = Button(self.panel, -1, "start", (280, 115), (100,20))
+        self.num_floors_input = TextCtrl(self.panel, -1, "1", (250,115), (50,20))
+        self.num_floors_button = Button(self.panel, -1, "floors", (315, 115), (70,20))
+        self.num_floors_button.Bind(EVT_BUTTON, self.on_num_floors_update)
+        self.start_button = Button(self.panel, -1, "start", (280, 145), (100,20))
         self.start_button.Bind(EVT_BUTTON, self.on_start_update)
         self.algorithm_choice = Choice(self.panel, -1, (280,25), (100,20), self.algorithm.get_list())
         self.algorithm_choice.Bind(EVT_CHOICE, self.on_algorithm_choice)
@@ -74,7 +79,13 @@ class Monitoring:
 
     def on_start_update(self, _):
         try:
-            ...
+            start_simulation()
+        except:
+            return
+
+    def on_num_floors_update(self, _):
+        try:
+            set_number_of_floors(int(self.num_floors_input.GetValue()))
         except:
             return
         
