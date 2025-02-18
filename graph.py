@@ -24,15 +24,32 @@ class SimulationAnalytics:
         self._plot_system_statistics(completed_requests, total_time)
         plt.show()
 
+# plot1
     def _plot_waiting_times(self, completed_requests: List[Request]):
         """Plot waiting times for each request"""
         plt.figure(figsize=(10, 6))
-        waiting_times = [req.time_on_floor - req.time_created for req in completed_requests]
-        plt.hist(waiting_times, bins=20)
-        plt.title('Distribution of Waiting Times')
-        plt.xlabel('Waiting Time (seconds)')
-        plt.ylabel('Number of Requests')
+        waiting_times = [req.time_on_floor for req in completed_requests]
+        # Sort requests by creation time
+        sorted_indices = sorted(range(len(completed_requests)), 
+                              key=lambda k: completed_requests[k].time_created)
+        sorted_times = [waiting_times[i] for i in sorted_indices]
+        
+        plt.plot(range(len(sorted_times)), sorted_times, marker='o')
+        plt.title('Waiting Times Over Request Sequence')
+        plt.xlabel('Request Number')
+        plt.ylabel('Waiting Time (seconds)')
+        plt.grid(True, which='both', linestyle='-', alpha=0.5)
+        plt.minorticks_on()
+        plt.ylim(bottom=0)
+        plt.xlim(left=0)
+        ax = plt.gca()
+        ax.spines['left'].set_position('zero')
+        ax.spines['bottom'].set_position('zero')
+        # Hide the top and right spines
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
 
+# plot2
     def _plot_lift_positions(self):
         """Plot lift positions over time"""
         plt.figure(figsize=(12, 6))
@@ -43,16 +60,44 @@ class SimulationAnalytics:
         plt.xlabel('Time (seconds)')
         plt.ylabel('Floor')
         plt.legend()
+        plt.grid(True, which='both', linestyle='-', alpha=0.5)
+        plt.minorticks_on()
+        plt.xlim(left=0)
+        plt.ylim(bottom=0)
+        ax = plt.gca()
+        ax.spines['left'].set_position(('data', 0))
+        ax.spines['bottom'].set_position(('data', 0))
+        # Hide the top and right spines
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
 
+# plot3
     def _plot_turnaround_times(self, completed_requests: List[Request]):
         """Plot total turnaround times (waiting + travel)"""
         plt.figure(figsize=(10, 6))
         turnaround_times = [(req.time_in_lift + req.time_on_floor) for req in completed_requests]
-        plt.hist(turnaround_times, bins=20)
-        plt.title('Distribution of Total Turnaround Times')
-        plt.xlabel('Turnaround Time (seconds)')
-        plt.ylabel('Number of Requests')
+        # Sort requests by creation time
+        sorted_indices = sorted(range(len(completed_requests)), 
+                              key=lambda k: completed_requests[k].time_created)
+        sorted_times = [turnaround_times[i] for i in sorted_indices]
+        
+        plt.plot(range(len(sorted_times)), sorted_times, marker='o')
+        plt.title('Total Turnaround Times Over Request Sequence')
+        plt.xlabel('Request Number')
+        plt.ylabel('Turnaround Time (seconds)')
+        plt.grid(True, which='both', linestyle='-', alpha=0.5)
+        plt.minorticks_on()
+        plt.ylim(bottom=0)
+        plt.xlim(left=0)
+        ax = plt.gca()
+        ax.spines['left'].set_position('zero')
+        ax.spines['bottom'].set_position('zero')
+        # Hide the top and right spines
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
 
+
+# plot4
     def _plot_system_statistics(self, completed_requests: List[Request], total_time: float):
         """Plot overall system statistics"""
         plt.figure(figsize=(10, 6))
@@ -68,5 +113,8 @@ class SimulationAnalytics:
 
         plt.bar(metrics, values)
         plt.title('System Performance Metrics')
+        plt.grid(True, which='both', linestyle='-', alpha=0.5)
+        plt.minorticks_on()
         plt.xticks(rotation=45)
+        plt.ylim(bottom=0)
         plt.tight_layout() 
