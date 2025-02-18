@@ -18,7 +18,7 @@ class Lift:
     deltatime: DeltaTime
     acceleration: float = 0
     max_speed: float = 0
-    weight: float = 0
+    weight: int = 0
     waiting_time: float = 0
     waited_time: float = 0
     capacity: int = 0
