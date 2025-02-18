@@ -11,6 +11,7 @@ class Request:
     time_created: float    
     time_on_floor: float
     time_in_lift: float
+    weight_captor: int
     direction: Direction
 
     def __init__(self, request_floor:int , target_floor: int, time_created: float, weight_captor: int = 0):
