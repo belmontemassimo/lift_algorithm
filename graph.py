@@ -111,10 +111,18 @@ class SimulationAnalytics:
         metrics = ['Avg Waiting Time', 'Avg Travel Time', 'Avg Turnaround', 'Throughput']
         values = [avg_waiting_time, avg_travel_time, avg_turnaround, throughput]
 
-        plt.bar(metrics, values)
+        bars = plt.bar(metrics, values)
         plt.title('System Performance Metrics')
         plt.grid(True, which='both', linestyle='-', alpha=0.5)
         plt.minorticks_on()
         plt.xticks(rotation=45)
         plt.ylim(bottom=0)
-        plt.tight_layout() 
+        
+        # Add value labels on top of each bar
+        for bar in bars:
+            height = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width()/2., height,
+                    f'{height:.4f}',
+                    ha='center', va='bottom')
+            
+        plt.tight_layout()
