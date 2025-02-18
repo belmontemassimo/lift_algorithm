@@ -90,3 +90,6 @@ def start_simulation():
     global start
     start = True
 
+def get_start_simulation():
+    global start
+    return start
