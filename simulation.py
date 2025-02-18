@@ -53,9 +53,6 @@ def run_simulation(num_floors: int = 30, num_lifts: int = 3, isMonitoring: bool 
     lift_manager.configure(get_number_of_floors(), get_number_of_lifts(), max_speed, acceleration, capacity, waiting_time)
     
     gui_position_queue = None
-    if isGUI:
-        gui_position_queue = run_gui(get_number_of_floors(), get_number_of_lifts())
-
     # Initialize GUI only after start signal
     if isGUI:
         gui_position_queue = run_gui(get_number_of_floors(), get_number_of_lifts())
