@@ -113,7 +113,7 @@ class MYLIFT:
             return min(current_requests, key=lambda request: abs(request.request_floor - lift.position)).request_floor
         
         sorted_picked = sorted(picked_requests, key=lambda request: request.target_floor)
-        sorted_current = sorted(current_requests, key=lambda request: request.request)
+        sorted_current = sorted(current_requests, key=lambda request: request.request_floor)
 
         if not current_requests: #dealing with picked requests if there are no current requests in a LOOK manner
             up_requests = [floor for floor in sorted_picked if floor > lift.position]
