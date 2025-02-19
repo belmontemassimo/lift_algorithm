@@ -132,8 +132,8 @@ class MYLIFT:
             return None
         
         if not picked_requests:#dealing with current requests if there are no current requests in a LOOK manner
-            up_requests = [floor for floor in sorted_current if floor > lift.position]
-            down_requests = [floor for floor in sorted_current if floor < lift.position]
+            up_requests = [request for request in sorted_current if request.request_floor > lift.position]
+            down_requests = [request for request in sorted_current if request.request_floor < lift.position]
 
             if up_requests and (self.direction == Direction.UP or not down_requests):
                 if self.direction != Direction.UP:
@@ -166,7 +166,7 @@ class MYLIFT:
         
         if picked_requests and current_requests:
 
-            all_requests = set(sorted_picked + sorted_current)
+            all_requests = sorted_picked + sorted_current
 
         
             # Calculate batch size based on number of requests
