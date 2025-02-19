@@ -103,7 +103,7 @@ class MYLIFT:
     min_batch_size = 1
     scale_factor = 1
     direction = Direction.UP
-    def __call__(self, lift: Lift, current_requests: list[Request], min_batch_size: int = 1, max_batch_size: int = 5, scale_factor: int = 1):
+    def __call__(self, lift: Lift, current_requests: list[Request], min_batch_size: int = 1, max_batch_size: int = 5, scale_factor: int = 1) -> float | None:
         picked_requests = lift.picked_requests
 
         if not current_requests and not picked_requests:
@@ -116,8 +116,8 @@ class MYLIFT:
         sorted_current = sorted(current_requests, key=lambda request: request.request_floor)
 
         if not current_requests: #dealing with picked requests if there are no current requests in a LOOK manner
-            up_requests = [floor for floor in sorted_picked if floor > lift.position]
-            down_requests = [floor for floor in sorted_picked if floor < lift.position]
+            up_requests = [request for request in sorted_picked if request.target_floor > lift.position]
+            down_requests = [request for request in sorted_picked if request.target_floor < lift.position]
 
             if up_requests and (self.direction == Direction.UP or not down_requests):
                 if self.direction != Direction.UP:
@@ -149,8 +149,8 @@ class MYLIFT:
         
         #if the weight of the lift is above 80% of the capacity, the lift will ignore current requests and only deal with picked requests
         if lift.weight > (0.8 * lift.capacity):
-            up_requests = [floor for floor in sorted_picked if floor > lift.position]
-            down_requests = [floor for floor in sorted_picked if floor < lift.position]
+            up_requests = [request for request in sorted_picked if request.target_floor > lift.position]
+            down_requests = [request for request in sorted_picked if request.target_floor < lift.position]
 
             if up_requests and (self.direction == Direction.UP or not down_requests):
                 if self.direction != Direction.UP:
@@ -184,8 +184,8 @@ class MYLIFT:
                 current_batch = batches[i]
 
             # Separate requests into picked and current ones
-            pick_floors = [floor for floor in current_batch if floor in [req.target_floor for req in picked_requests]]
-            wait_floors = [floor for floor in current_batch if floor in [req.request_floor for req in current_requests]]
+            pick_floors = [request for request in current_batch if request in [req.target_floor for req in picked_requests]]
+            wait_floors = [request for request in current_batch if request in [req.request_floor for req in current_requests]]
 
             # Debug print to see the separation of requests
             print(f"Picked Floors: {pick_floors}, Waiting Floors: {wait_floors}")
@@ -193,22 +193,22 @@ class MYLIFT:
             # If there are picked requests, prioritize them
             if pick_floors:
                 if self.direction == Direction.UP:
-                    return pick_floors[0]  # Go to the next picked floor upwards
+                    return pick_floors[0].target_floor  # Go to the next picked floor upwards
                 elif self.direction == Direction.DOWN:
-                    return pick_floors[-1] # Go to the next picked floor downwards
+                    return pick_floors[-1].target_floor # Go to the next picked floor downwards
 
             # Serve waiting requests if they are in the direction of movement
             if wait_floors:
                 if self.direction == Direction.UP:
                     # Only serve current requests that are upwards
-                    up_requests = [floor for floor in wait_floors if floor > lift.position]
+                    up_requests = [request for request in wait_floors if request.request_floor > lift.position]
                     if up_requests:
-                        return up_requests[0]  # Go to the next floor upwards
+                        return up_requests[0].request_floor  # Go to the next floor upwards
                 elif self.direction == Direction.DOWN:
                     # Only serve current requests that are downwards
-                    down_requests = [floor for floor in wait_floors if floor < lift.position]
+                    down_requests = [request for request in wait_floors if request.request_floor < lift.position]
                     if down_requests:
-                        return down_requests[-1]  # Go to the next floor downwards
+                        return down_requests[-1].request_floor  # Go to the next floor downwards
 
             return None
 
