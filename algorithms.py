@@ -187,8 +187,8 @@ class MYLIFT:
                 current_batch = batches[i]
 
                 # Separate requests into picked and current ones
-                pick_floors = [request for request in current_batch if request in [req.target_floor for req in picked_requests]]
-                wait_floors = [request for request in current_batch if request in [req.request_floor for req in current_requests]]
+                pick_floors = [request for request in current_batch if request.target_floor in [req.target_floor for req in picked_requests]]
+                wait_floors = [request for request in current_batch if request.request_floor in [req.request_floor for req in current_requests]]
 
                 # Debug print to see the separation of requests
                 print(f"Picked Floors: {pick_floors}, Waiting Floors: {wait_floors}")
