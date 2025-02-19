@@ -122,12 +122,12 @@ class MYLIFT:
             if up_requests and (self.direction == Direction.UP or not down_requests):
                 if self.direction != Direction.UP:
                     self.direction = Direction.UP
-                return up_requests[0]
+                return up_requests[0].target_floor
         
             if down_requests and (self.direction == Direction.DOWN or not up_requests):
                 if self.direction != Direction.DOWN:
                     self.direction = Direction.DOWN
-                return down_requests[-1]
+                return down_requests[-1].target_floor
         
             return None
         
@@ -138,12 +138,12 @@ class MYLIFT:
             if up_requests and (self.direction == Direction.UP or not down_requests):
                 if self.direction != Direction.UP:
                     self.direction = Direction.UP
-                return up_requests[0]
+                return up_requests[0].request_floor
             
             if down_requests and (self.direction == Direction.DOWN or not up_requests):        
                 if self.direction != Direction.DOWN:
                     self.direction = Direction.DOWN
-                return down_requests[-1]
+                return down_requests[-1].request_floor
             
             return None
         
@@ -155,12 +155,12 @@ class MYLIFT:
             if up_requests and (self.direction == Direction.UP or not down_requests):
                 if self.direction != Direction.UP:
                     self.direction = Direction.UP
-                return up_requests[0]
+                return up_requests[0].target_floor
         
             if down_requests and (self.direction == Direction.DOWN or not up_requests):
                 if self.direction != Direction.DOWN:
                     self.direction = Direction.DOWN
-                return down_requests[-1]
+                return down_requests[-1].target_floor
         
             return None
         
@@ -195,7 +195,7 @@ class MYLIFT:
                 if self.direction == Direction.UP:
                     return pick_floors[0]  # Go to the next picked floor upwards
                 elif self.direction == Direction.DOWN:
-                    return pick_floors[-1]  # Go to the next picked floor downwards
+                    return pick_floors[-1] # Go to the next picked floor downwards
 
             # Serve waiting requests if they are in the direction of movement
             if wait_floors:
