@@ -198,17 +198,15 @@ class MYLIFT:
                 # If there are picked requests, prioritize them
                 if pick_floors:
                     if self.direction == Direction.UP:
-                        return pick_floors[0].target_floor  # Go to the next picked floor upwards
-                        # Only serve current requests that are upwards
                         up_requests = [request for request in wait_floors if request.request_floor > lift.position]
-                        if up_requests:
+                        if up_requests and up_requests[0].request_floor < pick_floors[0].target_floor:
                             return up_requests[0].request_floor  # Go to the next floor upwards
+                        return pick_floors[0].target_floor 
                     elif self.direction == Direction.DOWN:
-                        return pick_floors[-1].target_floor # Go to the next picked floor downwards
-                        # Only serve current requests that are downwards
                         down_requests = [request for request in wait_floors if request.request_floor < lift.position]
-                        if down_requests:
+                        if down_requests and down_requests[-1].request_floor > pick_floors[-1].target_floor:
                             return down_requests[-1].request_floor  # Go to the next floor downwards
+                        return pick_floors[-1].target_floor
 
                 # Serve waiting requests if they are in the direction of movement
                 #if wait_floors:
