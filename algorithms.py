@@ -199,21 +199,29 @@ class MYLIFT:
                 if pick_floors:
                     if self.direction == Direction.UP:
                         return pick_floors[0].target_floor  # Go to the next picked floor upwards
-                    elif self.direction == Direction.DOWN:
-                        return pick_floors[-1].target_floor # Go to the next picked floor downwards
-
-                # Serve waiting requests if they are in the direction of movement
-                if wait_floors:
-                    if self.direction == Direction.UP:
                         # Only serve current requests that are upwards
                         up_requests = [request for request in wait_floors if request.request_floor > lift.position]
                         if up_requests:
                             return up_requests[0].request_floor  # Go to the next floor upwards
                     elif self.direction == Direction.DOWN:
+                        return pick_floors[-1].target_floor # Go to the next picked floor downwards
                         # Only serve current requests that are downwards
                         down_requests = [request for request in wait_floors if request.request_floor < lift.position]
                         if down_requests:
                             return down_requests[-1].request_floor  # Go to the next floor downwards
+
+                # Serve waiting requests if they are in the direction of movement
+                #if wait_floors:
+                    #if self.direction == Direction.UP:
+                        # Only serve current requests that are upwards
+                        #up_requests = [request for request in wait_floors if request.request_floor > lift.position]
+                        #if up_requests:
+                            #return up_requests[0].request_floor  # Go to the next floor upwards
+                    #elif self.direction == Direction.DOWN:
+                        # Only serve current requests that are downwards
+                        #down_requests = [request for request in wait_floors if request.request_floor < lift.position]
+                        #if down_requests:
+                            #return down_requests[-1].request_floor  # Go to the next floor downwards
 
             return None
 
