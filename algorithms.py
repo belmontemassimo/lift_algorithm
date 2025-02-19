@@ -166,14 +166,16 @@ class MYLIFT:
         
         if picked_requests and current_requests:
 
-            all_requests = sorted_picked + sorted_current
+            all_requests = sorted(sorted_picked + sorted_current, key=lambda req: abs(req.target_floor - lift.position))
 
-        
             # Calculate batch size based on number of requests
             batch_size = max(min_batch_size, min(max_batch_size, (len(all_requests)) // self.scale_factor))
 
             # Split requests into batches of the calculated size
             batches = [all_requests[i:i + batch_size] for i in range(0, len(all_requests), batch_size)]
+
+            print("Batch Size:", batch_size)
+            print("Batches:", batches)
             
             # If no batches, remain idle
             if not batches:
@@ -186,9 +188,12 @@ class MYLIFT:
             for i in range(len(batches)):
                 current_batch = batches[i]
 
+                picked_targets = {req.target_floor for req in sorted_picked}
+                current_request = {req.request_floor for req in sorted_current}
+
                 # Separate requests into picked and current ones
-                pick_floors = [request for request in current_batch if request.target_floor in [req.target_floor for req in sorted_picked]]
-                wait_floors = [request for request in current_batch if request.request_floor in [req.request_floor for req in sorted_current]]
+                pick_floors = [request for request in current_batch if request.target_floor in [req for req in picked_targets]]
+                wait_floors = [request for request in current_batch if request.request_floor in [req for req in current_request]]
 
                 # If there are picked requests, prioritize them
                 if pick_floors:
