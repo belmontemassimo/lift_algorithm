@@ -55,7 +55,8 @@ def run_simulation(num_floors: int = 30, num_lifts: int = 3, isMonitoring: bool 
     gui_position_queue = None
     # Initialize GUI only after start signal
     if isGUI:
-        gui_position_queue = run_gui(get_number_of_floors(), get_number_of_lifts())
+        gui_position_queue, gui_target_queue = run_gui(get_number_of_floors(), get_number_of_lifts())
+        
 
     # set a timer so that we can see the efficiency of the algorithm based on a set of requests
     timer = 0
@@ -69,11 +70,11 @@ def run_simulation(num_floors: int = 30, num_lifts: int = 3, isMonitoring: bool 
         # record the state of the lifts
         analytics.record_state(timer, lift_manager.lifts)
 
-        # allow the user to diable the monitoring and the gui
+        # allow the user to disable the monitoring and the gui
         if isMonitoring:
             monitoring.update(timer)
         if isGUI:
-            gui_update(lift_manager, gui_position_queue)
+            gui_update(lift_manager, gui_position_queue,gui_target_queue)
 
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         # if there is a request in new_requests_list then add it to the current_requests list 
