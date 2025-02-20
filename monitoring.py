@@ -1,9 +1,7 @@
-from wx import App, Frame, StaticText, Panel, TextCtrl, Button, Choice
-from wx import EVT_BUTTON
-from liftmanager import LiftManager
+from wx import App, Frame, StaticText, Panel, TextCtrl, Button, Choice, Timer
+from wx import EVT_BUTTON, EVT_TIMER
 from lift import LiftState
-from algorithms import AlgorithmHandler
-from extenders import set_time_multiplier, set_number_of_lifts, start_simulation, set_number_of_floors
+from multiprocessing import Process, Queue
 
 class Monitoring:
 
@@ -22,14 +20,17 @@ class Monitoring:
     num_floors_input: TextCtrl
     num_floors_text: StaticText
     start_button: Button
-    timer: StaticText
+    timer_text: StaticText
     algorithm_choice: Choice
-    lift_manager: LiftManager
-    algorithm: AlgorithmHandler
+    queue: Queue
+    algorithms: dict[str, object]
+    capacity: int
+    timer: Timer
 
-    def __init__(self, lift_manager: LiftManager, algorithm: AlgorithmHandler):
-        self.lift_manager = lift_manager
-        self.algorithm = algorithm
+    def __init__(self, queue: Queue, algorithms: dict[str, object], capacity: int):
+        self.queue = queue
+        self.capacity = capacity
+        self.algorithms = algorithms
         self.app = App()
         self.frame = Frame(parent=None, title='Monitoring')
         self.panel = Panel(self.frame, -1)
@@ -37,7 +38,7 @@ class Monitoring:
         self.speed_label = StaticText(self.panel, -1, "", (25, 45))
         self.state_label = StaticText(self.panel, -1, "", (25, 65))
         self.weight_label = StaticText(self.panel, -1, "", (25, 85))
-        self.timer = StaticText(self.panel, -1, "", (25, 125))
+        self.timer_text = StaticText(self.panel, -1, "", (25, 125))
         self.target_floor = StaticText(self.panel, -1, "", (25, 105))
         self.speed_input = TextCtrl(self.panel, -1, "1", (250,55), (50,20))
         self.speed_text = StaticText(self.panel, -1, "speed", (315, 55), (70,20))
@@ -47,27 +48,40 @@ class Monitoring:
         self.num_floors_text = StaticText(self.panel, -1, "floors", (315, 115), (70,20))
         self.start_button = Button(self.panel, -1, "start", (280, 145), (100,20))
         self.start_button.Bind(EVT_BUTTON, self.on_start_update)
-        self.algorithm_choice = Choice(self.panel, -1, (280,25), (100,20), self.algorithm.get_list())
+        self.algorithm_choice = Choice(self.panel, -1, (280,25), (100,20), self.algorithms)
+        self.timer = Timer()
+        self.frame.Bind(EVT_TIMER, self.update, self.timer)
+        self.timer.Start(40)
         self.frame.Show()
+        self.app.MainLoop()
 
-    def update(self, timer:float):
-        if self.lift_manager:
-            self.position_label.SetLabelText(f'position:      {" ".join(["%.2f" % item for item in  self.lift_manager.get_positions()])}')
-            self.speed_label.SetLabelText(f'speed:         {" ".join(["%.2f" % item for item in self.lift_manager.get_speed()])}')
-            self.state_label.SetLabelText(f'state:         {" ".join(["W" if state == LiftState.WAITING else "I" if state == LiftState.IDLE else "M" for state in self.lift_manager.get_states()])}')
-            self.weight_label.SetLabelText(f'weight:        {" ".join(["%.1f" % item for item in  self.lift_manager.get_weight_kg()])} / {"%.1f" % self.lift_manager.capacity}')
-            self.target_floor.SetLabelText(f'target floor:  {" ".join(["%.1f" % item for item in self.lift_manager.get_target_floors()])}')
-            self.timer.SetLabelText(f'time:  {"%.2f" % timer}')
-        self.app.Yield()
+    def update(self):
+        if self.queue.empty():
+            return
+        data: dict = self.queue.get()
+        self.position_label.SetLabelText(f'position:      {" ".join(["%.2f" % item for item in  data["positions"]])}')
+        self.speed_label.SetLabelText(f'speed:         {" ".join(["%.2f" % item for item in data["speed"]])}')
+        self.state_label.SetLabelText(f'state:         {" ".join(["W" if state == LiftState.WAITING else "I" if state == LiftState.IDLE else "M" for state in data["states"]])}')
+        self.weight_label.SetLabelText(f'weight:        {" ".join(["%.1f" % item for item in  data["weight"]])} / {"%.1f" % self.capacity}')
+        self.target_floor.SetLabelText(f'target floor:  {" ".join(["%.1f" % item for item in data["target_floors"]])}')
+        self.timer_text.SetLabelText(f'time:  {"%.2f" % data["timer"]}')
 
     def on_start_update(self, _):
-        try:
-            set_number_of_lifts(int(self.lift_number_input.GetValue()))
-            set_time_multiplier(float(self.speed_input.GetValue()))
-            set_number_of_floors(int(self.num_floors_input.GetValue()))
-            self.algorithm.set_algorithm(self.algorithm_choice.GetString(self.algorithm_choice.GetSelection()))
-            start_simulation()
-            self.algorithm_choice.Disable()
-            self.start_button.Disable()
-        except:
-            return
+        self.algorithm_choice.Disable()
+        self.start_button.Disable()
+        self.queue.put({
+            "num_lifts": self.lift_number_input.GetValue(),
+            "time": self.speed_input.GetValue(),
+            "num_floors": self.num_floors_input.GetValue(),
+            "algorithm": self.algorithm_choice.GetString(self.algorithm_choice.GetSelection())
+        })
+
+def run_monitoring(algorithms: dict[str, object], capacity: int) -> Queue:
+    queue = Queue()
+    Process(target=Monitoring, args=[queue, algorithms, capacity]).run()
+    return queue
+
+def update_monitoring(queue: Queue, data: list):
+    if queue.empty():
+        queue.put(data)
+    return 

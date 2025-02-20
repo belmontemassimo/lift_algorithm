@@ -2,21 +2,24 @@
 # this is a main file that must be used to run any code
 #
 
+from multiprocessing import Queue
 from gui import run_gui, gui_update
 from lift import LiftState
 from extenders import DeltaTime, set_time_multiplier, get_number_of_floors, get_number_of_lifts, get_start_simulation
 from request import Request
 from algorithms import AlgorithmHandler
-from monitoring import Monitoring
+from monitoring import run_monitoring, update_monitoring
 from liftmanager import LiftManager
 from graph import SimulationAnalytics
 
 
-def run_simulation(num_floors: int = 30, num_lifts: int = 3, isMonitoring: bool = True, isGUI: bool = True):
+def run_simulation(isMonitoring: bool = True, isGUI: bool = True):
     max_speed: float = 2
     acceleration: float = 0.4
     capacity: float = 1000
     waiting_time: float = 4
+    monitoring_queue: Queue
+    gui_position_queue: Queue
 
     # requests are in the form of (target_floor, direction, time_created)
     list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 21), Request(4, 1, 24), Request(5, 1, 25), 
@@ -34,7 +37,7 @@ def run_simulation(num_floors: int = 30, num_lifts: int = 3, isMonitoring: bool 
     
     # Then create monitoring with the lift_manager
     if isMonitoring:
-        monitoring = Monitoring(lift_manager, algorithm)
+        monitoring_queue = run_monitoring(algorithm.get_list(), capacity)
     else:
         algorithm.set_algorithm("FCFS")
         set_time_multiplier(1)
@@ -44,11 +47,10 @@ def run_simulation(num_floors: int = 30, num_lifts: int = 3, isMonitoring: bool 
     timer = 0
     
     # Wait for start signal from monitoring
-    while not get_start_simulation():
-        if isMonitoring:
-            monitoring.update(timer)
-        continue
-    
+    while isMonitoring:
+        if not monitoring_queue.empty():
+            data = monitoring_queue.get()
+
     # Configure lift_manager with user-selected values
     lift_manager.configure(get_number_of_floors(), get_number_of_lifts(), max_speed, acceleration, capacity, waiting_time)
     
