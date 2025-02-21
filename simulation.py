@@ -62,7 +62,7 @@ def run_simulation(isGUI: bool = True):
         lift_manager.run_updates()
 
         # record the state of the lifts
-        analytics.record_state(timer, lift_manager.lifts)
+        #analytics.record_state(timer, lift_manager.lifts)
 
         # allow the user to disable the monitoring and the gui
         update_monitoring(monitoring_queue, lift_manager, timer)
