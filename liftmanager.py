@@ -16,7 +16,7 @@ class LiftManager:
         self.num_floors = 0
         self.num_lifts = 0
 
-    def configure(self, num_floors, num_lifts, max_speed, acceleration, capacity, waiting_time):
+    def configure(self, num_floors: int, num_lifts: int, max_speed: float, acceleration: float, capacity: int, waiting_time: float):
         self.num_lifts = num_lifts
         self.num_floors = num_floors
         self.capacity = capacity
