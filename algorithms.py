@@ -173,44 +173,61 @@ class MYLIFT:
 
             all_requests = []
 
+            # Store (floor, None) for picked requests (drop-offs)
             for req in picked_requests:
-                all_requests.append((req.target_floor, None))  # Only target_floor
+                all_requests.append((req.target_floor, None))
 
+            # Store (request_floor, target_floor) for current requests (pick-ups)
             for req in current_requests:
                 all_requests.append((req.request_floor, req.target_floor))
 
+            # Calculate batch size dynamically
+            batch_size = max(min_batch_size, min(max_batch_size, len(all_requests) // self.scale_factor))
 
-
-            # Calculate batch size based on number of requests
-            batch_size = max(min_batch_size, min(max_batch_size, (len(all_requests)) // self.scale_factor))
-
-            # Split requests into batches of the calculated size
+            # Split into batches
             batches = [all_requests[i:i + batch_size] for i in range(0, len(all_requests), batch_size)]
-            
-            # If no batches, remain idle
+
             if not batches:
-                return None
+                return None  # Stay idle if no requests
 
-            # Process the batches
-            for i in range(len(batches)):
-                current_batch = batches[i]
+            # Process each batch and find the best move
+            for current_batch in batches:
 
-                pick_floors = [req[0] for req in current_batch if req[1] is None and req[0] > lift.position]  # target_floors of picked_requests
-                wait_floors = [req for req in current_batch if req[1] is not None and req[1] > req[0] > lift.position]  # request_floors
+                # Extract target floors (drop-offs)
+                pick_floors = [req[0] for req in current_batch if req[1] is None and req[0] != lift.position]
 
-                # If there are picked requests, prioritize them
-                if pick_floors:
+                # Extract request floors (pick-ups)
+                wait_floors = [(req[0], req[1]) for req in current_batch if req[1] is not None and req[0] != lift.position]
+
+                # Sort drop-off requests
+                pick_floors.sort()
+
+                # Sort pick-up requests based on request floor
+                wait_floors.sort(key=lambda req: req[0])
+
+                if pick_floors or wait_floors:
                     if self.direction == Direction.UP:
+                        # Get closest request going up
                         up_requests = [req[0] for req in wait_floors if req[0] > lift.position]
-                        if up_requests and up_requests[0] < pick_floors[0]:  
-                            return up_requests[0]  # Go to the next floor upwards
-                        return pick_floors[0]  # Move towards the first target floor
+                        if up_requests:
+                            return min(up_requests)  # Move to nearest request floor going up
                         
+                        # If no pick-ups, move to nearest drop-off going up
+                        if pick_floors:
+                            return min(pick_floors)
+
                     elif self.direction == Direction.DOWN:
+                        # Get closest request going down
                         down_requests = [req[0] for req in wait_floors if req[0] < lift.position]
-                        if down_requests and down_requests[-1] > pick_floors[-1]:  
-                            return down_requests[-1]  # Go to the next floor downwards
-                        return pick_floors[-1]  # Move towards the last target floor
+                        if down_requests:
+                            return max(down_requests)  # Move to nearest request floor going down
+                        
+                        # If no pick-ups, move to nearest drop-off going down
+                        if pick_floors:
+                            return max(pick_floors)
+
+            return None  # Remain idle if no valid moves found
+
 
                 # Serve waiting requests if they are in the direction of movement
                 #if wait_floors:
@@ -224,8 +241,6 @@ class MYLIFT:
                         #down_requests = [request for request in wait_floors if request.request_floor < lift.position]
                         #if down_requests:
                             #return down_requests[-1].request_floor  # Go to the next floor downwards
-
-            return None
 
 
 
