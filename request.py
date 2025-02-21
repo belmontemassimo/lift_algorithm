@@ -41,13 +41,11 @@ class Request:
         current_position = self.request_floor
         target_position = self.target_floor
 
-        self.direction
-
-
         if self.direction == Direction.DOWN:
             current_position = current_position.__floor__()
             
         elif self.direction == Direction.UP:
             current_position = current_position.__ceil__()
+
 
         return [i for i in range(min(current_position,target_position),max(current_position,target_position)+1)]
