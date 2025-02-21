@@ -7,9 +7,6 @@ from time import time
 # global variables for this file
 time_multiplier = 0
 skip_time_loop = False
-num_lifts = 1
-num_floors = 1
-start = False
 
 # function to set the time multiplier for the Deltatime class
 def set_time_multiplier(time_multiplier_incoming):
@@ -68,28 +65,5 @@ def double_normal_distribution(mean: float = 70, std_dev: float = 12.5, second_m
     return max(30, gauss(mean, std_dev)) + max(0, gauss(second_mean, second_std_dev))  # Minimum weight of 30kg to avoid unrealistic values
 
 
-def set_number_of_lifts(number_of_lifts: int):
-    global num_lifts
-    num_lifts = number_of_lifts
 
 
-def get_number_of_lifts() -> int:
-    global num_lifts
-    return num_lifts
-
-
-def set_number_of_floors(number_of_floors: int):
-    global num_floors
-    num_floors = number_of_floors
-
-def get_number_of_floors() -> int:
-    global num_floors
-    return num_floors
-
-def start_simulation():
-    global start
-    start = True
-
-def get_start_simulation():
-    global start
-    return start
