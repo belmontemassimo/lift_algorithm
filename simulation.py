@@ -18,7 +18,6 @@ def run_simulation(isGUI: bool = True):
     acceleration: float = 0.4
     capacity: float = 1000
     waiting_time: float = 4
-    gui_position_queue: Queue
 
     # requests are in the form of (target_floor, direction, time_created)
     list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 21), Request(4, 1, 24), Request(5, 1, 25), 
@@ -46,8 +45,9 @@ def run_simulation(isGUI: bool = True):
             data = monitoring_queue.get()
             lift_manager.configure(data["floors"], data["lifts"], max_speed, acceleration, capacity, waiting_time)
             set_time_multiplier(data["time"])
+            algorithm.set_algorithm(data["algorithm"])
             if isGUI:
-                gui_position_queue, gui_target_queue = run_gui(data["floors"], data["lifts"])
+                gui_queue = run_gui(data["floors"], data["lifts"])
             break
         
     
@@ -61,12 +61,12 @@ def run_simulation(isGUI: bool = True):
         lift_manager.run_updates()
 
         # record the state of the lifts
-        analytics.record_state(timer, lift_manager.lifts)
+        #analytics.record_state(timer, lift_manager.lifts)
 
         # allow the user to disable the monitoring and the gui
         update_monitoring(monitoring_queue, lift_manager, timer)
         if isGUI:
-            gui_update(lift_manager, gui_position_queue,gui_target_queue)
+            gui_update(lift_manager, gui_queue)
 
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         # if there is a request in new_requests_list then add it to the current_requests list 

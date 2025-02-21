@@ -76,6 +76,12 @@ class Monitoring:
             })
             self.algorithm_choice.Disable()
             self.start_button.Disable()
+            self.speed_input.Disable()
+            self.lift_number_input.Disable()
+            self.num_floors_input.Disable()
+            self.speed_text.Disable()
+            self.lift_number_text.Disable()
+            self.num_floors_text.Disable()
         except:
             return
 
@@ -96,7 +102,7 @@ def update_monitoring(queue: Queue, lift_manager: LiftManager, timer: float):
             "positions": [lift.position for lift in lifts],
             "speed": [lift.speed for lift in lifts],
             "states": [lift.state for lift in lifts],
-            "weight": [lift.weight for lift in lifts],
+            "weight": [lift.weight/100 for lift in lifts],
             "target_floors": [lift.target_floor for lift in lifts],
             "timer": timer,
         }
