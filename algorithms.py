@@ -21,7 +21,12 @@ class AlgorithmHandler:
     # returns the next floor to move to and the lift status
     def __call__(self, lift_manager: LiftManager, current_requests: list[Request]):
         #TEMP
-        return [self.algorithm(lift, current_requests) for lift in lift_manager.lifts]
+        match self.algorithm:
+            case FCFS() | SCAN() | LOOK() | MYLIFT():
+                return [self.algorithm(lift, current_requests) for lift in lift_manager.lifts]
+            case _:
+                return self.algorithm(lift_manager, current_requests)
+            
     
     # returns the list of algorithms names
     def get_list(self) -> dict[str,object]:
