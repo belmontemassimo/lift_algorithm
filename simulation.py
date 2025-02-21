@@ -54,14 +54,17 @@ def run_simulation(isGUI: bool = True):
     # set a timer so that we can see the efficiency of the algorithm based on a set of requests
     timer = 0
     deltatime = DeltaTime()
+    RECORD_INTERVAL = 0.1  # Record every 0.1 seconds
+    next_record_time = 0
     
     while True: 
         timer += deltatime()
         # update lifts
         lift_manager.run_updates()
 
-        # record the state of the lifts
-        #analytics.record_state(timer, lift_manager.lifts)
+        if timer >= next_record_time:
+            analytics.record_state(timer, lift_manager.lifts)
+            next_record_time += RECORD_INTERVAL
 
         # allow the user to disable the monitoring and the gui
         update_monitoring(monitoring_queue, lift_manager, timer)
