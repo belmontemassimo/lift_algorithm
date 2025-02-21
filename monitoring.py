@@ -2,6 +2,7 @@ from wx import App, Frame, StaticText, Panel, TextCtrl, Button, Choice, Timer
 from wx import EVT_BUTTON, EVT_TIMER
 from lift import LiftState
 from multiprocessing import Process, Queue
+from liftmanager import LiftManager
 
 class Monitoring:
 
@@ -49,13 +50,12 @@ class Monitoring:
         self.start_button = Button(self.panel, -1, "start", (280, 145), (100,20))
         self.start_button.Bind(EVT_BUTTON, self.on_start_update)
         self.algorithm_choice = Choice(self.panel, -1, (280,25), (100,20), self.algorithms)
-        self.timer = Timer()
+        self.timer = Timer(self.frame)
         self.frame.Bind(EVT_TIMER, self.update, self.timer)
-        self.timer.Start(40)
         self.frame.Show()
         self.app.MainLoop()
 
-    def update(self):
+    def update(self, _):
         if self.queue.empty():
             return
         data: dict = self.queue.get()
@@ -67,21 +67,38 @@ class Monitoring:
         self.timer_text.SetLabelText(f'time:  {"%.2f" % data["timer"]}')
 
     def on_start_update(self, _):
-        self.algorithm_choice.Disable()
-        self.start_button.Disable()
-        self.queue.put({
-            "num_lifts": self.lift_number_input.GetValue(),
-            "time": self.speed_input.GetValue(),
-            "num_floors": self.num_floors_input.GetValue(),
-            "algorithm": self.algorithm_choice.GetString(self.algorithm_choice.GetSelection())
-        })
+        try:
+            self.queue.put({
+                "lifts": int(self.lift_number_input.GetValue()),
+                "time": float(self.speed_input.GetValue()),
+                "floors": int(self.num_floors_input.GetValue()),
+                "algorithm": self.algorithm_choice.GetString(self.algorithm_choice.GetSelection())
+            })
+            self.algorithm_choice.Disable()
+            self.start_button.Disable()
+        except:
+            return
+
+        while True:
+            if self.queue.empty():
+                break
+        self.timer.Start(40)
 
 def run_monitoring(algorithms: dict[str, object], capacity: int) -> Queue:
     queue = Queue()
-    Process(target=Monitoring, args=[queue, algorithms, capacity]).run()
+    Process(target=Monitoring, args=[queue, algorithms, capacity]).start()
     return queue
 
-def update_monitoring(queue: Queue, data: list):
+def update_monitoring(queue: Queue, lift_manager: LiftManager, timer: float):
     if queue.empty():
+        lifts = lift_manager.lifts
+        data = {
+            "positions": [lift.position for lift in lifts],
+            "speed": [lift.speed for lift in lifts],
+            "states": [lift.state for lift in lifts],
+            "weight": [lift.weight for lift in lifts],
+            "target_floors": [lift.target_floor for lift in lifts],
+            "timer": timer,
+        }
         queue.put(data)
     return 

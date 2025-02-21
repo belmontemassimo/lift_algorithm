@@ -5,7 +5,7 @@
 from multiprocessing import Queue
 from gui import run_gui, gui_update
 from lift import LiftState
-from extenders import DeltaTime, set_time_multiplier, get_number_of_floors, get_number_of_lifts, get_start_simulation
+from extenders import DeltaTime, set_time_multiplier
 from request import Request
 from algorithms import AlgorithmHandler
 from monitoring import run_monitoring, update_monitoring
@@ -13,12 +13,11 @@ from liftmanager import LiftManager
 from graph import SimulationAnalytics
 
 
-def run_simulation(isMonitoring: bool = True, isGUI: bool = True):
+def run_simulation(isGUI: bool = True):
     max_speed: float = 2
     acceleration: float = 0.4
     capacity: float = 1000
     waiting_time: float = 4
-    monitoring_queue: Queue
     gui_position_queue: Queue
 
     # requests are in the form of (target_floor, direction, time_created)
@@ -36,29 +35,21 @@ def run_simulation(isMonitoring: bool = True, isGUI: bool = True):
     analytics = SimulationAnalytics()
     
     # Then create monitoring with the lift_manager
-    if isMonitoring:
-        monitoring_queue = run_monitoring(algorithm.get_list(), capacity)
-    else:
-        algorithm.set_algorithm("FCFS")
-        set_time_multiplier(1)
+    monitoring_queue = run_monitoring(algorithm.get_list(), capacity)
 
     # TEMP
     update_flag: bool = False
-    timer = 0
     
     # Wait for start signal from monitoring
-    while isMonitoring:
+    while True:
         if not monitoring_queue.empty():
             data = monitoring_queue.get()
-
-    # Configure lift_manager with user-selected values
-    lift_manager.configure(get_number_of_floors(), get_number_of_lifts(), max_speed, acceleration, capacity, waiting_time)
+            lift_manager.configure(data["floors"], data["lifts"], max_speed, acceleration, capacity, waiting_time)
+            set_time_multiplier(data["time"])
+            if isGUI:
+                gui_position_queue = run_gui(data["floors"], data["lifts"])
+            break
     
-    gui_position_queue = None
-    # Initialize GUI only after start signal
-    if isGUI:
-        gui_position_queue = run_gui(get_number_of_floors(), get_number_of_lifts())
-
     # set a timer so that we can see the efficiency of the algorithm based on a set of requests
     timer = 0
     deltatime = DeltaTime()
@@ -72,8 +63,7 @@ def run_simulation(isMonitoring: bool = True, isGUI: bool = True):
         analytics.record_state(timer, lift_manager.lifts)
 
         # allow the user to diable the monitoring and the gui
-        if isMonitoring:
-            monitoring.update(timer)
+        update_monitoring(monitoring_queue, lift_manager, timer)
         if isGUI:
             gui_update(lift_manager, gui_position_queue)
 
