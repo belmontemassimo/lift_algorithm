@@ -87,12 +87,10 @@ class GUI:
         for seer in self.seers:
 
             if seer['floor'] in target_floors and seer['status'] == False:
-                print('turn lights blue')
                 self.canvas.itemconfig(seer['id'], fill='red')
                 seer['status'] = True
             
             elif seer['floor'] not in target_floors and seer['status'] == True:
-                print('turn lights black')
                 self.canvas.itemconfig(seer['id'], fill='black')
                 seer['status'] = False
             
