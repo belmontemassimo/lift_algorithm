@@ -48,7 +48,7 @@ def run_simulation(isGUI: bool = True):
             set_time_multiplier(data["time"])
             algorithm.set_algorithm(data["algorithm"])
             if isGUI:
-                gui_position_queue, gui_target_queue = run_gui(data["floors"], data["lifts"])
+                gui_queue = run_gui(data["floors"], data["lifts"])
             break
         
     
@@ -67,7 +67,7 @@ def run_simulation(isGUI: bool = True):
         # allow the user to disable the monitoring and the gui
         update_monitoring(monitoring_queue, lift_manager, timer)
         if isGUI:
-            gui_update(lift_manager, gui_position_queue,gui_target_queue)
+            gui_update(lift_manager, gui_queue)
 
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         # if there is a request in new_requests_list then add it to the current_requests list 
