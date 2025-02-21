@@ -46,6 +46,7 @@ def run_simulation(isGUI: bool = True):
             data = monitoring_queue.get()
             lift_manager.configure(data["floors"], data["lifts"], max_speed, acceleration, capacity, waiting_time)
             set_time_multiplier(data["time"])
+            algorithm.set_algorithm(data["algorithm"])
             if isGUI:
                 gui_position_queue, gui_target_queue = run_gui(data["floors"], data["lifts"])
             break
