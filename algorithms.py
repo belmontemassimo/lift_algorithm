@@ -166,12 +166,14 @@ class MYLIFT:
         
         if picked_requests and current_requests:
 
-            #all_requests = sorted(sorted_picked + sorted_current, key=lambda req: abs(req.target_floor - lift.position))
+            all_requests = []
 
-            if self.direction == Direction.UP:
-                all_requests = sorted(sorted_picked + sorted_current, key=lambda req: (req.target_floor < lift.position, req.target_floor))
-            elif self.direction == Direction.DOWN:
-                all_requests = sorted(sorted_picked + sorted_current, key=lambda req: (req.target_floor > lift.position, -req.target_floor))
+            for req in picked_requests:
+                all_requests.append((req.target_floor, None))  # Only target_floor
+
+            for req in current_requests:
+                all_requests.append((req.request_floor, req.target_floor))
+
 
 
             # Calculate batch size based on number of requests
@@ -179,53 +181,31 @@ class MYLIFT:
 
             # Split requests into batches of the calculated size
             batches = [all_requests[i:i + batch_size] for i in range(0, len(all_requests), batch_size)]
-
-            print("Batch Size:", batch_size)
-            print("Batches:", batches)
             
             # If no batches, remain idle
             if not batches:
                 return None
-            
-            pick_floors = []
-            wait_floors = []
 
             # Process the batches
             for i in range(len(batches)):
                 current_batch = batches[i]
 
-                picked_targets = {req.target_floor for req in sorted_picked}
-                current_request = {req.request_floor for req in sorted_current}
-
-                # Separate requests into picked and current ones
-                pick_floors = [request for request in current_batch if (request.target_floor in picked_targets and 
-                ((self.direction == Direction.UP and request.target_floor > lift.position) or 
-                (self.direction == Direction.DOWN and request.target_floor < lift.position)))]
-
-                wait_floors = [request for request in current_batch if (request.request_floor in current_request and 
-                ((self.direction == Direction.UP and request.request_floor > lift.position) or 
-                (self.direction == Direction.DOWN and request.request_floor < lift.position)))]
-
-                # Prioritize picked passengers first
-            if pick_floors:
-                return pick_floors[0].target_floor  # Keep moving in the current direction
-        
-        # Serve waiting requests in the same direction
-            if wait_floors:
-                return wait_floors[0].request_floor
+                pick_floors = [req[0] for req in current_batch if req[1] is None and req[0] > lift.position]  # target_floors of picked_requests
+                wait_floors = [req for req in current_batch if req[1] is not None and req[1] > req[0] > lift.position]  # request_floors
 
                 # If there are picked requests, prioritize them
-                #if pick_floors:
-                    #if self.direction == Direction.UP:
-                        #up_requests = [request for request in wait_floors if request.request_floor > lift.position]
-                        #if up_requests and up_requests[0].request_floor < pick_floors[0].target_floor:
-                            #return up_requests[0].request_floor  # Go to the next floor upwards
-                        #return pick_floors[0].target_floor 
-                    #elif self.direction == Direction.DOWN:
-                        #down_requests = [request for request in wait_floors if request.request_floor < lift.position]
-                        #if down_requests and down_requests[-1].request_floor > pick_floors[-1].target_floor:
-                            #return down_requests[-1].request_floor  # Go to the next floor downwards
-                        #return pick_floors[-1].target_floor
+                if pick_floors:
+                    if self.direction == Direction.UP:
+                        up_requests = [req[0] for req in wait_floors if req[0] > lift.position]
+                        if up_requests and up_requests[0] < pick_floors[0]:  
+                            return up_requests[0]  # Go to the next floor upwards
+                        return pick_floors[0]  # Move towards the first target floor
+                        
+                    elif self.direction == Direction.DOWN:
+                        down_requests = [req[0] for req in wait_floors if req[0] < lift.position]
+                        if down_requests and down_requests[-1] > pick_floors[-1]:  
+                            return down_requests[-1]  # Go to the next floor downwards
+                        return pick_floors[-1]  # Move towards the last target floor
 
                 # Serve waiting requests if they are in the direction of movement
                 #if wait_floors:
