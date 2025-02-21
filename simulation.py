@@ -18,7 +18,6 @@ def run_simulation(isGUI: bool = True):
     acceleration: float = 0.4
     capacity: float = 1000
     waiting_time: float = 4
-    gui_position_queue: Queue
 
     # requests are in the form of (target_floor, direction, time_created)
     list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 21), Request(4, 1, 24), Request(5, 1, 25), 
