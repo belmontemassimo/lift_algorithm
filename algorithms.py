@@ -79,80 +79,13 @@ class LOOK:
         picked_requests = lift.picked_requests
         if not current_requests and not picked_requests:
             return None # No requests, lift remains idle
-        
-        if lift.state == LiftState.IDLE:
-            return min(current_requests, key=lambda request: abs(request.request_floor - lift.position)).request_floor
-        
-        all_requests = [req.target_floor for req in picked_requests] + [req.request_floor for req in current_requests]
-        all_requests = sorted(set(all_requests))  # Remove duplicates and sort
 
-        up_requests = [floor for floor in all_requests if floor > lift.position]
-        down_requests = [floor for floor in all_requests if floor < lift.position]
-
-        if up_requests and (self.direction == Direction.UP or not down_requests):
-            if self.direction != Direction.UP:
-                self.direction = Direction.UP
-            return up_requests[0]
-        
-        if down_requests and (self.direction == Direction.DOWN or not up_requests):
-            if self.direction != Direction.DOWN:
-                self.direction = Direction.DOWN
-            return down_requests[-1]
-        
-        return None
-
-    
-class MYLIFT:
-
-    max_batch_size = 5
-    min_batch_size = 1
-    scale_factor = 1
-    direction = Direction.UP
-    def __call__(self, lift: Lift, current_requests: list[Request], min_batch_size: int = 1, max_batch_size: int = 5, scale_factor: int = 1) -> float | None:
-        picked_requests = lift.picked_requests
-
-        if not current_requests and not picked_requests:
-            return None # No requests, lift remains idle
-
-        if lift.state == LiftState.IDLE:
-            return min(current_requests, key=lambda request: abs(request.request_floor - lift.position)).request_floor
-        
         sorted_picked = sorted(picked_requests, key=lambda request: request.target_floor)
         sorted_current = sorted(current_requests, key=lambda request: request.request_floor)
+        
+        if lift.state == LiftState.IDLE:
+            return min(current_requests, key=lambda request: abs(request.request_floor - lift.position)).request_floor
 
-        if not current_requests: #dealing with picked requests if there are no current requests in a LOOK manner
-            up_requests = [request for request in sorted_picked if request.target_floor > lift.position]
-            down_requests = [request for request in sorted_picked if request.target_floor < lift.position]
-
-            if up_requests and (self.direction == Direction.UP or not down_requests):
-                if self.direction != Direction.UP:
-                    self.direction = Direction.UP
-                return up_requests[0].target_floor
-        
-            if down_requests and (self.direction == Direction.DOWN or not up_requests):
-                if self.direction != Direction.DOWN:
-                    self.direction = Direction.DOWN
-                return down_requests[-1].target_floor
-        
-            return None
-        
-        if not picked_requests:#dealing with current requests if there are no current requests in a LOOK manner
-            up_requests = [request for request in sorted_current if request.request_floor > lift.position]
-            down_requests = [request for request in sorted_current if request.request_floor < lift.position]
-
-            if up_requests and (self.direction == Direction.UP or not down_requests):
-                if self.direction != Direction.UP:
-                    self.direction = Direction.UP
-                return up_requests[0].request_floor
-            
-            if down_requests and (self.direction == Direction.DOWN or not up_requests):        
-                if self.direction != Direction.DOWN:
-                    self.direction = Direction.DOWN
-                return down_requests[-1].request_floor
-            
-            return None
-        
-        #if the weight of the lift is above 80% of the capacity, the lift will ignore current requests and only deal with picked requests
         if lift.weight > (0.8 * lift.capacity):
             up_requests = [request for request in sorted_picked if request.target_floor > lift.position]
             down_requests = [request for request in sorted_picked if request.target_floor < lift.position]
@@ -169,78 +102,102 @@ class MYLIFT:
         
             return None
         
-        if picked_requests and current_requests:
+        picked_up_requests = [request for request in sorted_picked if request.target_floor > lift.position]
+        picked_down_requests = [request for request in sorted_picked if request.target_floor < lift.position]
 
-            all_requests = []
+        current_up_requests = [request for request in sorted_current if request.request_floor > lift.position]
+        current_down_requests = [request for request in sorted_current if request.request_floor < lift.position]
 
-            # Store (floor, None) for picked requests (drop-offs)
-            for req in picked_requests:
-                all_requests.append((req.target_floor, None))
+        if picked_up_requests and (self.direction == Direction.UP or not picked_down_requests):
+            if self.direction != Direction.UP:
+                self.direction = Direction.UP
+            return picked_up_requests[0].target_floor
+        
+        if picked_down_requests and (self.direction == Direction.DOWN or not picked_up_requests):
+            if self.direction != Direction.DOWN:
+                self.direction = Direction.DOWN
+            return picked_down_requests[-1].target_floor
 
-            # Store (request_floor, target_floor) for current requests (pick-ups)
-            for req in current_requests:
-                all_requests.append((req.request_floor, req.target_floor))
+        if current_up_requests and (self.direction == Direction.UP or not current_down_requests):
+            if self.direction != Direction.UP:
+                self.direction = Direction.UP
+            return current_up_requests[0].request_floor
+            
+        if current_down_requests and (self.direction == Direction.DOWN or not current_up_requests):        
+            if self.direction != Direction.DOWN:
+                self.direction = Direction.DOWN
+            return current_down_requests[-1].request_floor
+        
+        return None
 
-            # Calculate batch size dynamically
-            batch_size = max(min_batch_size, min(max_batch_size, len(all_requests) // self.scale_factor))
+class MYLIFT:
+    max_batch_size = 5
+    min_batch_size = 1
+    scale_factor = 1
+    direction = Direction.UP
 
-            # Split into batches
-            batches = [all_requests[i:i + batch_size] for i in range(0, len(all_requests), batch_size)]
+    def __call__(self, lift: Lift, current_requests: list[Request], min_batch_size: int = 1, max_batch_size: int = 5, scale_factor: int = 1) -> float | None:
+        if not current_requests and not lift.picked_requests:
+            return None  # No requests, lift remains idle
 
-            if not batches:
-                return None  # Stay idle if no requests
+        if lift.state == LiftState.IDLE:
+            return self.find_nearest_request(lift, current_requests)
 
-            # Process each batch and find the best move
-            for current_batch in batches:
+        # Prioritize requests based on weight
+        if lift.weight > (0.8 * lift.capacity):
+            return self.weight_handler(lift)
 
-                # Extract target floors (drop-offs)
-                pick_floors = [req[0] for req in current_batch if req[1] is None and req[0] != lift.position]
+        # Process both picked and current requests
+        return self.batching_requests(lift, current_requests, min_batch_size, max_batch_size, scale_factor)
 
-                # Extract request floors (pick-ups)
-                wait_floors = [(req[0], req[1]) for req in current_batch if req[1] is not None and req[0] != lift.position]
+    def find_nearest_request(self, lift, requests):
+        return min(requests, key=lambda req: abs(req.request_floor - lift.position)).request_floor
 
-                # Sort drop-off requests
-                pick_floors.sort()
+    def weight_handler(self, lift):
+        return self.get_next_floor(lift, lift.picked_requests, key=lambda req: req.target_floor)
 
-                # Sort pick-up requests based on request floor
-                wait_floors.sort(key=lambda req: req[0])
+    def batching_requests(self, lift, current_requests, min_batch_size, max_batch_size, scale_factor):
+        all_requests = [(req.target_floor, None) for req in lift.picked_requests] + \
+                       [(req.request_floor, req.target_floor) for req in current_requests]
 
-                if pick_floors or wait_floors:
-                    if self.direction == Direction.UP:
-                        # Get closest request going up
-                        up_requests = [req[0] for req in wait_floors if req[0] > lift.position]
-                        if up_requests:
-                            return min(up_requests)  # Move to nearest request floor going up
-                        
-                        # If no pick-ups, move to nearest drop-off going up
-                        if pick_floors:
-                            return min(pick_floors)
+        batch_size = max(min_batch_size, min(max_batch_size, len(all_requests) // scale_factor))
+        batches = [all_requests[i:i + batch_size] for i in range(0, len(all_requests), batch_size)]
 
-                    elif self.direction == Direction.DOWN:
-                        # Get closest request going down
-                        down_requests = [req[0] for req in wait_floors if req[0] < lift.position]
-                        if down_requests:
-                            return max(down_requests)  # Move to nearest request floor going down
-                        
-                        # If no pick-ups, move to nearest drop-off going down
-                        if pick_floors:
-                            return max(pick_floors)
+        if not batches:
+            return None
 
-            return None  # Remain idle if no valid moves found
+        # Process each batch and find the best move
+        for batch in batches:
+            return self.get_travel(lift, batch)
+
+        return None
+
+    def get_travel(self, lift, batch):
+        pick_floors = sorted(set(req[0] for req in batch if req[1] is None and req[0] != lift.position))
+        wait_floors = sorted(set(req[0] for req in batch if req[1] is not None and req[0] != lift.position))
+
+        return self.get_next_floor(lift, pick_floors + wait_floors)
+
+    def get_next_floor(self, lift, requests, key=lambda req: req):
+        if not requests:
+            return None
+
+        if self.direction == Direction.UP:
+            up_requests = [req for req in requests if key(req) > lift.position]
+            if up_requests:
+                return min(up_requests, key=key)  # Move to nearest request going up
+
+        if self.direction == Direction.DOWN:
+            down_requests = [req for req in requests if key(req) < lift.position]
+            if down_requests:
+                return max(down_requests, key=key)  # Move to nearest request going down
+
+        # If no requests match the direction, change direction
+        self.direction = Direction.UP if self.direction == Direction.DOWN else Direction.DOWN
+        return self.get_next_floor(lift, requests, key)  # Recurse with updated direction
 
 
-                # Serve waiting requests if they are in the direction of movement
-                #if wait_floors:
-                    #if self.direction == Direction.UP:
-                        # Only serve current requests that are upwards
-                        #up_requests = [request for request in wait_floors if request.request_floor > lift.position]
-                        #if up_requests:
-                            #return up_requests[0].request_floor  # Go to the next floor upwards
-                    #elif self.direction == Direction.DOWN:
-                        # Only serve current requests that are downwards
-                        #down_requests = [request for request in wait_floors if request.request_floor < lift.position]
-                        #if down_requests:
-                            #return down_requests[-1].request_floor  # Go to the next floor downwards
+
 
 
 
