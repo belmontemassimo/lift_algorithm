@@ -13,12 +13,14 @@ class Request:
     time_in_lift: float
     weight_captor: int
     direction: Direction
+    lift_position_on_request: float | None  # Position of the lift when request was received
 
     def __init__(self, request_floor:int , target_floor: int, time_created: float, weight_captor: int = 0):
         self.request_floor = request_floor
         self.target_floor = target_floor
         self.time_created = time_created
         self.direction = Direction.UP if (request_floor-target_floor) < 0 else Direction.DOWN
+        self.lift_position_on_request = None  # Initialize as None
         if weight_captor != 0:
             self.weight_captor = weight_captor * 100
         else:
@@ -49,3 +51,19 @@ class Request:
 
 
         return [i for i in range(min(current_position,target_position),max(current_position,target_position)+1)]
+
+    def set_lift_position_on_request(self, position: float) -> None:
+        """
+        Sets the position of the lift when the request was received
+        Args:
+            position (float): The current position of the lift
+        """
+        self.lift_position_on_request = position
+
+    def get_lift_position_on_request(self) -> float | None:
+        """
+        Returns the position of the lift when the request was received
+        Returns:
+            float | None: The position of the lift when request was received, or None if not set
+        """
+        return self.lift_position_on_request
