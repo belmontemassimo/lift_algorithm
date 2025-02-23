@@ -20,10 +20,12 @@ def run_simulation(isGUI: bool = True):
     waiting_time: float = 4
 
     # requests are in the form of (target_floor, direction, time_created)
-    list_of_requests: list[Request] = [Request(5,0,0), Request(8, 2, 3), Request(2, 1, 20), Request(3, 20, 21), Request(4, 1, 24), Request(5, 1, 25), 
-                                    Request(6, 1, 26), Request(7, 1, 27), Request(8, 1, 28), Request(9, 1, 29), Request(10, 1, 30), Request(11, 1, 31), 
-                                    Request(12, 1, 32), Request(13, 1, 33), Request(14, 1, 34), Request(15, 1, 35), Request(16, 1, 36), Request(17, 1, 37), 
-                                    Request(18, 1, 38), Request(19, 1, 39), Request(20, 1, 40), Request(21, 1, 41), Request(22, 1, 42), Request(23, 1, 43)]
+    list_of_requests: list[Request] = [Request(9, 3, 3), Request(24, 12, 3), Request(21, 14, 10), Request(8, 1, 10), Request(13, 5, 18), 
+Request(6, 2, 18), Request(19, 9, 24), Request(15, 8, 24), Request(12, 3, 31), Request(20, 6, 36), 
+Request(11, 7, 36), Request(7, 2, 44), Request(18, 5, 44), Request(5, 0, 50), Request(22, 14, 57), 
+Request(14, 4, 57), Request(10, 2, 64), Request(16, 5, 64), Request(25, 11, 70), Request(17, 6, 70), 
+Request(3, 0, 78), Request(23, 10, 84), Request(9, 1, 84), Request(6, 2, 90), Request(15, 9, 90), 
+Request(8, 3, 98), Request(24, 13, 98), Request(20, 7, 104), Request(5, 1, 104), Request(12, 4, 112)]
     len_list_of_requests: int = len(list_of_requests)
     current_requests: list[Request] = []
     completed_requests_list: list[Request] = []
