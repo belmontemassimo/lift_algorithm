@@ -47,7 +47,7 @@ class Request:
         self.time_in_lift = time - self.time_on_floor
         return True
     
-    def floors_range(start_floor:float, end_floor:int):
+    def floors_range(start_floor:float, end_floor:int) -> list[int]:
 
         direction = Direction.UP if start_floor < end_floor else Direction.DOWN
 
