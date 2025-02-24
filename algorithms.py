@@ -203,7 +203,7 @@ class MYLIFT:
         return self.get_next_floor(lift, requests, key)  # Recurse with updated direction
 
 
-class OtherLift:
+class PATHFINDER:
     def __init__(self):
         # Dictionary to track each lift's direction (lift index -> Direction)
         self.lift_directions = {}
