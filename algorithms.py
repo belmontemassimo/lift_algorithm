@@ -210,7 +210,7 @@ class PATHFINDER:
 
     def __call__(self, lift_manager: LiftManager, current_requests: list[Request]) -> list[float | None]:
         assigned_requests = set()  # Track assigned requests to ensure uniqueness
-        lift_targets = [None] * len(lift_manager.lifts)  # Target floors for each lift
+        lift_targets: list[float|None] = [None] * len(lift_manager.lifts)  # Target floors for each lift
 
         # Process each lift
         for lift_idx, lift in enumerate(lift_manager.lifts):
