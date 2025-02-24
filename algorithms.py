@@ -22,14 +22,14 @@ class AlgorithmHandler:
     def __call__(self, lift_manager: LiftManager, current_requests: list[Request]):
         #TEMP
         match self.algorithm:
-            case FCFS() | SCAN() | LOOK() | MYLIFT():
-                return [self.algorithm(lift, current_requests) for lift in lift_manager.lifts]
+            case FCFS() | LOOK() | SCAN() | MYLIFT():
+                return [self.algorithm(lift, current_requests, lift_manager.num_floors) for lift in lift_manager.lifts]
             case _:
                 return self.algorithm(lift_manager, current_requests)
             
     
     # returns the list of algorithms names
-    def get_list(self) -> dict[str,object]:
+    def get_list(self) -> list[str]:
         return list(self.algorithms.keys())
     
     # allows the user to change algorithm in use
@@ -38,7 +38,7 @@ class AlgorithmHandler:
 
 # create algorithm class for each algorithm
 class FCFS:
-    def __call__(self, lift: Lift, current_requests: list[Request]) -> float | None:
+    def __call__(self, lift: Lift, current_requests: list[Request], _) -> float | None:
         picked_requests = lift.picked_requests
         if picked_requests:
             return picked_requests[0].target_floor
@@ -50,7 +50,7 @@ class FCFS:
 
 
 class SCAN:
-    def __call__(self, lift: Lift, current_requests: list[Request]) -> float | None:
+    def __call__(self, lift: Lift, current_requests: list[Request], num_floors: int) -> float | None:
         picked_requests = lift.picked_requests
         if not current_requests and not picked_requests:
             return None # No requests, lift remains idle
@@ -75,7 +75,7 @@ class SCAN:
 class LOOK:
     direction = Direction.UP
 
-    def __call__(self, lift: Lift, current_requests: list[Request]) -> float | None:
+    def __call__(self, lift: Lift, current_requests: list[Request], _) -> float | None:
         picked_requests = lift.picked_requests
         
         if not picked_requests and not current_requests:
