@@ -3,10 +3,16 @@
 #
 from random import gauss
 from time import time
+from enum import Enum
 
 # global variables for this file
 time_multiplier = 0
 skip_time_loop = False
+
+class Direction(Enum):
+    UP = 1
+    DOWN = -1
+    NONE = 0
 
 # function to set the time multiplier for the Deltatime class
 def set_time_multiplier(time_multiplier_incoming):

@@ -61,7 +61,7 @@ class Monitoring:
         data: dict = self.queue.get()
         self.position_label.SetLabelText(f'position:      {" ".join(["%.2f" % item for item in  data["positions"]])}')
         self.speed_label.SetLabelText(f'speed:         {" ".join(["%.2f" % item for item in data["speed"]])}')
-        self.state_label.SetLabelText(f'state:         {" ".join(["W" if state == LiftState.WAITING else "I" if state == LiftState.IDLE else "M" for state in data["states"]])}')
+        self.state_label.SetLabelText(f'state:         {" ".join(["W" if state == LiftState.WAITING else "I" if state == LiftState.IDLE else "M" if state == LiftState.MOVING else "A" for state in data["states"]])}')
         self.weight_label.SetLabelText(f'weight:        {" ".join(["%.1f" % item for item in  data["weight"]])} / {"%.1f" % self.capacity}')
         self.target_floor.SetLabelText(f'target floor:  {" ".join(["%.1f" % item for item in data["target_floors"]])}')
         self.timer_text.SetLabelText(f'time:  {"%.2f" % data["timer"]}')

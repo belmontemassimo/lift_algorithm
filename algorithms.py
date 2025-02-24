@@ -1,9 +1,10 @@
-from request import Request, Direction
+from math import copysign
+from request import Request
 from lift import Lift, LiftState
 from liftmanager import LiftManager
 from inspect import getmembers, isclass
 from importlib import import_module
-
+from extenders import Direction
 
 # get the name of the algorithms listed in the algorithms.py file and returns a dictionary conatining the name as key and the class as value
 def get_algorithms() -> dict[str,object]:
@@ -22,7 +23,7 @@ class AlgorithmHandler:
     def __call__(self, lift_manager: LiftManager, current_requests: list[Request]):
         #TEMP
         match self.algorithm:
-            case FCFS() | LOOK() | SCAN() | MYLIFT():
+            case FCFS() | LOOK() | MYLIFT():
                 return [self.algorithm(lift, current_requests, lift_manager.num_floors) for lift in lift_manager.lifts]
             case _:
                 return self.algorithm(lift_manager, current_requests)
@@ -50,67 +51,64 @@ class FCFS:
 
 
 class SCAN:
-    direction = Direction.UP
+    directions: dict[Lift,Direction] = {}
+    num_floors: int
     
-    def __call__(self, lift: Lift, current_requests: list[Request], num_floors: int) -> float | None:
-        picked_requests = lift.picked_requests
+    def __call__(self, lift_manager: LiftManager, current_requests: list[Request]) -> list[float | None]:
+        if not len(self.directions):
+            self.num_floors = lift_manager.num_floors
+            for lift in lift_manager.lifts:
+                self.directions[lift] = Direction.UP
+
+        target_floors: list[float | None] = []
         
-        if not picked_requests and not current_requests:
-            return None  # No requests, lift remains idle
+        for lift in lift_manager.lifts:
+            picked_requests = lift.picked_requests
 
-        sorted_picked = sorted(picked_requests, key=lambda request: request.target_floor)
+            possible_stop = max((lift.speed ** 2 / (2 * abs(lift.acceleration))-0.1), 0)
 
-        all_requests = []
+            if not picked_requests and not current_requests:
+                target_floors.append(None)  # No requests, lift remains idle
+                continue
 
-        if lift.state == LiftState.IDLE:
-            return min(current_requests, key=lambda request: abs(request.request_floor - lift.position)).request_floor
+            if lift.state == LiftState.IDLE:
+                target_floors.append(min(current_requests, key=lambda request: abs(request.request_floor - lift.position)).request_floor)
+                continue
 
-        if lift.weight > (0.8 * lift.capacity):
-            up_requests = [request for request in sorted_picked if request.target_floor > lift.position]
-            down_requests = [request for request in sorted_picked if request.target_floor < lift.position]
+            all_requests = []
 
-            if up_requests and (self.direction == Direction.UP or not down_requests):
-                if lift.position == 0:
-                    self.direction = Direction.UP
-                return up_requests[0].target_floor
-        
-            if down_requests and (self.direction == Direction.DOWN or not up_requests):
-                if lift.position == num_floors - 1:
-                    self.direction = Direction.DOWN
-                return down_requests[-1].target_floor
-        
-            return None
-        # Drop-offs
-        for req in picked_requests:
-            all_requests.append((req.target_floor, -1))
+            # Drop-offs
+            all_requests += [req.request_floor for req in current_requests]
 
-        # Pick-ups
-        for req in current_requests:
-            all_requests.append((req.request_floor, req.target_floor))
+            # Pick-ups
+            all_requests += [req.target_floor for req in picked_requests]
 
-        # Separate and sort requests
-        pick_floors = sorted([req[0] for req in all_requests if req[1] == -1 and req[0] != lift.position])
-        wait_floors = sorted([(req[0], req[1]) for req in all_requests if req[1] != -1 and req[0] != lift.position], key=lambda req: req[0])
 
-        if self.direction == Direction.UP:
-            up_requests = [req[0] for req in wait_floors if req[0] > lift.position]
-            if up_requests:
-                return min(up_requests)  # Nearest request going up
-            elif pick_floors:
-                return min(pick_floors)  # Nearest drop-off going up
-            elif lift.position == num_floors - 1:
-                self.direction = Direction.DOWN  # No requests up, go to top floor and switch directions
+            up_requests: list[float] = sorted([floor for floor in all_requests if floor > lift.position + possible_stop])
+            down_requests: list[float] = sorted([floor for floor in all_requests if floor < lift.position - possible_stop], reverse=True)
 
-        elif self.direction == Direction.DOWN:
-            down_requests = [req[0] for req in wait_floors if req[0] < lift.position]
-            if down_requests:
-                return max(down_requests)  # Nearest request going down
-            elif pick_floors:
-                return max(pick_floors)  # Nearest drop-off going down
-            elif lift.position == 0:
-                self.direction = Direction.UP  # No requests down, go to bottom floor and switch directions
+            if self.directions[lift] == Direction.UP:
+                if up_requests:
+                    target_floors.append(up_requests[0])  # Nearest request going up
+                    continue
+                if lift.position == self.num_floors - 1 and down_requests:
+                    self.directions[lift] = Direction.DOWN # No requests up, go to top floor and switch directions
+                    target_floors.append(down_requests[0])
+                    continue
+                target_floors.append(self.num_floors-1)
+                continue
 
-        return None  # Stay idle if no valid moves found
+            if self.directions[lift] == Direction.DOWN:
+                if down_requests:
+                    target_floors.append(down_requests[0] ) # Nearest request going down
+                    continue
+                if lift.position == 0 and up_requests:
+                    self.directions[lift] = Direction.UP  # No requests down, go to bottom floor and switch directions
+                    target_floors.append(up_requests[0])
+                    continue
+                target_floors.append(0)
+                continue
+        return target_floors 
 
 class LOOK:
     direction = Direction.UP

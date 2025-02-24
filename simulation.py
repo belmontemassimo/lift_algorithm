@@ -42,7 +42,7 @@ Request(8, 3, 98), Request(24, 13, 98), Request(20, 7, 104), Request(5, 1, 104),
     monitoring_queue = run_monitoring(algorithm.get_list(), CAPACITY)
 
     # flag to show if any changes in simulation (new request, lift stoped, etc)
-    update_flag: bool = False
+    update_flag: bool = True
     
     # Wait for start signal from monitoring and configure lift manager after 
     while True:

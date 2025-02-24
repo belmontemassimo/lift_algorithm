@@ -1,10 +1,5 @@
-from enum import Enum
 from extenders import double_normal_distribution
- 
-# direction of a requets 
-class Direction(Enum):
-    UP = 1
-    DOWN = -1
+from extenders import Direction
 
 # class that represcent entier request from start to finish
 class Request:
