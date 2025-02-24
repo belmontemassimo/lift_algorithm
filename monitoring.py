@@ -90,7 +90,7 @@ class Monitoring:
                 break
         self.timer.Start(40)
 
-def run_monitoring(algorithms: dict[str, object], capacity: int) -> Queue:
+def run_monitoring(algorithms: list[str], capacity: int) -> Queue:
     queue = Queue()
     Process(target=Monitoring, args=[queue, algorithms, capacity]).start()
     return queue
