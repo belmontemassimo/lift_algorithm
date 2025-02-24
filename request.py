@@ -38,19 +38,17 @@ class Request:
         self.time_in_lift = time - self.time_on_floor
         return True
     
-    def floors_range(self):
+    def floors_range(start_floor:float, end_floor:int):
 
-        current_position = self.request_floor
-        target_position = self.target_floor
+        direction = Direction.UP if start_floor < end_floor else Direction.DOWN
 
-        if self.direction == Direction.DOWN:
-            current_position = current_position.__floor__()
+        if direction == Direction.DOWN:
+            start_floor = start_floor.__floor__()
             
-        elif self.direction == Direction.UP:
-            current_position = current_position.__ceil__()
+        elif direction == Direction.UP:
+            start_floor = start_floor.__ceil__()
 
-
-        return [i for i in range(min(current_position,target_position),max(current_position,target_position)+1)]
+        return [i for i in range(min(start_floor,end_floor),max(start_floor,end_floor)+1)]
 
     def set_lift_position_on_request(self, position: float) -> None:
         """
