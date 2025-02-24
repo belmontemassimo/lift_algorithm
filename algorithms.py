@@ -167,13 +167,13 @@ class MYLIFT:
                        [(req.request_floor, req.target_floor) for req in current_requests]
 
         batch_size = max(min_batch_size, min(max_batch_size, len(all_requests) // scale_factor))
-        batches = [all_requests[i:i + batch_size] for i in range(0, len(all_requests), batch_size)]
+        priority_batches = [all_requests[i:i + batch_size] for i in range(0, len(all_requests), batch_size)]
 
-        if not batches:
+        if not priority_batches:
             return None
 
         # Process each batch and find the best move
-        for batch in batches:
+        for batch in priority_batches:
             return self.get_travel(lift, batch)
 
         return None
