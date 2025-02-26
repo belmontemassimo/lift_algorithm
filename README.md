@@ -12,19 +12,20 @@ The Lift Simulation System is a Python-based project designed to simulate elevat
 **Project Structure:**
 
 lift-simulation/  
-├── gui.py              # Tkinter-based GUI for visualizing lift movements  
-├── lift.py             # Core Lift class with movement and state logic  
-├── liftmanager.py      # Manages multiple lifts and their updates  
-├── main.py             # Main simulation runner  
-├── monitoring.py       # wxPython-based monitoring interface  
-├── request.py          # Request class for passenger trip modeling  
-├── algorithms.py       # Scheduling algorithms (FCFS, SCAN, LOOK, MYLIFT, PATHFINDER)  
-├── graph.py            # Analytics and graphing with Matplotlib  
-├── extenders.py        # Utility functions (DeltaTime, weight distribution)  
-└── README.md           # This file  
+├── `gui.py`              # Tkinter-based GUI for visualizing lift movements  
+├── `lift.py`             # Core Lift class with movement and state logic  
+├── `liftmanager.py`      # Manages multiple lifts and their updates  
+├── `main.py`             # Main simulation runner  
+├── `monitoring.py`       # wxPython-based monitoring interface  
+├── `request.py`          # Request class for passenger trip modeling  
+├── `algorithms.py`       # Scheduling algorithms (FCFS, SCAN, LOOK, MYLIFT, PATHFINDER)  
+├── `graph.py`            # Analytics and graphing with Matplotlib  
+├── `extenders.py`        # Utility functions (DeltaTime, weight distribution)  
+├── `generator.py`        # Generates samples of requests  
+└── `README.md`           # This file  
 
 **Prerequisites:**
-- Python 3.8+
+- Python 3.9+
 
 - Dependencies:
     - matplotlib (for analytics graphs)
@@ -32,17 +33,19 @@ lift-simulation/
     - wxPython (for monitoring GUI)
     - tkinter (for visualization GUI, typically included with Python)
 
-**Install dependencies via pip:**
-pip install matplotlib numpy wxPython
-
 **Installation:**
 1. Clone the repository:
-git clone https://github.com/yourusername/lift-simulation.git
-cd lift-simulation
-2. Install required packages:
+```sh
+git clone https://github.com/yourusername/lift-simulation.git; cd lift-simulation
+```
+3. Install required packages:
+```sh
 pip install -r requirements.txt  # If a requirements.txt is added
-3. Run the simulation:
+```
+5. Run the simulation:
+```sh
 python simulation.py
+```
 
 
 **Usage:**
@@ -56,10 +59,9 @@ python simulation.py
 
 **Configuration:**
 Modify simulation.py to adjust:
-- Lift Parameters: MAX_SPEED, ACCELERATION, CAPACITY, WAITING_TIME.
-- Requests: Edit list_of_requests with Request(request_floor, target_floor, time_created) entries.
+- Lift Parameters: `MAX_SPEED`, `ACCELERATION`, `CAPACITY`, `WAITING_TIME`.
 - GUI Toggle: Set isGUI=False in run_simulation() to disable visualization.
-- nitoring Interface
+- monitoring Interface
 - Set number of lifts, floors, simulation speed, and algorithm before clicking "Start".
 - Displays live updates every 40ms.
 
@@ -76,7 +78,7 @@ Idle lifts take the closest request; moving lifts batch requests along their pat
 To switch algorithms, adjust the monitoring UI or modify algorithm.set_algorithm() in main.py.
 
 **Analytics:**
-Post-simulation graphs (via graph.py):
+Post-simulation graphs (via `graph.py`):
 
 - Waiting Times: Time from request creation to lift pickup.
 - Lift Positions: Tracks each lift’s floor over time.
@@ -84,9 +86,9 @@ Post-simulation graphs (via graph.py):
 - System Statistics: Average waiting time, travel time, turnaround time, and throughput.
 
 **Extending the Project:**
-- New Algorithms: Add classes to algorithms.py and register them in get_algorithms().
-- Custom Requests: Use request.py’s double_normal_distribution for realistic weights or modify request generation.
-- UI Enhancements: Expand gui.py or monitoring.py for additional features.
+- New Algorithms: Add classes to `algorithms.py` and register them in `get_algorithms()`.
+- Custom Requests: Use request.py’s `double_normal_distribution` for realistic weights or modify request generation.
+- UI Enhancements: Expand gui.py or `monitoring.py` for additional features.
 
 
 **Contributing:**
