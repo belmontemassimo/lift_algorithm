@@ -40,7 +40,7 @@ git clone https://github.com/belmontemassimo/lift_algorithm.git; cd lift_algorit
 ```
 3. Install required packages:
 ```sh
-pip install wxPython, matplotlib
+pip install wxPython, matplotlib, numpy
 ```
 5. Run the simulation:
 ```sh
