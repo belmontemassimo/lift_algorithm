@@ -36,7 +36,7 @@ lift-simulation/
 **Installation:**
 1. Clone the repository:
 ```sh
-git clone ttps://github.com/belmontemassimo/lift_algorithm.git; cd lift_algorithm
+git clone https://github.com/belmontemassimo/lift_algorithm.git; cd lift_algorithm
 ```
 3. Install required packages:
 ```sh
