@@ -11,17 +11,17 @@ The Lift Simulation System is a Python-based project designed to simulate elevat
 
 **Project Structure:**
 
-lift-simulation/
-├── gui.py              # Tkinter-based GUI for visualizing lift movements
-├── lift.py             # Core Lift class with movement and state logic
-├── liftmanager.py      # Manages multiple lifts and their updates
-├── main.py             # Main simulation runner
-├── monitoring.py       # wxPython-based monitoring interface
-├── request.py          # Request class for passenger trip modeling
-├── algorithms.py       # Scheduling algorithms (FCFS, SCAN, LOOK, MYLIFT, PATHFINDER)
-├── graph.py            # Analytics and graphing with Matplotlib
-├── extenders.py        # Utility functions (DeltaTime, weight distribution)
-└── README.md           # This file
+lift-simulation/  
+├── gui.py              # Tkinter-based GUI for visualizing lift movements  
+├── lift.py             # Core Lift class with movement and state logic  
+├── liftmanager.py      # Manages multiple lifts and their updates  
+├── main.py             # Main simulation runner  
+├── monitoring.py       # wxPython-based monitoring interface  
+├── request.py          # Request class for passenger trip modeling  
+├── algorithms.py       # Scheduling algorithms (FCFS, SCAN, LOOK, MYLIFT, PATHFINDER)  
+├── graph.py            # Analytics and graphing with Matplotlib  
+├── extenders.py        # Utility functions (DeltaTime, weight distribution)  
+└── README.md           # This file  
 
 **Prerequisites:**
 - Python 3.8+
