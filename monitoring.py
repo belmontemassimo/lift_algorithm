@@ -3,6 +3,7 @@ from wx import EVT_BUTTON, EVT_TIMER
 from lift import LiftState
 from multiprocessing import Process, Queue
 from liftmanager import LiftManager
+from generator import samples_list
 
 class Monitoring:
 
@@ -17,23 +18,26 @@ class Monitoring:
     speed_input: TextCtrl
     speed_text: StaticText
     lift_number_input: TextCtrl
-    lift_number_text: StaticText
-    num_floors_input: TextCtrl
-    num_floors_text: StaticText
+    sample_text: StaticText
     start_button: Button
     timer_text: StaticText
     algorithm_choice: Choice
+    algorithm_text: StaticText
+    sample_choice: Choice
     queue: Queue
-    algorithms: dict[str, object]
+    algorithms: list[str]
+    samples: list[str]
     capacity: int
     timer: Timer
 
-    def __init__(self, queue: Queue, algorithms: dict[str, object], capacity: int):
+    def __init__(self, queue: Queue, algorithms: list[str], capacity: int):
         self.queue = queue
         self.capacity = capacity
+        self.samples = samples_list()
         self.algorithms = algorithms
         self.app = App()
         self.frame = Frame(parent=None, title='Monitoring')
+        self.frame.SetSize(550,210)
         self.panel = Panel(self.frame, -1)
         self.position_label = StaticText(self.panel, -1, "", (25, 25))
         self.speed_label = StaticText(self.panel, -1, "", (25, 45))
@@ -41,20 +45,20 @@ class Monitoring:
         self.weight_label = StaticText(self.panel, -1, "", (25, 85))
         self.timer_text = StaticText(self.panel, -1, "", (25, 125))
         self.target_floor = StaticText(self.panel, -1, "", (25, 105))
-        self.speed_input = TextCtrl(self.panel, -1, "1", (250,55), (50,20))
-        self.speed_text = StaticText(self.panel, -1, "speed", (315, 55), (70,20))
-        self.lift_number_input = TextCtrl(self.panel, -1, "1", (250,85), (50,20))
-        self.lift_number_text = StaticText(self.panel, -1, "lifts", (315, 85), (70,20))
-        self.num_floors_input = TextCtrl(self.panel, -1, "10", (250,115), (50,20))
-        self.num_floors_text = StaticText(self.panel, -1, "floors", (315, 115), (70,20))
-        self.start_button = Button(self.panel, -1, "start", (280, 145), (100,20))
+        self.speed_input = TextCtrl(self.panel, -1, "1", (380,115), (100,20))
+        self.speed_text = StaticText(self.panel, -1, "speed", (495, 115), (40,20))
+        self.lift_number_input = TextCtrl(self.panel, -1, "1", (380,85), (100,20))
+        self.lift_number_text = StaticText(self.panel, -1, "lifts", (495, 85), (40,20))
+        self.sample_text = StaticText(self.panel, -1, "sample", (495, 55), (40,20))
+        self.start_button = Button(self.panel, -1, "start", (380, 145), (155,20))
         self.start_button.Bind(EVT_BUTTON, self.on_start_update)
-        self.algorithm_choice = Choice(self.panel, -1, (280,25), (100,20), self.algorithms)
+        self.algorithm_choice = Choice(self.panel, -1, (380,25), (100,20), self.algorithms)
+        self.algorithm_text = StaticText(self.panel, -1, "algo", (495, 25), (40,20))
+        self.sample_choice = Choice(self.panel, -1, (380,55),(100,20), self.samples)
         self.timer = Timer(self.frame)
         self.frame.Bind(EVT_TIMER, self.update, self.timer)
         self.frame.Show()
         self.app.MainLoop()
-
     def update(self, _):
         if self.queue.empty():
             return
@@ -71,17 +75,18 @@ class Monitoring:
             self.queue.put({
                 "lifts": int(self.lift_number_input.GetValue()),
                 "time": float(self.speed_input.GetValue()),
-                "floors": int(self.num_floors_input.GetValue()),
-                "algorithm": self.algorithm_choice.GetString(self.algorithm_choice.GetSelection())
+                "algorithm": self.algorithm_choice.GetString(self.algorithm_choice.GetSelection()),
+                "sample": self.sample_choice.GetString(self.sample_choice.GetSelection())
             })
             self.algorithm_choice.Disable()
             self.start_button.Disable()
             self.speed_input.Disable()
             self.lift_number_input.Disable()
-            self.num_floors_input.Disable()
             self.speed_text.Disable()
             self.lift_number_text.Disable()
-            self.num_floors_text.Disable()
+            self.sample_text.Disable()
+            self.sample_choice.Disable()
+            self.algorithm_text.Disable()
         except:
             return
 

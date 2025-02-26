@@ -5,6 +5,7 @@
 from gui import run_gui, gui_update
 from lift import LiftState
 from extenders import DeltaTime, set_time_multiplier
+from generator import load_sample
 from request import Request
 from algorithms import AlgorithmHandler
 from monitoring import run_monitoring, update_monitoring
@@ -28,6 +29,7 @@ Request(3, 0, 78), Request(23, 10, 84), Request(9, 1, 84), Request(6, 2, 90), Re
 Request(8, 3, 98), Request(24, 13, 98), Request(20, 7, 104), Request(5, 1, 104), Request(12, 4, 112)]
     # save initial number of requests
     len_list_of_requests: int = len(list_of_requests)
+    floors = 0
     # two lists to keep track of active and completed requests
     current_requests: list[Request] = []
     completed_requests_list: list[Request] = []
@@ -48,11 +50,18 @@ Request(8, 3, 98), Request(24, 13, 98), Request(20, 7, 104), Request(5, 1, 104),
     while True:
         if not monitoring_queue.empty():
             data = monitoring_queue.get()
-            lift_manager.configure(data["floors"], data["lifts"], MAX_SPEED, ACCELERATION, CAPACITY, WAITING_TIME)
+            if data["sample"]:
+                list_of_requests = load_sample(data["sample"])
+                len_list_of_requests = len(list_of_requests)
+            for request in list_of_requests:
+                if max(request.target_floor, request.request_floor) > floors:
+                    floors = max(request.target_floor, request.request_floor)
+            floors += 1
+            lift_manager.configure(floors, data["lifts"], MAX_SPEED, ACCELERATION, CAPACITY, WAITING_TIME)
             set_time_multiplier(data["time"])
             algorithm.set_algorithm(data["algorithm"])
             if isGUI:
-                gui_queue = run_gui(data["floors"], data["lifts"])
+                gui_queue = run_gui(floors, data["lifts"])
             break
         
     

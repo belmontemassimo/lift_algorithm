@@ -23,7 +23,7 @@ class Request:
         self.lift_position_on_request = None  # Initialize as None
         # set weight to custom if provided
         if weight_captor != 0:
-            self.weight_captor = weight_captor * 100
+            self.weight_captor = weight_captor
         # generate random weight 
         else:
             self.weight_captor = int(double_normal_distribution(mean=70, std_dev=12.5, second_mean=3.5, second_std_dev=0.5)*100)

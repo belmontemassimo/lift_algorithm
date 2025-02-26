@@ -3,6 +3,7 @@ from extenders import double_normal_distribution
 from os import path, makedirs
 from random import randint
 from os import listdir
+from os.path import isdir, exists
 from json import dump, loads
 
 if __name__ == "__main__":
@@ -33,16 +34,20 @@ if __name__ == "__main__":
             sample_number += 1
             continue
         with open(f"./samples/sample_{sample_number}", "w") as file:
-            dump(requests, file)
+            dump(sorted(requests, key=lambda request: request["created_time"]), file)
             break
     print(f"saved as sample_{sample_number}")
 
 def dict_to_request(request_dict: dict[str,int]):
-    return Request(request_dict["request_floor"], request_dict["target_floor"], request_dict["time_created"], request_dict["weight_captor"])
+    return Request(request_dict["request_floor"], request_dict["target_floor"], request_dict["created_time"], request_dict["weight_captor"])
 
 def samples_list() -> list[str]:
-    return listdir("./samples")
+    if isdir("./samples"):
+        return listdir("./samples")
+    return []
 
 def load_sample(file_name: str) -> list[Request]:
-    with open(f"./samples/{file_name}", "r") as file:
-        return [dict_to_request({key: value for key, value  in request_dict.iteritems()}) for request_dict in loads(file.read())]
+    if exists(f"./samples/{file_name}"):
+        with open(f"./samples/{file_name}", "r") as file:
+            return [dict_to_request({key: value for key, value  in request_dict.items()}) for request_dict in loads(file.read())]
+    return []
