@@ -40,7 +40,7 @@ git clone https://github.com/yourusername/lift-simulation.git; cd lift-simulatio
 ```
 3. Install required packages:
 ```sh
-pip install -r requirements.txt  # If a requirements.txt is added
+pip install wxPython, matplotlib
 ```
 5. Run the simulation:
 ```sh
