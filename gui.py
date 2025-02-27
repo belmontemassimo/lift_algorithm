@@ -127,7 +127,3 @@ def run_gui(num_floors: int, num_lifts: int) -> Queue:
 def gui_update(lift_manager: LiftManager, gui_queue: Queue):
     if gui_queue.empty():
         gui_queue.put({'positions':lift_manager.get_positions(), 'targets':lift_manager.get_target_floors()})
-
-                
-    
-
