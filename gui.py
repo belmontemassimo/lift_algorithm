@@ -27,6 +27,7 @@ class GUI:
         self.lifts = list()
         self.seers = list()
         self.root.update()
+        self.shadow_lifts = list()
 
         proportional_stops = self.canvas.winfo_height()/n_floors
         height = self.canvas.winfo_height()
@@ -39,6 +40,7 @@ class GUI:
         # Create lift objects
         for i in range(1, (2*n_lifts) + 1):
             if i%2 == 1:
+                self.shadow_lifts.append(self.canvas.create_rectangle(i*proportional_stops, height-proportional_stops, (i*proportional_stops)+proportional_stops, height, fill="#D9D9D9", outline="#D9D9D9"))
                 self.lifts.append(self.canvas.create_rectangle(i*proportional_stops, height-proportional_stops, (i*proportional_stops)+proportional_stops, height, fill="black"))
 
         # Call mainloop
@@ -50,11 +52,38 @@ class GUI:
             queue = self.gui_queue.get()
             next_positions = queue['positions']
             current_targets = queue['targets']
-        
+
+            self.shadow_movements(current_targets)
             self.move(next_positions)
             self.seers_update(current_targets)
 
         self.root.after(1, self.queue_manager)  # Avoid recursion crash
+
+
+    def shadow_movements(self, current_targets):
+        for i, target in enumerate(current_targets):
+            if target:
+                self.canvas.update()
+                front_coords = self.canvas.coords(self.shadow_lifts[i])  # Get lift rectangle coordinates
+                current_y = front_coords[3]  # Use the bottom coordinate x1,y1,x2,y2)
+                
+                canvas_height = self.canvas.winfo_height()
+                target_y = canvas_height - ((target / self.floors) * canvas_height)  # Flip the coordinate system
+                difference = target_y - current_y
+                step = abs(difference)
+
+                if difference > 0:  # Move DOWN
+                    self.canvas.move(self.shadow_lifts[i], 0, step)
+                elif difference < 0:  # Move UP
+                    self.canvas.move(self.shadow_lifts[i], 0, -step)
+            
+            else:
+                lift_coords = self.canvas.coords(self.lifts[i])[3]
+                shadow_lift_coords = self.canvas.coords(self.shadow_lifts[i])[3]
+                if lift_coords != shadow_lift_coords:
+                    difference = lift_coords - shadow_lift_coords
+                    self.canvas.move(self.shadow_lifts[i],0, difference)
+
 
 
     def move(self, positions):
@@ -63,7 +92,7 @@ class GUI:
             self.canvas.update()
             front_coords = self.canvas.coords(self.lifts[i])  # Get lift rectangle coordinates
             
-            current_y = front_coords[3]  # Use the bottom coordinate
+            current_y = front_coords[3]  # Use the bottom coordinate x1,y1,x2,y2)
             
             canvas_height = self.canvas.winfo_height()
             target_y = canvas_height - ((back_coords / self.floors) * canvas_height)  # Flip the coordinate system
