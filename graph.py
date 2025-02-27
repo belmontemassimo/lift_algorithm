@@ -107,21 +107,40 @@ class SimulationAnalytics:
         avg_travel_time = np.mean([req.time_in_lift for req in completed_requests])
         avg_turnaround = np.mean([req.time_in_lift + req.time_on_floor for req in completed_requests])
         throughput = len(completed_requests) / total_time
-
-        metrics = ['Avg Waiting Time', 'Avg Travel Time', 'Avg Turnaround', 'Throughput']
-        values = [avg_waiting_time, avg_travel_time, avg_turnaround, throughput]
-
-        bars = plt.bar(metrics, values)
-        plt.title('System Performance Metrics')
-        plt.grid(True, which='both', linestyle='-', alpha=0.5)
-        plt.minorticks_on()
-        plt.xticks(rotation=45)
-        plt.ylim(bottom=0)
+        
+        # Create two separate sets of metrics
+        time_metrics = ['Avg Waiting Time', 'Avg Travel Time', 'Avg Turnaround']
+        time_values = [avg_waiting_time, avg_travel_time, avg_turnaround]
+        
+        # Create figure with two y-axes
+        fig, ax1 = plt.subplots(figsize=(10, 6))
+        
+        # Plot time metrics on the left y-axis
+        bars1 = ax1.bar(time_metrics, time_values, color='skyblue')
+        ax1.set_ylabel('Time (seconds)')
+        ax1.set_ylim(bottom=0)
+        
+        # Create a second y-axis for throughput
+        ax2 = ax1.twinx()
+        bars2 = ax2.bar(['Throughput'], [throughput], color='orange')
+        ax2.set_ylabel('Requests per second')
+        ax2.set_ylim(bottom=0)
+        
+        # Set title and grid
+        ax1.set_title('System Performance Metrics')
+        ax1.grid(True, which='both', linestyle='-', alpha=0.5)
+        ax1.minorticks_on()
         
         # Add value labels on top of each bar
-        for bar in bars:
+        for bar in bars1:
             height = bar.get_height()
-            plt.text(bar.get_x() + bar.get_width()/2., height,
+            ax1.text(bar.get_x() + bar.get_width()/2., height,
+                    f'{height:.4f}',
+                    ha='center', va='bottom')
+        
+        for bar in bars2:
+            height = bar.get_height()
+            ax2.text(bar.get_x() + bar.get_width()/2., height,
                     f'{height:.4f}',
                     ha='center', va='bottom')
             
