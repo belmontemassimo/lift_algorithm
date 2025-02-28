@@ -257,10 +257,10 @@ class MYLIFT2:
 
             if not self.current_batches[lift] and not lift.picked_requests and [request for request in current_requests if request not in self.another_batch(self.current_batches)]:
                 directional_requests: dict[str,list[Request]] = {}
-                directional_requests["up"] = [request for request in current_requests if request.request_floor >= lift.position and request.direction == Direction.UP and request not in self.another_batch(self.current_batches)]
-                directional_requests["down"] = [request for request in current_requests if request.request_floor <= lift.position and request.direction == Direction.DOWN and request not in self.another_batch(self.current_batches)]
-                directional_requests["up_reverse"] = [request for request in current_requests if request.request_floor >= lift.position and request.direction == Direction.DOWN and request not in self.another_batch(self.current_batches)]
-                directional_requests["down_reverse"] = [request for request in current_requests if request.request_floor <= lift.position and request.direction == Direction.UP and request not in self.another_batch(self.current_batches)]
+                directional_requests["up"] = [request for request in current_requests if request.request_floor > lift.position and request.direction == Direction.UP and request not in self.another_batch(self.current_batches)]
+                directional_requests["down"] = [request for request in current_requests if request.request_floor < lift.position and request.direction == Direction.DOWN and request not in self.another_batch(self.current_batches)]
+                directional_requests["up_reverse"] = [request for request in current_requests if request.request_floor > lift.position and request.direction == Direction.DOWN and request not in self.another_batch(self.current_batches)]
+                directional_requests["down_reverse"] = [request for request in current_requests if request.request_floor < lift.position and request.direction == Direction.UP and request not in self.another_batch(self.current_batches)]
 
                 min_time = min(current_requests, key=lambda request: request.time_created).time_created
                 max_time = max(current_requests, key=lambda request: request.time_created).time_created
@@ -272,13 +272,16 @@ class MYLIFT2:
                 sorted_direction = sorted(directional_requests[preferable_direction], key=lambda request: request.target_floor, reverse= True if preferable_direction in ["down", "up_reverse"] else False)
                 self.current_batches[lift] = [sorted_direction[i] for i in range(max_batch_size if len(sorted_direction) >= max_batch_size else len(sorted_direction) )]
 
-            to_remove_from_batches = [request for request in self.current_batches[lift] if request in lift.picked_requests]
+            to_remove_from_batches = [request for request in self.current_batches[lift] if request in lift.picked_requests or request.request_floor == lift.position]
             if to_remove_from_batches:
                 for request in to_remove_from_batches:
                     self.current_batches[lift].remove(request)
 
             if self.current_batches[lift] or lift.picked_requests:
-                all_requests: list[int] = [request.request_floor for request in self.current_batches[lift]] + [request.target_floor for request in lift.picked_requests]
+                if lift.weight > (lift.capacity - 150):
+                    all_requests = [request.target_floor for request in lift.picked_requests]
+                else:
+                    all_requests: list[int] = [request.request_floor for request in self.current_batches[lift]] + [request.target_floor for request in lift.picked_requests]
                 self.target_floors[lift] = min(all_requests, key=lambda request: abs(request - lift.position))
         return self.return_converter(self.target_floors, lift_manager.lifts)
 
