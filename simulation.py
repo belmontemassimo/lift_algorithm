@@ -42,6 +42,9 @@ Request(8, 3, 98), Request(24, 13, 98), Request(20, 7, 104), Request(5, 1, 104),
     
     # Then create monitoring with the lift_manager
     monitoring_queue = run_monitoring(algorithm.get_list(), CAPACITY)
+    
+    # Initialize gui_queue to None
+    gui_queue = None
 
     # flag to show if any changes in simulation (new request, lift stoped, etc)
     update_flag: bool = True
@@ -84,26 +87,41 @@ Request(8, 3, 98), Request(24, 13, 98), Request(20, 7, 104), Request(5, 1, 104),
 
         # update of monitoring and gui if enabled
         update_monitoring(monitoring_queue, lift_manager, timer)
-        if isGUI:
+        if isGUI and gui_queue is not None:
             gui_update(lift_manager, gui_queue)
 
         # collects requestes that become due after the last loop
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         # if there is a request in new_requests_list then add it to the current_requests list 
         if new_requests_list:
+            # Record the lift positions for each new request
+            for request in new_requests_list:
+                # Record position of all lifts at the time of request
+                lift_positions = lift_manager.get_positions()
+                # Find the closest lift (simple approach - in a real system, this would be more complex)
+                closest_lift_idx = min(range(len(lift_positions)), 
+                                      key=lambda i: abs(lift_positions[i] - request.request_floor))
+                # Store both the position and the ID of the closest lift (initial estimate)
+                request.set_lift_position_on_request(lift_positions[closest_lift_idx], closest_lift_idx)
+                    
             current_requests.extend(new_requests_list)
             # removes the processed request from the list_of_requests
             list_of_requests = [request for request in list_of_requests if request not in new_requests_list]
             update_flag = True
         
         # for loop to determin if requests are required to interact with LiftState 
-        for lift in lift_manager.lifts:
+        for lift_idx, lift in enumerate(lift_manager.lifts):
             match lift.state:
                 case LiftState.WAITING:
                     # adds all requests from the floor where lift is at 
                     add_requests_list: list[Request] = [request for request in current_requests if request.request_floor == lift.position and lift.add_request(request) and request.lift_check_in(timer)]
-                    # update list of waiting requests if there are new requests moved to the lift 
+                    # update list of waiting requests if there are new requests moved to the lift
                     if add_requests_list:
+                        # Record the actual lift that handled each request
+                        for request in add_requests_list:
+                            # Only update if not already set (to preserve the first lift that picks up the request)
+                            if request.get_assigned_lift() is None:
+                                request.set_assigned_lift(lift_idx)
                         current_requests = [request for request in current_requests if request not in add_requests_list]
                         update_flag = True
                     # check if request reached the target floor and process accordingly 
