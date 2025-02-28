@@ -260,16 +260,6 @@ class SimulationAnalytics:
         # Set axes to start from origin if possible
         plt.xlim(left=0)
         plt.ylim(bottom=0)
-        
-        # Add a reference line if there's a theoretical relationship
-        if len(distances_array) > 1:
-            # Calculate average speed (distance/time) to see if it matches expectations
-            avg_speed = np.mean(distances_array / waiting_times_array)
-            ideal_line_x = np.linspace(0, np.max(waiting_times_array) * 1.1, 10)
-            ideal_line_y = ideal_line_x * avg_speed
-            plt.plot(ideal_line_x, ideal_line_y, 'g--', linewidth=1, alpha=0.5, 
-                    label=f"Expected (v={avg_speed:.2f} floors/s)")
-            plt.legend(loc='lower right')
             
         # Add a legend explaining the point labels
         plt.figtext(0.02, 0.02, "Note: Points are labeled with request number (1-indexed)", 
