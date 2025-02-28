@@ -244,7 +244,7 @@ class MYLIFT2:
     target_floors: dict[Lift,float|None] = {}
 
     def __call__(self, lift_manager: LiftManager, current_requests: list[Request]) -> list[float | None]:
-        max_batch_size = 5
+        max_batch_size = 25
 
         if not self.current_batches and not self.target_floors:
             self.current_batches = {lift: [] for lift in lift_manager.lifts}
