@@ -6,6 +6,35 @@ import tkinter as tk
 from multiprocessing import Process, Queue
 from liftmanager import LiftManager
 
+COLORS = [
+    "#1C2526",  # Dark Slate Gray
+    "#3C2F2F",  # Dark Brown
+    "#4A4A4A",  # Dark Gray
+    "#2F1C0F",  # Deep Coffee Brown
+    "#3F2A44",  # Dark Plum
+    "#1A3C34",  # Dark Teal
+    "#5C4033",  # Dark Sienna
+    "#2B1D3A",  # Dark Indigo
+    "#2E2E2E",  # Charcoal Gray
+    "#403530",  # Dark Taupe
+    "#1F2F3C",  # Dark Steel Blue
+    "#3A2A29"   # Dark Mahogany
+]
+TRANSPARENT_COLORS = [
+    "#788081",  # Lightened Slate Gray
+    "#8D7F7F",  # Lightened Brown
+    "#989898",  # Lightened Gray
+    "#847873",  # Lightened Coffee Brown
+    "#8E7C91",  # Lightened Plum
+    "#778D88",  # Lightened Teal
+    "#A28E85",  # Lightened Sienna
+    "#837588",  # Lightened Indigo
+    "#858585",  # Lightened Charcoal Gray
+    "#908784",  # Lightened Taupe
+    "#7A858C",  # Lightened Steel Blue
+    "#8B7C7B"   # Lightened Mahogany
+]
+
 
 # nothing is implemented yet
 class GUI:
@@ -40,8 +69,10 @@ class GUI:
         # Create lift objects
         for i in range(1, (2*n_lifts) + 1):
             if i%2 == 1:
-                self.shadow_lifts.append(self.canvas.create_rectangle(i*proportional_stops, height-proportional_stops, (i*proportional_stops)+proportional_stops, height, fill="#D9D9D9", outline="#D9D9D9"))
-                self.lifts.append(self.canvas.create_rectangle(i*proportional_stops, height-proportional_stops, (i*proportional_stops)+proportional_stops, height, fill="black"))
+                lift_color = COLORS[int(((i-1)/2)%len(COLORS))]
+                shadow_color = TRANSPARENT_COLORS[int(((i-1)/2)%len(TRANSPARENT_COLORS))]
+                self.shadow_lifts.append(self.canvas.create_rectangle(i*proportional_stops, height-proportional_stops, (i*proportional_stops)+proportional_stops, height, fill=shadow_color, outline=shadow_color))
+                self.lifts.append(self.canvas.create_rectangle(i*proportional_stops, height-proportional_stops, (i*proportional_stops)+proportional_stops, height, fill=lift_color))
 
         # Call mainloop
         self.root.after(1,self.queue_manager)

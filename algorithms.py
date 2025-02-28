@@ -228,12 +228,12 @@ class MYLIFT:
         if self.direction == Direction.UP:
             up_requests = [req for req in requests if key(req) > lift.position]
             if up_requests:
-                return min(up_requests, key=key)  # Move to nearest request going up
+                return key(min(up_requests, key=key))  # Move to nearest request going up
 
         if self.direction == Direction.DOWN:
             down_requests = [req for req in requests if key(req) < lift.position]
             if down_requests:
-                return max(down_requests, key=key)  # Move to nearest request going down
+                return key(max(down_requests, key=key))  # Move to nearest request going down
 
         # If no requests match the direction, change direction
         self.direction = Direction.UP if self.direction == Direction.DOWN else Direction.DOWN
