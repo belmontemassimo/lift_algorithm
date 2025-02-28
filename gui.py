@@ -7,32 +7,32 @@ from multiprocessing import Process, Queue
 from liftmanager import LiftManager
 
 COLORS = [
-    "#FF0000",  # Bright Red
-    "#00FF00",  # Lime Green
-    "#0000FF",  # Pure Blue
-    "#FFFF00",  # Vivid Yellow
-    "#FF00FF",  # Magenta (Fuchsia)
-    "#00FFFF",  # Cyan (Aqua)
-    "#FF4500",  # Orange Red
-    "#8A2BE2",  # Blue Violet
-    "#32CD32",  # Lime Green (slightly darker)
-    "#FFD700",  # Gold
-    "#00CED1",  # Dark Turquoise
-    "#FF1493",  # Deep Pink
+    "#1C2526",  # Dark Slate Gray
+    "#3C2F2F",  # Dark Brown
+    "#4A4A4A",  # Dark Gray
+    "#2F1C0F",  # Deep Coffee Brown
+    "#3F2A44",  # Dark Plum
+    "#1A3C34",  # Dark Teal
+    "#5C4033",  # Dark Sienna
+    "#2B1D3A",  # Dark Indigo
+    "#2E2E2E",  # Charcoal Gray
+    "#403530",  # Dark Taupe
+    "#1F2F3C",  # Dark Steel Blue
+    "#3A2A29"   # Dark Mahogany
 ]
 TRANSPARENT_COLORS = [
-    "#FF7676",  # Lightened Red (from #FF0000)
-    "#76FF76",  # Lightened Lime Green (from #00FF00)
-    "#7676FF",  # Lightened Blue (from #0000FF)
-    "#FFFF76",  # Lightened Yellow (from #FFFF00)
-    "#FF76FF",  # Lightened Magenta (from #FF00FF)
-    "#76FFFF",  # Lightened Cyan (from #00FFFF)
-    "#FF8D76",  # Lightened Orange Red (from #FF4500)
-    "#B584EE",  # Lightened Blue Violet (from #8A2BE2)
-    "#8BEE8B",  # Lightened Lime Green (from #32CD32)
-    "#FFEA76",  # Lightened Gold (from #FFD700)
-    "#76F0E9",  # Lightened Dark Turquoise (from #00CED1)
-    "#FF71B3"   # Lightened Deep Pink (from #FF1493)
+    "#788081",  # Lightened Slate Gray
+    "#8D7F7F",  # Lightened Brown
+    "#989898",  # Lightened Gray
+    "#847873",  # Lightened Coffee Brown
+    "#8E7C91",  # Lightened Plum
+    "#778D88",  # Lightened Teal
+    "#A28E85",  # Lightened Sienna
+    "#837588",  # Lightened Indigo
+    "#858585",  # Lightened Charcoal Gray
+    "#908784",  # Lightened Taupe
+    "#7A858C",  # Lightened Steel Blue
+    "#8B7C7B"   # Lightened Mahogany
 ]
 
 
