@@ -1,4 +1,3 @@
-from math import copysign
 from request import Request
 from lift import Lift, LiftState
 from liftmanager import LiftManager
@@ -240,9 +239,73 @@ class MYLIFT:
         self.direction = Direction.UP if self.direction == Direction.DOWN else Direction.DOWN
         return self.get_next_floor(lift, requests, key)  # Recurse with updated direction
 
+class MYLIFT2:
+    current_batches: dict[Lift,list[Request]] = {}
+    target_floors: dict[Lift,float|None] = {}
+
+    def __call__(self, lift_manager: LiftManager, current_requests: list[Request]) -> list[float | None]:
+        max_batch_size = 5
+
+        if not self.current_batches and not self.target_floors:
+            self.current_batches = {lift: [] for lift in lift_manager.lifts}
+            self.target_floors = {lift: None for lift in lift_manager.lifts}
 
 
-        
+        for lift in lift_manager.lifts:
+            if not current_requests and not lift.picked_requests:
+                self.target_floors[lift] = None # No requests, lift remains idle
+
+            if not self.current_batches[lift] and not lift.picked_requests and [request for request in current_requests if request not in self.another_batch(self.current_batches)]:
+                directional_requests: dict[str,list[Request]] = {}
+                directional_requests["up"] = [request for request in current_requests if request.request_floor >= lift.position and request.direction == Direction.UP and request not in self.another_batch(self.current_batches)]
+                directional_requests["down"] = [request for request in current_requests if request.request_floor <= lift.position and request.direction == Direction.DOWN and request not in self.another_batch(self.current_batches)]
+                directional_requests["up_reverse"] = [request for request in current_requests if request.request_floor >= lift.position and request.direction == Direction.DOWN and request not in self.another_batch(self.current_batches)]
+                directional_requests["down_reverse"] = [request for request in current_requests if request.request_floor <= lift.position and request.direction == Direction.UP and request not in self.another_batch(self.current_batches)]
+
+                min_time = min(current_requests, key=lambda request: request.time_created).time_created
+                max_time = max(current_requests, key=lambda request: request.time_created).time_created
+                min_requests = min([len(list_of_requests) for list_of_requests in directional_requests.items()])
+                max_requests = max([len(list_of_requests) for list_of_requests in directional_requests.items()])
+
+                directional_scores: dict[str,float] = self.direction_score(directional_requests, min_time, max_time, min_requests, max_requests)
+                preferable_direction: str = min(directional_scores.items(), key=lambda score: score[1])[0]
+                sorted_direction = sorted(directional_requests[preferable_direction], key=lambda request: request.target_floor, reverse= True if preferable_direction in ["down", "up_reverse"] else False)
+                self.current_batches[lift] = [sorted_direction[i] for i in range(max_batch_size if len(sorted_direction) >= max_batch_size else len(sorted_direction) )]
+
+            to_remove_from_batches = [request for request in self.current_batches[lift] if request in lift.picked_requests]
+            if to_remove_from_batches:
+                for request in to_remove_from_batches:
+                    self.current_batches[lift].remove(request)
+
+            if self.current_batches[lift] or lift.picked_requests:
+                all_requests: list[int] = [request.request_floor for request in self.current_batches[lift]] + [request.target_floor for request in lift.picked_requests]
+                self.target_floors[lift] = min(all_requests, key=lambda request: abs(request - lift.position))
+        return self.return_converter(self.target_floors, lift_manager.lifts)
+
+    def return_converter(self, target_floors: dict[Lift,float|None], lifts: list[Lift]) -> list[float|None]:
+        return [target_floors[lift] for lift in lifts]
+
+    def direction_score(self, directional_requests: dict[str,list[Request]], min_time: float, max_time: float, min_requests: int, max_requests: int) -> dict[str,float]:
+            return {key: self.normalise(min_requests,max_requests,len(list_of_requests)) + (1 - self.mean([self.exponential(self.normalise(min_time,max_time,request.time_created)) for request in list_of_requests])) for key, list_of_requests in directional_requests.items()}
+
+    def normalise(self, min_number: float, max_number: float, number: float) -> float:
+        if min_number == max_number:
+            return 1
+        return (number - min_number)/(max_number - min_number)
+
+    def exponential(self, number: float) -> float:
+        e = 2.7183
+        return (e ** number) / e + 3
+
+    def mean(self, list_of_numbers: list[float]) -> float:
+        if not list_of_numbers:
+            return 0
+        return sum(list_of_numbers) / len(list_of_numbers)
+
+    def another_batch(self, batches: dict[Lift,list[Request]]) -> list[Request]:
+        return [request for batch in batches.items() for request in batch[1]] 
+
+
 
         
 
