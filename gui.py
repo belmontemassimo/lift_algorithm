@@ -6,6 +6,35 @@ import tkinter as tk
 from multiprocessing import Process, Queue
 from liftmanager import LiftManager
 
+COLORS = [
+    "#FF0000",  # Bright Red
+    "#00FF00",  # Lime Green
+    "#0000FF",  # Pure Blue
+    "#FFFF00",  # Vivid Yellow
+    "#FF00FF",  # Magenta (Fuchsia)
+    "#00FFFF",  # Cyan (Aqua)
+    "#FF4500",  # Orange Red
+    "#8A2BE2",  # Blue Violet
+    "#32CD32",  # Lime Green (slightly darker)
+    "#FFD700",  # Gold
+    "#00CED1",  # Dark Turquoise
+    "#FF1493",  # Deep Pink
+]
+TRANSPARENT_COLORS = [
+    "#FF7676",  # Lightened Red (from #FF0000)
+    "#76FF76",  # Lightened Lime Green (from #00FF00)
+    "#7676FF",  # Lightened Blue (from #0000FF)
+    "#FFFF76",  # Lightened Yellow (from #FFFF00)
+    "#FF76FF",  # Lightened Magenta (from #FF00FF)
+    "#76FFFF",  # Lightened Cyan (from #00FFFF)
+    "#FF8D76",  # Lightened Orange Red (from #FF4500)
+    "#B584EE",  # Lightened Blue Violet (from #8A2BE2)
+    "#8BEE8B",  # Lightened Lime Green (from #32CD32)
+    "#FFEA76",  # Lightened Gold (from #FFD700)
+    "#76F0E9",  # Lightened Dark Turquoise (from #00CED1)
+    "#FF71B3"   # Lightened Deep Pink (from #FF1493)
+]
+
 
 # nothing is implemented yet
 class GUI:
@@ -40,8 +69,10 @@ class GUI:
         # Create lift objects
         for i in range(1, (2*n_lifts) + 1):
             if i%2 == 1:
-                self.shadow_lifts.append(self.canvas.create_rectangle(i*proportional_stops, height-proportional_stops, (i*proportional_stops)+proportional_stops, height, fill="#D9D9D9", outline="#D9D9D9"))
-                self.lifts.append(self.canvas.create_rectangle(i*proportional_stops, height-proportional_stops, (i*proportional_stops)+proportional_stops, height, fill="black"))
+                lift_color = COLORS[int(((i-1)/2)%len(COLORS))]
+                shadow_color = TRANSPARENT_COLORS[int(((i-1)/2)%len(TRANSPARENT_COLORS))]
+                self.shadow_lifts.append(self.canvas.create_rectangle(i*proportional_stops, height-proportional_stops, (i*proportional_stops)+proportional_stops, height, fill=shadow_color, outline=shadow_color))
+                self.lifts.append(self.canvas.create_rectangle(i*proportional_stops, height-proportional_stops, (i*proportional_stops)+proportional_stops, height, fill=lift_color))
 
         # Call mainloop
         self.root.after(1,self.queue_manager)
