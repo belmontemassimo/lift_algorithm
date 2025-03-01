@@ -44,6 +44,7 @@ class Request:
         self.time_in_lift = time - self.time_on_floor
         return True
     
+    # creates a list of all floor numbers between two specified floors based on the direction of the lift
     def floors_range(self, start_floor:float, end_floor:int) -> list[int]:
         if start_floor > end_floor:
             start_floor = start_floor.__floor__()
