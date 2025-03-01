@@ -93,11 +93,11 @@ def run_simulation(isGUI: bool = True):
             for request in new_requests_list:
                 # Record position of all lifts at the time of request
                 lift_positions = lift_manager.get_positions()
-                # Find the closest lift (simple approach - in a real system, this would be more complex)
+                # Find the closest lift 
                 closest_lift_idx = min(range(len(lift_positions)), 
                                       key=lambda i: abs(lift_positions[i] - request.request_floor))
-                # Store both the position and the ID of the closest lift (initial estimate)
-                request.set_lift_position_on_request(lift_positions[closest_lift_idx], closest_lift_idx)
+                # Store the position of the closest lift for graph analytics
+                request.lift_position_on_request = lift_positions[closest_lift_idx]
                     
             current_requests.extend(new_requests_list)
             # removes the processed request from the list_of_requests
@@ -112,11 +112,7 @@ def run_simulation(isGUI: bool = True):
                     add_requests_list: list[Request] = [request for request in current_requests if request.request_floor == lift.position and lift.add_request(request) and request.lift_check_in(timer)]
                     # update list of waiting requests if there are new requests moved to the lift
                     if add_requests_list:
-                        # Record the actual lift that handled each request
-                        for request in add_requests_list:
-                            # Only update if not already set (to preserve the first lift that picks up the request)
-                            if request.get_assigned_lift() is None:
-                                request.set_assigned_lift(lift_idx)
+                        # Record the actual lift that handled each request (no longer needed for graphs)
                         current_requests = [request for request in current_requests if request not in add_requests_list]
                         update_flag = True
                     # check if request reached the target floor and process accordingly 

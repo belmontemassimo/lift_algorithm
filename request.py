@@ -1,7 +1,7 @@
 from extenders import double_normal_distribution
 from extenders import Direction
 
-# class that represcent entier request from start to finish
+# class that represcent entire request from start to finish
 class Request:
     # variables definition
     request_floor: int
@@ -26,7 +26,7 @@ class Request:
         # set weight to custom if provided
         if weight_captor != 0:
             self.weight_captor = weight_captor
-        # generate random weight 
+        # generate random weight under a normal distribution
         else:
             self.weight_captor = int(double_normal_distribution(mean=70, std_dev=12.5, second_mean=3.5, second_std_dev=0.5)*100)
 
@@ -52,38 +52,3 @@ class Request:
             start_floor = start_floor.__ceil__()
 
         return list(range(min(start_floor,end_floor),max(start_floor,end_floor)+1))
-
-    def set_lift_position_on_request(self, position: float, lift_id: int | None = None) -> None:
-        """
-        Sets the position of the lift when the request was received
-        Args:
-            position (float): The current position of the lift
-            lift_id (int, optional): The ID of the lift. Defaults to None.
-        """
-        self.lift_position_on_request = position
-        if lift_id is not None:
-            self.assigned_lift_id = lift_id
-
-    def get_lift_position_on_request(self) -> float | None:
-        """
-        Returns the position of the lift when the request was received
-        Returns:
-            float | None: The position of the lift when request was received, or None if not set
-        """
-        return self.lift_position_on_request
-        
-    def set_assigned_lift(self, lift_id: int) -> None:
-        """
-        Sets the ID of the lift that has been assigned to handle this request
-        Args:
-            lift_id (int): The ID of the assigned lift
-        """
-        self.assigned_lift_id = lift_id
-        
-    def get_assigned_lift(self) -> int | None:
-        """
-        Returns the ID of the lift assigned to this request
-        Returns:
-            int | None: The lift ID, or None if not yet assigned
-        """
-        return self.assigned_lift_id
