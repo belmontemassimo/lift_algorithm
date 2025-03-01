@@ -21,12 +21,7 @@ def run_simulation(isGUI: bool = True):
     WAITING_TIME: float = 10
 
     # requests are in the form of (target_floor, direction, time_created)
-    list_of_requests: list[Request] = [Request(9, 3, 3), Request(24, 12, 3), Request(21, 14, 10), Request(8, 1, 10), Request(13, 5, 18), 
-Request(6, 2, 18), Request(19, 9, 24), Request(15, 8, 24), Request(12, 3, 31), Request(20, 6, 36), 
-Request(11, 7, 36), Request(7, 2, 44), Request(18, 5, 44), Request(5, 0, 50), Request(22, 14, 57), 
-Request(14, 4, 57), Request(10, 2, 64), Request(16, 5, 64), Request(25, 11, 70), Request(17, 6, 70), 
-Request(3, 0, 78), Request(23, 10, 84), Request(9, 1, 84), Request(6, 2, 90), Request(15, 9, 90), 
-Request(8, 3, 98), Request(24, 13, 98), Request(20, 7, 104), Request(5, 1, 104), Request(12, 4, 112)]
+    list_of_requests: list[Request] = []
     # save initial number of requests
     len_list_of_requests: int = len(list_of_requests)
     floors = 0
