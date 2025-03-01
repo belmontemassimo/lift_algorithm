@@ -16,9 +16,9 @@ from graph import SimulationAnalytics
 def run_simulation(isGUI: bool = True):
     # set lift configuration constants
     MAX_SPEED: float = 2
-    ACCELERATION: float = 0.4
-    CAPACITY: float = 1000
-    WAITING_TIME: float = 4
+    ACCELERATION: float = 1
+    CAPACITY: float = 1500
+    WAITING_TIME: float = 10
 
     # requests are in the form of (target_floor, direction, time_created)
     list_of_requests: list[Request] = [Request(9, 3, 3), Request(24, 12, 3), Request(21, 14, 10), Request(8, 1, 10), Request(13, 5, 18), 
