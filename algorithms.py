@@ -242,9 +242,9 @@ class MYLIFT:
 class MYLIFT2:
     current_batches: dict[Lift,list[Request]] = {}
     target_floors: dict[Lift,float|None] = {}
+    max_batch_size = 25
 
     def __call__(self, lift_manager: LiftManager, current_requests: list[Request]) -> list[float | None]:
-        max_batch_size = 25
 
         if not self.current_batches and not self.target_floors:
             self.current_batches = {lift: [] for lift in lift_manager.lifts}
@@ -270,7 +270,7 @@ class MYLIFT2:
                 directional_scores: dict[str,float] = self.direction_score(directional_requests, min_time, max_time, min_requests, max_requests)
                 preferable_direction: str = min(directional_scores.items(), key=lambda score: score[1])[0]
                 sorted_direction = sorted(directional_requests[preferable_direction], key=lambda request: request.target_floor, reverse= True if preferable_direction in ["down", "up_reverse"] else False)
-                self.current_batches[lift] = [sorted_direction[i] for i in range(max_batch_size if len(sorted_direction) >= max_batch_size else len(sorted_direction) )]
+                self.current_batches[lift] = [sorted_direction[i] for i in range(self.max_batch_size if len(sorted_direction) >= self.max_batch_size else len(sorted_direction) )]
 
             to_remove_from_batches = [request for request in self.current_batches[lift] if request in lift.picked_requests or request.request_floor == lift.position]
             if to_remove_from_batches:
