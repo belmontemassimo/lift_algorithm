@@ -125,7 +125,7 @@ def run_simulation(isGUI: bool = True):
                 
     # generate analytics after simulation is finished
     analytics.generate_graphs(completed_requests_list, timer)
-    return analytics
+    return
 
 # main function
 if __name__ == "__main__":
