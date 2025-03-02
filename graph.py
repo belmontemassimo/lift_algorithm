@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np
-from scipy import stats
 from typing import List
 from request import Request
 from lift import Lift

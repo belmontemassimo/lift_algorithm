@@ -88,16 +88,6 @@ def run_simulation(isGUI: bool = True):
         new_requests_list = [request for request in list_of_requests if timer >= request.time_created]
         # if there is a request in new_requests_list then add it to the current_requests list 
         if new_requests_list:
-            # Record the lift positions for each new request
-            for request in new_requests_list:
-                # Record position of all lifts at the time of request
-                lift_positions = lift_manager.get_positions()
-                # Find the closest lift 
-                closest_lift_idx = min(range(len(lift_positions)), 
-                                      key=lambda i: abs(lift_positions[i] - request.request_floor))
-                # Store the position of the closest lift for graph analytics
-                request.lift_position_on_request = lift_positions[closest_lift_idx]
-                    
             current_requests.extend(new_requests_list)
             # removes the processed request from the list_of_requests
             list_of_requests = [request for request in list_of_requests if request not in new_requests_list]
