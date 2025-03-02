@@ -20,10 +20,10 @@ def run_simulation(isGUI: bool = True):
     CAPACITY: float = 1500
     WAITING_TIME: float = 10
 
-    list_of_requests: list[Request] = []
+    list_of_requests: list[Request]
     # save initial number of requests
-    len_list_of_requests: int = len(list_of_requests)
-    floors = 0
+    len_list_of_requests: int
+    floors: int = 0
     # two lists to keep track of active and completed requests
     current_requests: list[Request] = []
     completed_requests_list: list[Request] = []
@@ -47,9 +47,8 @@ def run_simulation(isGUI: bool = True):
     while True:
         if not monitoring_queue.empty():
             data = monitoring_queue.get()
-            if data["sample"]:
-                list_of_requests = load_sample(data["sample"])
-                len_list_of_requests = len(list_of_requests)
+            list_of_requests = load_sample(data["sample"])
+            len_list_of_requests = len(list_of_requests)
             for request in list_of_requests:
                 if max(request.target_floor, request.request_floor) > floors:
                     floors = max(request.target_floor, request.request_floor)
