@@ -1,6 +1,6 @@
 The Lift Simulation System is a Python-based project designed to simulate elevator operations in a multi-lift building environment. It models passenger requests, lift movements, and scheduling algorithms, providing real-time visualization and performance analytics. This project is ideal for studying elevator system efficiency, testing scheduling algorithms, or educational purposes.
 
-**Features:**
+## **Features:**
 - Multi-Lift Management: Simulate multiple lifts with configurable speed, acceleration, and capacity.
 - Request Handling: Generate and process passenger requests with realistic weight modeling.
 - Scheduling Algorithms: Includes FCFS, SCAN, LOOK, MYLIFT, and a custom OtherLift algorithm, with extensibility for new strategies.
@@ -9,7 +9,7 @@ The Lift Simulation System is a Python-based project designed to simulate elevat
 - Analytics: Generate graphs for waiting times, turnaround times, lift positions, and system performance using Matplotlib.
 - Modular Design: Cleanly separated components for easy modification and expansion.
 
-**Project Structure:**
+## **Project Structure:**
 
 lift-simulation/  
 ├── `gui.py`              # Tkinter-based GUI for visualizing lift movements  
@@ -24,7 +24,7 @@ lift-simulation/
 ├── `generator.py`        # Generates samples of requests  
 └── `README.md`           # This file  
 
-**Prerequisites:**
+## **Prerequisites:**
 - Python 3.9+
 
 - Dependencies:
@@ -33,7 +33,7 @@ lift-simulation/
     - wxPython (for monitoring GUI)
     - tkinter (for visualization GUI, typically included with Python)
 
-**Installation:**
+## **Installation:**
 1. Clone the repository:
 ```sh
 git clone https://github.com/belmontemassimo/lift_algorithm.git; cd lift_algorithm
@@ -48,16 +48,27 @@ python simulation.py
 ```
 
 
-**Usage:**
-Run simulation.py to start the simulation with default settings:
+## **Usage:**
+Generating sample of requests (optional if other sample present)
+```sh
+python generator.py
+```
+ - enter number of floors
+ - enter number of requests
+ - enter time frame when requests will appear 
+
+
+Run `simulation.py` to start the simulation with default settings:
+```sh
 python simulation.py
+```
 
 - GUI: A Tkinter window shows lift positions and floor requests.
 - Monitoring: A wxPython window displays real-time lift stats (position, speed, state, etc.).
 - Analytics: After completion, Matplotlib plots performance metrics.
 
 
-**Configuration:**
+## **Configuration:**
 Modify simulation.py to adjust:
 - Lift Parameters: `MAX_SPEED`, `ACCELERATION`, `CAPACITY`, `WAITING_TIME`.
 - GUI Toggle: Set isGUI=False in run_simulation() to disable visualization.
@@ -65,7 +76,7 @@ Modify simulation.py to adjust:
 - Set number of lifts, floors, simulation speed, and algorithm before clicking "Start".
 - Displays live updates every 40ms.
 
-**Algorithms:**
+## **Algorithms:**
 The system supports multiple scheduling strategies in algorithms.py:
 - FCFS (First Come, First Served): Processes requests in order of arrival.
 - SCAN: Moves lifts in one direction, servicing requests until the end, then reverses.
@@ -77,7 +88,7 @@ Lifts maintain direction mid-trip, changing only when idle or waiting.
 Idle lifts take the closest request; moving lifts batch requests along their path.
 To switch algorithms, adjust the monitoring UI or modify algorithm.set_algorithm() in main.py.
 
-**Analytics:**
+## **Analytics:**
 Post-simulation graphs (via `graph.py`):
 
 - Waiting Times: Time from request creation to lift pickup.
@@ -85,18 +96,18 @@ Post-simulation graphs (via `graph.py`):
 - Turnaround Times: Total time from request creation to completion.
 - System Statistics: Average waiting time, travel time, turnaround time, and throughput.
 
-**Extending the Project:**
+## **Extending the Project:**
 - New Algorithms: Add classes to `algorithms.py` and register them in `get_algorithms()`.
 - Custom Requests: Use request.py’s `double_normal_distribution` for realistic weights or modify request generation.
 - UI Enhancements: Expand gui.py or `monitoring.py` for additional features.
 
 
-**Contributing:**
+## **Contributing:**
 Contributions are welcome! Fork the repo, make changes, and submit a pull request. Focus areas:
 - Bug fixes
 - New algorithms
 - UI improvements
 - Performance optimization
 
-**License**
+## **License**
 This project is licensed under the MIT License. See LICENSE for details.
