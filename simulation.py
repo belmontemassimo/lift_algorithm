@@ -20,7 +20,6 @@ def run_simulation(isGUI: bool = True):
     CAPACITY: float = 1500
     WAITING_TIME: float = 10
 
-    # requests are in the form of (target_floor, direction, time_created)
     list_of_requests: list[Request] = []
     # save initial number of requests
     len_list_of_requests: int = len(list_of_requests)
@@ -28,10 +27,10 @@ def run_simulation(isGUI: bool = True):
     # two lists to keep track of active and completed requests
     current_requests: list[Request] = []
     completed_requests_list: list[Request] = []
-    # class that contains algorithms¥
+    # class that contains algorithms
     algorithm = AlgorithmHandler()
     
-    # init lift managet and analytics
+    # init lift manager and analytics
     lift_manager = LiftManager()
     analytics = SimulationAnalytics()
     
@@ -41,7 +40,7 @@ def run_simulation(isGUI: bool = True):
     # Initialize gui_queue to None
     gui_queue = None
 
-    # flag to show if any changes in simulation (new request, lift stoped, etc)
+    # flag to show if any changes in simulation (new request, lift stopped, etc)
     update_flag: bool = True
     
     # Wait for start signal from monitoring and configure lift manager after 
@@ -63,7 +62,7 @@ def run_simulation(isGUI: bool = True):
             break
         
     
-    # init items to keep tracj if time
+    # init items to keep track of time
     timer = 0
     deltatime = DeltaTime()
     RECORD_INTERVAL = 0.1  # Record every 0.1 seconds
@@ -75,7 +74,7 @@ def run_simulation(isGUI: bool = True):
         # update lifts
         lift_manager.run_updates()
         
-        # records lifts statictics with set interval 
+        # records lifts statistics with set interval 
         if timer >= next_record_time:
             analytics.record_state(timer, lift_manager.lifts)
             next_record_time += RECORD_INTERVAL
@@ -104,15 +103,14 @@ def run_simulation(isGUI: bool = True):
             list_of_requests = [request for request in list_of_requests if request not in new_requests_list]
             update_flag = True
         
-        # for loop to determin if requests are required to interact with LiftState 
-        for lift_idx, lift in enumerate(lift_manager.lifts):
+        # for loop to determine if requests are required to interact with LiftState 
+        for lift in lift_manager.lifts:
             match lift.state:
                 case LiftState.WAITING:
                     # adds all requests from the floor where lift is at 
                     add_requests_list: list[Request] = [request for request in current_requests if request.request_floor == lift.position and lift.add_request(request) and request.lift_check_in(timer)]
                     # update list of waiting requests if there are new requests moved to the lift
                     if add_requests_list:
-                        # Record the actual lift that handled each request (no longer needed for graphs)
                         current_requests = [request for request in current_requests if request not in add_requests_list]
                         update_flag = True
                     # check if request reached the target floor and process accordingly 
@@ -132,7 +130,7 @@ def run_simulation(isGUI: bool = True):
             # set lifts states accordingly to the new target floor and previous state
             lift_manager.set_states([(LiftState.IDLE if states[i] != LiftState.WAITING else states[i]) if floor == None else (LiftState.MOVING if states[i] == LiftState.IDLE or states[i] == LiftState.AFTERWAIT else states[i]) for i, floor in enumerate(next_floors)])
 
-            # stop simulation loop if number if delivered requests is equal to initial number of requests 
+            # stop simulation loop if number of delivered requests is equal to initial number of requests 
             if len_list_of_requests == len(completed_requests_list):
                 break
                 
